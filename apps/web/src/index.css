@@ -1,0 +1,101 @@
+@import "tailwindcss";
+@import "maplibre-gl/dist/maplibre-gl.css";
+
+@theme {
+  --font-display: "Fraunces", Georgia, serif;
+  --font-sans: "Manrope", ui-sans-serif, sans-serif;
+
+  --color-ink: #0e1c1c;
+  --color-ink-soft: #1a2f2e;
+  --color-creek: #145c5a;
+  --color-creek-bright: #1f7a76;
+  --color-foam: #e7f1ef;
+  --color-mist: #c5d8d4;
+  --color-cedar: #8a5a3a;
+  --color-cedar-deep: #5c3a24;
+  --color-brass: #b08a4a;
+  --color-board: #d8c4a8;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(31, 122, 118, 0.18), transparent 55%),
+      radial-gradient(900px 500px at 90% 0%, rgba(138, 90, 58, 0.12), transparent 50%),
+      linear-gradient(180deg, #f3f7f6 0%, #e7f1ef 40%, #f7f5f1 100%);
+    min-height: 100vh;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fog-drift {
+  from {
+    transform: translateX(-2%);
+  }
+  to {
+    transform: translateX(2%);
+  }
+}
+
+@keyframes shimmer-line {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-rise {
+  animation: rise-in 0.8s ease-out both;
+}
+
+.animate-rise-delay {
+  animation: rise-in 0.9s ease-out 0.15s both;
+}
+
+.animate-rise-delay-2 {
+  animation: rise-in 0.9s ease-out 0.3s both;
+}
+
+.hero-fog {
+  animation: fog-drift 12s ease-in-out infinite alternate;
+}
+
+.accent-line {
+  background: linear-gradient(90deg, var(--color-creek), var(--color-brass), var(--color-cedar));
+  background-size: 200% 100%;
+  animation: shimmer-line 8s linear infinite;
+}

@@ -1,0 +1,19 @@
+{
+  "name": "creek-street",
+  "private": true,
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @creek-street/api & npm run dev -w @creek-street/web",
+    "dev:api": "npm run dev -w @creek-street/api",
+    "dev:web": "npm run dev -w @creek-street/web",
+    "build": "npm run build -w @creek-street/api && npm run build -w @creek-street/web",
+    "seed": "npm run seed -w @creek-street/api",
+    "lint": "npm run lint -w @creek-street/api && npm run lint -w @creek-street/web"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

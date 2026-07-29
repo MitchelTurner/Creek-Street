@@ -1,0 +1,53 @@
+import { useEffect, useState } from 'react';
+import { PageHeader } from '../components/PageHeader';
+import { SourceLink } from '../components/SourceLink';
+import { api, formatDate, type Meeting } from '../lib/api';
+
+export function MeetingsPage() {
+  const [rows, setRows] = useState<Meeting[]>([]);
+
+  useEffect(() => {
+    api.meetings().then(setRows).catch(() => setRows([]));
+  }, []);
+
+  return (
+    <div className="mx-auto max-w-6xl px-4 py-10 md:px-6">
+      <PageHeader
+        title="Meeting calendar"
+        lede="Noticed meetings, agendas, minutes, and video links when available. Quorum failures are recorded as neutral facts."
+      />
+
+      <ul className="divide-y divide-ink/10 border-y border-ink/10">
+        {rows.map((m) => (
+          <li key={m.id} className="grid gap-3 py-5 md:grid-cols-[180px_1fr]">
+            <div>
+              <p className="font-display text-xl font-semibold">{formatDate(m.scheduledAt)}</p>
+              <p className="mt-1 text-xs uppercase tracking-wide text-ink/45">{m.status.replace(/_/g, ' ')}</p>
+              {m.quorumMet === false && (
+                <p className="mt-2 text-xs font-semibold text-cedar-deep">Failed quorum</p>
+              )}
+            </div>
+            <div>
+              <p className="text-sm text-ink/65">{m.location}</p>
+              <ul className="mt-3 space-y-1.5">
+                {m.agendaItems.map((ai) => (
+                  <li key={ai.id} className="text-sm">
+                    <span className="text-ink/45">{ai.itemNumber}</span> {ai.title}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-3 flex flex-wrap gap-4 text-xs">
+                {m.agendaUrl && <SourceLink href={m.agendaUrl} label="Agenda" />}
+                {m.minutesUrl && <SourceLink href={m.minutesUrl} label="Minutes" />}
+                {m.videoUrl && <SourceLink href={m.videoUrl} label="Video" />}
+                {!m.agendaUrl && !m.minutesUrl && (
+                  <span className="text-ink/40">Packet links pending Clerk / CivicPlus feed</span>
+                )}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}

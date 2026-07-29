@@ -1,0 +1,426 @@
+// Creek Street Design Review Hub — Prisma schema
+// Legal boundary: Decision is mirrored public record; MemberNote is private,
+// author-scoped, never joined into public queries. Enforce in schema + guards.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Place and structure ─────────────────────────────────────────────────────
+
+model Parcel {
+  id           String        @id @default(cuid())
+  parcelNumber String        @unique
+  address      String?
+  geometry     Json?
+  inHdZone     Boolean       @default(true)
+  structures   Structure[]
+  applications Application[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Structure {
+  id                String        @id @default(cuid())
+  parcelId          String
+  parcel            Parcel        @relation(fields: [parcelId], references: [id])
+  commonName        String?
+  addressLabel      String?
+  yearBuilt         Int?
+  nrhpContributing  Boolean?
+  historicNarrative String?
+  publicSlug        String        @unique
+  notes             String?
+  centroid          Json?
+  sourceDocUrl      String?
+  photos            Photo[]
+  applications      Application[]
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([nrhpContributing])
+}
+
+model Photo {
+  id                String           @id @default(cuid())
+  structureId       String
+  storageKey        String
+  takenAt           DateTime?
+  yearApprox        Int?
+  isHistoric        Boolean          @default(false)
+  credit            String?
+  caption           String?
+  submittedByUserId String?
+  moderationStatus  ModerationStatus @default(APPROVED)
+  structure         Structure        @relation(fields: [structureId], references: [id])
+  createdAt         DateTime         @default(now())
+
+  @@index([structureId, takenAt])
+}
+
+enum ModerationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ─── Applications and decisions ──────────────────────────────────────────────
+
+model Application {
+  id            String              @id @default(cuid())
+  caseNumber    String?             @unique
+  parcelId      String
+  parcel        Parcel              @relation(fields: [parcelId], references: [id])
+  structureId   String?
+  structure     Structure?          @relation(fields: [structureId], references: [id])
+  applicantName String?
+  projectType   ProjectType
+  description   String
+  status        ApplicationStatus
+  filedAt       DateTime?
+  source        DataSource
+  sourceDocUrl  String?
+  documents     Document[]
+  agendaItems   AgendaItem[]
+  decisions     Decision[]
+  memberNotes   MemberNote[]
+  embedding     PrecedentEmbedding?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@index([status, filedAt])
+  @@index([projectType])
+}
+
+enum ProjectType {
+  NEW_CONSTRUCTION
+  EXTERIOR_ALTERATION
+  SIGNAGE
+  AWNING_CANOPY
+  PAINT_MATERIALS
+  DEMOLITION
+  BOARDWALK_STRUCTURE
+  SUBSTRUCTURE_PILING
+  OTHER
+}
+
+enum ApplicationStatus {
+  DRAFT
+  FILED
+  SCHEDULED
+  BOARD_REVIEWED
+  FORWARDED
+  APPROVED
+  APPROVED_W_CONDITIONS
+  DENIED
+  WITHDRAWN
+}
+
+enum DataSource {
+  MIRRORED
+  APPLICANT_DRAFT
+}
+
+model Decision {
+  id             String                 @id @default(cuid())
+  applicationId  String
+  meetingId      String?
+  recommendation String
+  conditions     String?
+  voteFor        Int?
+  voteAgainst    Int?
+  finalOutcome   String?
+  sourceDocUrl   String
+  decidedAt      DateTime?
+  application    Application            @relation(fields: [applicationId], references: [id])
+  criterionTags  DecisionCriterionTag[]
+  exemplars      PrecedentExemplar[]
+  createdAt      DateTime               @default(now())
+
+  @@index([decidedAt])
+}
+
+model Document {
+  id            String      @id @default(cuid())
+  applicationId String
+  kind          String
+  storageKey    String
+  sourceUrl     String?
+  isPublic      Boolean     @default(false)
+  application   Application @relation(fields: [applicationId], references: [id])
+}
+
+// ─── Criteria, triage, permit triggers ───────────────────────────────────────
+
+enum CriterionKey {
+  UNIFORMITY
+  DISSIMILARITY
+  APPROPRIATENESS
+  DESIGN_QUALITY
+  MATERIAL_HONESTY
+}
+
+model Criterion {
+  key           CriterionKey           @id
+  label         String
+  plainLanguage String
+  codeCite      String                 @default("KGBC 18.40.010(13)")
+  codeText      String?
+  tags          DecisionCriterionTag[]
+}
+
+model DecisionCriterionTag {
+  id           String       @id @default(cuid())
+  decisionId   String
+  criterion    CriterionKey
+  weight       TagWeight
+  decision     Decision     @relation(fields: [decisionId], references: [id])
+  criterionRef Criterion    @relation(fields: [criterion], references: [key])
+
+  @@unique([decisionId, criterion])
+}
+
+enum TagWeight {
+  DECISIVE
+  SUPPORTING
+  INCIDENTAL
+}
+
+model PrecedentExemplar {
+  id           String       @id @default(cuid())
+  decisionId   String
+  photoUrl     String
+  side         ExemplarSide
+  caption      String
+  sourceDocUrl String
+  decision     Decision     @relation(fields: [decisionId], references: [id])
+}
+
+enum ExemplarSide {
+  BEFORE
+  AFTER
+  AS_PROPOSED
+  AS_BUILT
+}
+
+model TriageFlow {
+  id          String      @id @default(cuid())
+  projectType ProjectType
+  version     Int
+  isPublished Boolean     @default(false)
+  tree        Json
+  reviewedBy  String?
+  reviewedAt  DateTime?
+
+  @@unique([projectType, version])
+}
+
+model Agency {
+  id           String          @id @default(cuid())
+  name         String
+  shortName    String          @unique
+  jurisdiction String
+  contactUrl   String
+  triggers     PermitTrigger[]
+}
+
+model PermitTrigger {
+  id                  String    @id @default(cuid())
+  agencyId            String
+  permitName          String
+  statutoryCite       String
+  conditions          Json
+  typicalLeadTimeDays Int?
+  guidanceUrl         String?
+  verifiedAt          DateTime?
+  verifiedNote        String?
+  agency              Agency    @relation(fields: [agencyId], references: [id])
+}
+
+// ─── Board, meetings, quorum ─────────────────────────────────────────────────
+
+model Seat {
+  id       String     @id @default(cuid())
+  label    String     @unique
+  seatType SeatType
+  terms    SeatTerm[]
+}
+
+enum SeatType {
+  AT_LARGE
+  PROPERTY_OWNER
+  BUSINESS_OWNER
+  DESIGN_PROFESSIONAL
+  OTHER
+}
+
+model SeatTerm {
+  id         String       @id @default(cuid())
+  seatId     String
+  memberName String?
+  termStart  DateTime
+  termEnd    DateTime
+  vacatedAt  DateTime?
+  seat       Seat         @relation(fields: [seatId], references: [id])
+  attendance Attendance[]
+
+  @@index([seatId, termStart])
+}
+
+model Meeting {
+  id           String          @id @default(cuid())
+  scheduledAt  DateTime
+  location     String          @default("Assembly Chambers, White Cliff Building")
+  status       MeetingStatus   @default(SCHEDULED)
+  quorumMet    Boolean?
+  cancelReason String?
+  noticeUrl    String?
+  agendaUrl    String?
+  minutesUrl   String?
+  videoUrl     String?
+  sourceDocUrl String?
+  agendaItems  AgendaItem[]
+  attendance   Attendance[]
+  summary      MeetingSummary?
+  createdAt    DateTime        @default(now())
+
+  @@index([scheduledAt])
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  HELD
+  CANCELLED
+  FAILED_QUORUM
+}
+
+model Attendance {
+  id         String   @id @default(cuid())
+  meetingId  String
+  seatTermId String
+  present    Boolean
+  meeting    Meeting  @relation(fields: [meetingId], references: [id])
+  seatTerm   SeatTerm @relation(fields: [seatTermId], references: [id])
+
+  @@unique([meetingId, seatTermId])
+}
+
+model AgendaItem {
+  id            String       @id @default(cuid())
+  meetingId     String
+  applicationId String?
+  itemNumber    String
+  title         String
+  meeting       Meeting      @relation(fields: [meetingId], references: [id])
+  application   Application? @relation(fields: [applicationId], references: [id])
+}
+
+model MeetingSummary {
+  id          String    @id @default(cuid())
+  meetingId   String    @unique
+  body        String
+  perItem     Json
+  model       String
+  generatedAt DateTime  @default(now())
+  reviewedBy  String?
+  reviewedAt  DateTime?
+  isPublished Boolean   @default(false)
+  meeting     Meeting   @relation(fields: [meetingId], references: [id])
+}
+
+// ─── Search, subscriptions, private notes, external data ─────────────────────
+
+model PrecedentEmbedding {
+  applicationId String      @id
+  sourceText    String
+  /// Phase 1: migrate to pgvector Unsupported("vector(1536)") once extension is live.
+  embedding     Json?
+  refreshedAt   DateTime    @default(now())
+  application   Application @relation(fields: [applicationId], references: [id])
+}
+
+model Subscription {
+  id           String             @id @default(cuid())
+  userId       String?
+  user         User?              @relation(fields: [userId], references: [id])
+  email        String
+  scope        SubscriptionScope
+  parcelId     String?
+  centerPoint  Json?
+  radiusMeters Int?
+  projectTypes ProjectType[]
+  channel      Channel            @default(EMAIL)
+  confirmedAt  DateTime?
+  unsubToken   String             @unique @default(cuid())
+  createdAt    DateTime           @default(now())
+}
+
+enum SubscriptionScope {
+  PARCEL
+  RADIUS
+  PROJECT_TYPE
+  DISTRICT_WIDE
+}
+
+enum Channel {
+  EMAIL
+  RSS
+}
+
+/// PRIVATE. Never joined into a public query. Never shared between members.
+/// Row-level: authorId is the only reader. No update path exposes it publicly.
+model MemberNote {
+  id            String      @id @default(cuid())
+  authorId      String
+  author        User        @relation(fields: [authorId], references: [id])
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id])
+  body          String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([authorId, applicationId])
+}
+
+model ShipCall {
+  id           String   @id @default(cuid())
+  callDate     DateTime
+  vesselName   String
+  estimatedPax Int?
+  source       String   @default("ktnport")
+  syncedAt     DateTime @default(now())
+
+  @@index([callDate])
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  role          UserRole       @default(APPLICANT)
+  notes         MemberNote[]
+  subscriptions Subscription[]
+  createdAt     DateTime       @default(now())
+}
+
+enum UserRole {
+  APPLICANT
+  BOARD_MEMBER
+  STAFF
+  ADMIN
+}
+
+/// District boundary and other spatial features as GeoJSON FeatureCollection pieces.
+model DistrictFeature {
+  id          String   @id @default(cuid())
+  kind        String
+  name        String
+  geometry    Json
+  properties  Json?
+  sourceDocUrl String?
+  createdAt   DateTime @default(now())
+}

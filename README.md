@@ -4,20 +4,24 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Phase 0 (this release)
+## Current release: Phase 0 + Phase 1
 
-Minimum credible launch — zero auth, zero legal exposure:
+**Phase 0 — public mirror** (zero auth, zero legal exposure):
 
 - Structure inventory from NRHP nomination **14000454** (2014)
 - District map (MapLibre + GeoJSON)
-- Application docket (mirrored / sample rows until Clerk feed)
-- Decision archive (searchable)
-- Meeting calendar
-- Plain-language HD guidance + criteria from KGBC 18.40.010(13)
+- Application docket, decision archive, meeting calendar
+- Plain-language HD guidance + criteria from KGBC 18.40.010(b)(13)
 - Board roster / vacancy watch
 - Open data JSON + CSV exports
 
-Phase 1+ (triage wizard, permit trigger map, precedent search, applicant workspace, official workflow) stays out of this branch until Phase 0 is live with real packet ingest. See the build spec for legal layering: public mirror → applicant workspace → contract-gated official workflow.
+**Phase 1 — decision support** (still zero borough agreement required):
+
+- Triage wizard (`/triage`) — versioned flows per project type; outcomes cite code; always ends at Zoning Administrator
+- Multi-agency permit trigger map (`/permits`) — data rows with `verifiedAt`; unverified gated behind opt-in
+- Visual precedent library + lexical similarity search (`/precedents`) — TF-IDF until pgvector embeddings land
+
+Phase 2 (applicant workspace) and Phase 3 (contract-gated official workflow) are not started.
 
 ### Hard legal constraints (schema + API)
 
@@ -55,6 +59,12 @@ docker compose up -d
 npm run prisma:migrate -w @creek-street/api
 npm run seed
 ```
+
+## Phase 1 API
+
+- `GET /api/triage/flows` · `GET /api/triage/flows/:projectType` · `POST /api/triage/evaluate`
+- `GET /api/permits/triggers?...` (verified-only unless `includeUnverified=true`)
+- `GET /api/precedents` · `GET /api/precedents/similar?q=`
 
 ## Open data
 

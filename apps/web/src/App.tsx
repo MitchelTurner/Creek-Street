@@ -8,14 +8,20 @@ import { HomePage } from './pages/HomePage';
 import { MapPage } from './pages/MapPage';
 import { MeetingsPage } from './pages/MeetingsPage';
 import { OpenDataPage } from './pages/OpenDataPage';
+import { PermitsPage } from './pages/PermitsPage';
+import { PrecedentsPage } from './pages/PrecedentsPage';
 import { StructureDetailPage } from './pages/StructureDetailPage';
 import { StructuresPage } from './pages/StructuresPage';
+import { TriagePage } from './pages/TriagePage';
 
 export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
+        <Route path="triage" element={<TriagePage />} />
+        <Route path="permits" element={<PermitsPage />} />
+        <Route path="precedents" element={<PrecedentsPage />} />
         <Route path="map" element={<MapPage />} />
         <Route path="structures" element={<StructuresPage />} />
         <Route path="structures/:slug" element={<StructureDetailPage />} />

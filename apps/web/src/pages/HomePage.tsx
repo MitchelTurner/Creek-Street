@@ -39,16 +39,16 @@ export function HomePage() {
           </p>
           <div className="animate-rise-delay-2 mt-8 flex flex-wrap gap-3">
             <Link
-              to="/decisions"
+              to="/triage"
               className="rounded-md bg-board px-5 py-3 text-sm font-semibold text-ink transition hover:bg-foam"
             >
-              Search the decision archive
+              Do I need review?
             </Link>
             <Link
-              to="/map"
+              to="/decisions"
               className="rounded-md border border-foam/40 px-5 py-3 text-sm font-semibold text-foam transition hover:bg-foam/10"
             >
-              Explore the district map
+              Decision archive
             </Link>
           </div>
         </div>
@@ -58,7 +58,7 @@ export function HomePage() {
         <div className="max-w-2xl">
           <h2 className="font-display text-3xl font-semibold text-ink">Built as infrastructure</h2>
           <p className="mt-3 text-ink/70 leading-relaxed">
-            Independent of the borough. Phase 0 ships the public mirror only — no board
+            Independent of the borough. Public mirror plus decision-support tools — no board
             deliberation, no private records custody. Every mirrored fact links to its source.
           </p>
         </div>
@@ -66,19 +66,19 @@ export function HomePage() {
         <div className="mt-10 grid gap-8 md:grid-cols-3">
           {[
             {
-              title: 'Structure inventory',
-              body: 'NRHP-listed district buildings with contributing status, narratives, and QR-ready slugs.',
-              to: '/structures',
+              title: 'Triage wizard',
+              body: 'Branching questions that cite KGBC 18.40.010(b)(13) and 18.90.020 — review required, not required, or confirm with ZA.',
+              to: '/triage',
             },
             {
-              title: 'Decision archive',
-              body: 'Searchable board recommendations and the outcomes that followed — the wedge nobody has today.',
-              to: '/decisions',
+              title: 'Permit trigger map',
+              body: 'Multi-agency jurisdiction as data. Verified rows only by default; unverified research leads stay gated.',
+              to: '/permits',
             },
             {
-              title: 'Rules, made legible',
-              body: 'Plain-language HD criteria beside the code cite. Never a legal conclusion.',
-              to: '/guidance',
+              title: 'Precedent search',
+              body: 'Visual pairs tagged by criterion, plus similarity search over the mirrored archive.',
+              to: '/precedents',
             },
           ].map((item) => (
             <Link key={item.to} to={item.to} className="group block border-t border-ink/15 pt-5">

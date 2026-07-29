@@ -1,12 +1,15 @@
 import { NavLink, Outlet } from 'react-router-dom';
 
 const links = [
-  { to: '/map', label: 'District map' },
+  { to: '/triage', label: 'Triage' },
+  { to: '/permits', label: 'Permits' },
+  { to: '/precedents', label: 'Precedents' },
+  { to: '/map', label: 'Map' },
   { to: '/structures', label: 'Structures' },
   { to: '/docket', label: 'Docket' },
   { to: '/decisions', label: 'Decisions' },
   { to: '/meetings', label: 'Meetings' },
-  { to: '/guidance', label: 'The rules' },
+  { to: '/guidance', label: 'Rules' },
   { to: '/board', label: 'Board' },
   { to: '/opendata', label: 'Open data' },
 ];

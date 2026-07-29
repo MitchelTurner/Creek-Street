@@ -8,6 +8,18 @@ async function get<T>(path: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+async function post<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(`${BASE}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    throw new Error(`API ${path} failed: ${res.status}`);
+  }
+  return res.json() as Promise<T>;
+}
+
 export type StructureSummary = {
   id: string;
   commonName: string | null;
@@ -97,6 +109,102 @@ export type Meta = {
   applyForBoard: { label: string; url: string; note: string };
 };
 
+export type TriageFlow = {
+  id: string;
+  projectType: string;
+  version: number;
+  entryNodeId: string;
+  tree: Array<
+    | {
+        id: string;
+        kind: 'question';
+        prompt: string;
+        help?: string;
+        options: { id: string; label: string; next: string }[];
+      }
+    | {
+        id: string;
+        kind: 'outcome';
+        outcome: string;
+        summary: string;
+        codeCites: string[];
+        criteria: string[];
+        exhibits: string[];
+        note: string;
+      }
+  >;
+};
+
+export type TriageEval =
+  | {
+      status: 'in_progress';
+      current: {
+        id: string;
+        kind: 'question';
+        prompt: string;
+        help?: string;
+        options: { id: string; label: string; next: string }[];
+      };
+      path: string[];
+      zoningAdministrator: Meta['zoningAdministratorContact'];
+      disclaimer: string;
+    }
+  | {
+      status: 'complete';
+      outcome: string;
+      summary: string;
+      codeCites: string[];
+      criteria: string[];
+      exhibits: string[];
+      note: string;
+      zoningAdministrator: Meta['zoningAdministratorContact'];
+      disclaimer: string;
+    }
+  | { status: 'error'; message: string };
+
+export type PermitTriggerResult = {
+  query: Record<string, boolean>;
+  includeUnverified: boolean;
+  note: string;
+  zoningAdministrator: Meta['zoningAdministratorContact'];
+  results: Array<{
+    id: string;
+    permitName: string;
+    statutoryCite: string;
+    typicalLeadTimeDays: number | null;
+    guidanceUrl: string | null;
+    verifiedAt: string | null;
+    verifiedNote: string | null;
+    verified: boolean;
+    agency: { name: string; shortName: string; jurisdiction: string; contactUrl: string };
+  }>;
+};
+
+export type PrecedentRow = {
+  id: string;
+  decisionId: string;
+  photoUrl: string;
+  side: string;
+  caption: string;
+  sourceDocUrl: string;
+  criterion: string;
+  weight: string;
+  decision: Decision | null;
+  application: Application | null;
+};
+
+export type SimilarResult = {
+  query: string;
+  count: number;
+  results: Array<{
+    score: number;
+    method: string;
+    note: string;
+    application: Application;
+    decisions: Decision[];
+  }>;
+};
+
 export const api = {
   meta: () => get<Meta>('/meta'),
   map: () => get<GeoJSON.FeatureCollection>('/map'),
@@ -112,6 +220,20 @@ export const api = {
   guidance: () => get<GuidanceResponse>('/guidance'),
   seats: () => get<{ seats: Seat[]; apply: Meta['applyForBoard']; note: string }>('/board/seats'),
   openData: () => get<Record<string, unknown>>('/opendata'),
+  triageFlows: () => get<Array<{ id: string; projectType: string; version: number }>>('/triage/flows'),
+  triageFlow: (projectType: string) => get<TriageFlow>(`/triage/flows/${projectType}`),
+  triageEvaluate: (projectType: string, answers: Record<string, string>) =>
+    post<TriageEval>('/triage/evaluate', { projectType, answers }),
+  permitTriggers: (params: Record<string, boolean>) => {
+    const qs = new URLSearchParams();
+    for (const [k, v] of Object.entries(params)) {
+      if (v) qs.set(k, 'true');
+    }
+    return get<PermitTriggerResult>(`/permits/triggers?${qs.toString()}`);
+  },
+  precedents: (criterion?: string) =>
+    get<PrecedentRow[]>(`/precedents${criterion ? `?criterion=${criterion}` : ''}`),
+  similar: (q: string) => get<SimilarResult>(`/precedents/similar?q=${encodeURIComponent(q)}`),
 };
 
 declare namespace GeoJSON {

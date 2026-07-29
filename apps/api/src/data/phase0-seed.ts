@@ -571,7 +571,7 @@ export const applications: SeedApplication[] = [
     id: 'app_sample_draft',
     caseNumber: null,
     parcelId: 'parcel_5cs',
-    structureId: 'struct_5cs',
+    structureId: 'struct_star',
     applicantName: 'Private draft (must never be public)',
     projectType: 'EXTERIOR_ALTERATION',
     description:

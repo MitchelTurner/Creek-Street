@@ -2,6 +2,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 
 const links = [
   { to: '/workspace', label: 'Workspace' },
+  { to: '/official', label: 'Board portal' },
   { to: '/triage', label: 'Triage' },
   { to: '/permits', label: 'Permits' },
   { to: '/precedents', label: 'Precedents' },

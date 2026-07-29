@@ -32,7 +32,14 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 - Historic photo crowdsourcing with moderation queue
 - Disclaimer on every applicant surface
 
-Phase 3 (contract-gated official workflow / deliberation) is **not** started.
+**Phase 3 — official workflow (contract-gated):**
+
+- Board portal (`/official`) — read-only docket, precedent context, upcoming meetings
+- Private `MemberNote`s — author-scoped only, exportable by that member, never shared
+- Circulated comments / criterion scoring / draft findings / recommendation assembly exist as API paths but return **403 PHASE3_CONTRACT_REQUIRED** until all processor-agreement env vars are set
+- Legal constraints surfaced in the UI (AS 44.62.310 OMA, AS 40.25 PRA)
+
+Deliberation does **not** turn on by default. That is intentional.
 
 ### Hard legal constraints (schema + API)
 
@@ -80,7 +87,24 @@ npm run seed
 - `POST /api/subscriptions` · `GET /api/notice` · `GET /api/timelines`
 - `POST /api/photos/submit` · moderation endpoints (staff)
 
-Demo applicant: `applicant@example.com` / `creek-demo`
+Demo accounts (password `creek-demo` for all):
+
+- Applicant: `applicant@example.com`
+- Board: `board@example.com`
+- Staff: `staff@example.com`
+
+### Phase 3 contract env (all required to unlock deliberation)
+
+```bash
+PHASE3_CONTRACT_ACTIVE=true
+PHASE3_CUSTODIAN="Ketchikan Gateway Borough"
+PHASE3_PROCESSOR="Mitchel Turner Dev, LLC"
+PHASE3_AGREEMENT_ID=...
+PHASE3_AGREEMENT_EFFECTIVE=2026-01-01
+PHASE3_RETENTION_SCHEDULE_URL=...
+PHASE3_RECORDS_REQUEST_CONTACT=...
+PHASE3_OMA_NOTICE_INTEGRATION=true
+```
 
 ## Open data
 

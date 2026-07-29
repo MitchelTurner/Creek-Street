@@ -94,15 +94,32 @@ export class ApplicantStore {
   private files = new Map<string, Buffer>();
 
   constructor() {
-    // Demo applicant for local smoke tests
+    // Demo users for local smoke tests
     const hash = bcrypt.hashSync('creek-demo', 8);
-    this.users.push({
-      id: 'user_demo',
-      email: 'applicant@example.com',
-      passwordHash: hash,
-      role: 'APPLICANT',
-      createdAt: new Date().toISOString(),
-    });
+    const now = new Date().toISOString();
+    this.users.push(
+      {
+        id: 'user_demo',
+        email: 'applicant@example.com',
+        passwordHash: hash,
+        role: 'APPLICANT',
+        createdAt: now,
+      },
+      {
+        id: 'user_board',
+        email: 'board@example.com',
+        passwordHash: hash,
+        role: 'BOARD_MEMBER',
+        createdAt: now,
+      },
+      {
+        id: 'user_staff',
+        email: 'staff@example.com',
+        passwordHash: hash,
+        role: 'STAFF',
+        createdAt: now,
+      },
+    );
   }
 
   async register(email: string, password: string) {

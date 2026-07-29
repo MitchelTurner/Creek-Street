@@ -745,7 +745,7 @@ export const meta = {
   siteName: 'Creek Street Design Review Hub',
   operator: 'Mitchel Turner Dev, LLC',
   notBoroughProperty: true,
-  phase: 2,
+  phase: 3,
   nrhpReference: '14000454',
   nrhpSourceUrl: NRHP_SOURCE,
   zoningAdministratorContact: {

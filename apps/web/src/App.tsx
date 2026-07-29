@@ -10,6 +10,8 @@ import { HomePage } from './pages/HomePage';
 import { MapPage } from './pages/MapPage';
 import { MeetingsPage } from './pages/MeetingsPage';
 import { NoticePage } from './pages/NoticePage';
+import { OfficialApplicationPage } from './pages/OfficialApplicationPage';
+import { OfficialPortalPage } from './pages/OfficialPortalPage';
 import { OpenDataPage } from './pages/OpenDataPage';
 import { PermitsPage } from './pages/PermitsPage';
 import { PhotosPage } from './pages/PhotosPage';
@@ -29,6 +31,8 @@ export default function App() {
         <Route path="auth" element={<AuthPage />} />
         <Route path="workspace" element={<WorkspacePage />} />
         <Route path="workspace/:id" element={<DraftBuilderPage />} />
+        <Route path="official" element={<OfficialPortalPage />} />
+        <Route path="official/applications/:id" element={<OfficialApplicationPage />} />
         <Route path="subscriptions" element={<SubscriptionsPage />} />
         <Route path="notice" element={<NoticePage />} />
         <Route path="timelines" element={<TimelinesPage />} />

@@ -7,7 +7,11 @@ export class PublicController {
 
   @Get('health')
   health() {
-    return { ok: true, phase: 6, store: 'memory' };
+    return {
+      ok: true,
+      phase: 7,
+      store: (process.env.USE_MEMORY_STORE ?? 'true').toLowerCase() === 'false' ? 'prisma' : 'memory',
+    };
   }
 
   @Get('meta')

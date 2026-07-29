@@ -1,6 +1,7 @@
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Queue, Worker, type Job } from 'bullmq';
 import IORedis from 'ioredis';
+import { EmbeddingPersistService } from '../geo/embedding.persist';
 import { SubscriptionNotifyService } from '../notify/subscription.notify';
 import { runAdapter } from './adapters';
 import { IngestStore } from './ingest.store';
@@ -19,6 +20,7 @@ export class IngestQueueService implements OnModuleInit, OnModuleDestroy {
   constructor(
     private readonly store: IngestStore,
     private readonly notify: SubscriptionNotifyService,
+    private readonly embeddings: EmbeddingPersistService,
   ) {}
 
   async onModuleInit() {
@@ -89,11 +91,16 @@ export class IngestQueueService implements OnModuleInit, OnModuleDestroy {
     const run = this.store.startRun(sourceId);
     try {
       const result = await runAdapter(sourceId, wm);
+      let message = result.message;
+      if (!result.skipped && sourceId === 'embedding_refresh') {
+        const persisted = await this.embeddings.refreshFromPublicApplications();
+        message = `${message} Persist: ${persisted.method} count=${persisted.count}.`;
+      }
       const status = result.skipped ? 'skipped' : 'succeeded';
       const finished = this.store.finishRun(
         run,
         status,
-        result.message,
+        message,
         result.diff,
         result.fanout,
         result.fingerprint,
@@ -102,7 +109,7 @@ export class IngestQueueService implements OnModuleInit, OnModuleDestroy {
       if (!result.skipped && result.fanout.length) {
         const fan = this.notify.fanout(result.fanout, {
           sourceId,
-          message: result.message,
+          message,
         });
         this.log.log(`Fanout ${result.fanout.join(',')} notified=${fan.notified}`);
       }

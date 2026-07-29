@@ -1,13 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { applications, decisions, parcels, structures } from '../data/phase0-seed';
+import { GeoService } from '../geo/geo.service';
 import { Phase1Service } from '../phase1/phase1.service';
 import { ApplicantStore } from './applicant.store';
 import { PdfService } from './pdf.service';
+import {
+  NOTICE_RADIUS_CITY_FEET,
+  NOTICE_RADIUS_CITY_METERS,
+  NOTICE_RADIUS_OUTSIDE_CITY_FEET,
+} from './phase2.constants';
 
-/** KGBC 18.90.060 — city of Ketchikan perimeter mail notice. Creek Street is inside city limits. */
-export const NOTICE_RADIUS_CITY_FEET = 600;
-export const NOTICE_RADIUS_CITY_METERS = NOTICE_RADIUS_CITY_FEET * 0.3048;
-export const NOTICE_RADIUS_OUTSIDE_CITY_FEET = 1200;
+export {
+  NOTICE_RADIUS_CITY_FEET,
+  NOTICE_RADIUS_CITY_METERS,
+  NOTICE_RADIUS_OUTSIDE_CITY_FEET,
+} from './phase2.constants';
 
 @Injectable()
 export class Phase2Service {
@@ -15,6 +22,7 @@ export class Phase2Service {
     private readonly store: ApplicantStore,
     private readonly pdf: PdfService,
     private readonly phase1: Phase1Service,
+    private readonly geo: GeoService,
   ) {}
 
   disclaimer() {
@@ -45,22 +53,10 @@ export class Phase2Service {
     };
   }
 
-  /** Approximate ST_DWithin using parcel centroid haversine until PostGIS is live. */
-  noticeLookup(opts: { address?: string; parcelId?: string; applicationId?: string }) {
+  /** PostGIS ST_DWithin when extensions live; otherwise centroid haversine. */
+  async noticeLookup(opts: { address?: string; parcelId?: string; applicationId?: string }) {
     const config = this.noticeConfig();
-    let centerParcel = opts.parcelId ? parcels.find((p) => p.id === opts.parcelId) : undefined;
-
-    if (!centerParcel && opts.address) {
-      const q = opts.address.toLowerCase();
-      centerParcel = parcels.find(
-        (p) => p.address.toLowerCase().includes(q) || p.parcelNumber.toLowerCase().includes(q),
-      );
-    }
-
-    if (!centerParcel && opts.applicationId) {
-      const app = applications.find((a) => a.id === opts.applicationId);
-      if (app) centerParcel = parcels.find((p) => p.id === app.parcelId);
-    }
+    const centerParcel = this.geo.resolveSubjectParcel(opts);
 
     if (!centerParcel) {
       return {
@@ -70,51 +66,42 @@ export class Phase2Service {
       };
     }
 
-    const center = centroidOf(centerParcel.geometry);
     const radiusM = NOTICE_RADIUS_CITY_METERS;
-    const noticedParcels = parcels
-      .map((p) => {
-        const c = centroidOf(p.geometry);
-        const meters = haversineMeters(center, c);
-        return { parcel: p, meters };
-      })
-      .filter((x) => x.meters <= radiusM)
-      .sort((a, b) => a.meters - b.meters);
+    const noticed = await this.geo.parcelsWithinNotice(centerParcel.id, radiusM);
 
     const pendingApps = applications.filter((a) =>
       ['FILED', 'SCHEDULED', 'BOARD_REVIEWED', 'FORWARDED'].includes(a.status),
     );
 
+    const noticedIds = new Set(noticed.parcels.map((p) => p.id));
     const wouldNoticeYou = pendingApps
       .map((app) => {
         const p = parcels.find((x) => x.id === app.parcelId);
         if (!p) return null;
-        const meters = haversineMeters(center, centroidOf(p.geometry));
+        const hit = noticed.parcels.find((n) => n.id === p.id);
+        const meters = hit?.meters ?? null;
         return {
           application: app,
           parcel: p,
           meters,
-          within600ft: meters <= radiusM,
-          hdDistrictNotice: p.inHdZone && centerParcel!.inHdZone,
+          within600ft: noticedIds.has(p.id) || p.id === centerParcel.id,
+          hdDistrictNotice: p.inHdZone && centerParcel.inHdZone,
         };
       })
       .filter(Boolean);
 
     return {
       found: true,
-      method: 'centroid-haversine-approx',
-      note: 'Approximate until PostGIS ST_DWithin over parcel polygons is enabled. Distances are centroid-to-centroid.',
+      method: noticed.method,
+      note:
+        noticed.method === 'postgis-st_dwithin'
+          ? 'Distances from PostGIS geography ST_DWithin over parcel polygons (KGBC 18.90.060 city radius).'
+          : 'Approximate centroid-to-centroid haversine until PostGIS helpers are applied (see apps/api/src/geo/postgis.sql).',
       subjectParcel: centerParcel,
       radiusFeet: NOTICE_RADIUS_CITY_FEET,
       radiusMeters: radiusM,
       config,
-      noticedParcelSet: noticedParcels.map((x) => ({
-        id: x.parcel.id,
-        parcelNumber: x.parcel.parcelNumber,
-        address: x.parcel.address,
-        meters: Math.round(x.meters),
-        feet: Math.round(x.meters / 0.3048),
-      })),
+      noticedParcelSet: noticed.parcels,
       pendingApplicationsThatWouldNoticeAddress: wouldNoticeYou,
     };
   }
@@ -216,30 +203,6 @@ export class Phase2Service {
 
     return { buffer, draft };
   }
-}
-
-function centroidOf(geometry: { coordinates: number[][][] }): [number, number] {
-  const ring = geometry.coordinates[0] ?? [];
-  let x = 0;
-  let y = 0;
-  const n = Math.max(ring.length - 1, 1);
-  for (let i = 0; i < ring.length - 1; i++) {
-    x += ring[i][0];
-    y += ring[i][1];
-  }
-  return [x / n, y / n];
-}
-
-function haversineMeters(a: [number, number], b: [number, number]) {
-  const R = 6371000;
-  const toRad = (d: number) => (d * Math.PI) / 180;
-  const dLat = toRad(b[1] - a[1]);
-  const dLng = toRad(b[0] - a[0]);
-  const lat1 = toRad(a[1]);
-  const lat2 = toRad(b[1]);
-  const h =
-    Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(h));
 }
 
 function quantile(sorted: number[], q: number) {

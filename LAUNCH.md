@@ -31,7 +31,8 @@ Phase 3 vars stay blank until MOU/contract.
 - [ ] Railway: set env from `apps/api/.env.example`; deploy monorepo (`railway.toml`)
 - [ ] Web origin proxies `/api` or sets `VITE_*` if split hosts
 - [ ] CDN / edge: public GET routes send `Cache-Control` + `stale-while-revalidate` (see interceptor)
-- [ ] Health: `GET /api/health` → `{ ok: true, phase: 6 }`
+- [ ] Health: `GET /api/health` → `{ ok: true, phase: 7 }`
+- [ ] Persistence: when using Postgres, `USE_MEMORY_STORE=false`, run migrations + seed, confirm `GET /api/geo/status` shows `postgis: true` after helpers apply
 
 ## Smoke after deploy
 

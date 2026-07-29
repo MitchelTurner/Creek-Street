@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0–6 (launch hardening)
+## Current release: Phase 0–7 (persistence & geo)
 
 See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
@@ -66,6 +66,13 @@ Deliberation does **not** turn on by default. That is intentional.
 - Subscription email stub + RSS polish; ingest fanout → `recentDeliveries`
 - [LAUNCH.md](./LAUNCH.md) checklist
 
+**Phase 7 — persistence & geo:**
+
+- Optional Prisma path when `USE_MEMORY_STORE=false` + `DATABASE_URL`
+- PostGIS notice: `creek_parcels_within_meters` (ST_DWithin) with haversine fallback
+- Precedent embedding persist (TF-IDF → `PrecedentEmbedding`); pgvector helper when extension present
+- `GET /api/geo/status` · `GET /api/geo/notice-set` · `GET /api/geo/embeddings/status`
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).
@@ -115,6 +122,7 @@ npm run seed
 - `GET /api/construction/window` · `GET /api/construction/ships`
 - `GET /api/summaries` · staff `POST /api/summaries/:id/review`
 - Staff ingest: `GET /api/ingest/status` · `POST /api/ingest/run/:sourceId` · `POST /api/ingest/run-all`
+- Geo: `GET /api/geo/status` · `GET /api/geo/notice-set?parcelId=` · `GET /api/geo/embeddings/status`
 
 Demo accounts (password `creek-demo` for all):
 

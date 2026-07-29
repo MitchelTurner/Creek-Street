@@ -37,7 +37,14 @@ export type StructureDetail = StructureSummary & {
   parcel: { id: string; parcelNumber: string; address: string } | null;
   applications: Application[];
   decisions: Decision[];
-  photos: unknown[];
+  photos: Array<{
+    id: string;
+    photoUrl: string;
+    yearApprox: number | null;
+    caption: string;
+    credit: string;
+    isHistoric: boolean;
+  }>;
 };
 
 export type Application = {
@@ -78,6 +85,13 @@ export type Meeting = {
   videoUrl: string | null;
   sourceDocUrl: string | null;
   agendaItems: { id: string; itemNumber: string; title: string; applicationId: string | null }[];
+  summary: {
+    id: string;
+    body: string;
+    generatedByAi: boolean;
+    humanReviewed: boolean;
+    reviewedBy: string | null;
+  } | null;
 };
 
 export type Seat = {

@@ -41,6 +41,13 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 Deliberation does **not** turn on by default. That is intentional.
 
+**Parallel track — audience (Phase 4):**
+
+- Tourism / visit layer (`/visit`, `/visit/:slug`) — QR-ready structure stories for boardwalk walkers
+- Photo time-series on civic + visit structure pages
+- Construction-window calendar (`/construction`) — backward-plan filing from build season using ship-call density + timeline medians
+- Meeting AI summaries — **unpublished until human review**; public surfaces only show reviewed+published rows
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).
@@ -86,6 +93,9 @@ npm run seed
 - `CRUD /api/applicant/drafts` · document upload · `GET .../package.pdf`
 - `POST /api/subscriptions` · `GET /api/notice` · `GET /api/timelines`
 - `POST /api/photos/submit` · moderation endpoints (staff)
+- `GET /api/tourism` · `GET /api/tourism/:slug`
+- `GET /api/construction/window` · `GET /api/construction/ships`
+- `GET /api/summaries` · staff `POST /api/summaries/:id/review`
 
 Demo accounts (password `creek-demo` for all):
 

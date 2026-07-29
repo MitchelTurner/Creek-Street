@@ -61,7 +61,28 @@ export function StructureDetailPage() {
         <p className="mt-4">
           <SourceLink href={row.sourceDocUrl} />
         </p>
+        <p className="mt-2 text-sm">
+          <Link to={`/visit/${row.publicSlug}`} className="text-creek underline underline-offset-4">
+            Visitor / tourism view
+          </Link>
+        </p>
       </section>
+
+      {row.photos?.length > 0 && (
+        <section className="mt-12">
+          <h2 className="font-display text-2xl font-semibold">Photo time-series</h2>
+          <div className="mt-4 space-y-6">
+            {row.photos.map((p) => (
+              <figure key={p.id}>
+                <img src={p.photoUrl} alt={p.caption} className="w-full object-cover" />
+                <figcaption className="mt-2 text-sm text-ink/65">
+                  <span className="font-medium text-ink">{p.yearApprox ?? '—'}</span> — {p.caption}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="mt-12">
         <h2 className="font-display text-2xl font-semibold">Applications</h2>

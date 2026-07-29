@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { AuthPage } from './pages/AuthPage';
 import { BoardPage } from './pages/BoardPage';
+import { ConstructionPage } from './pages/ConstructionPage';
 import { DecisionsPage } from './pages/DecisionsPage';
 import { DocketPage } from './pages/DocketPage';
 import { DraftBuilderPage } from './pages/DraftBuilderPage';
@@ -21,6 +22,8 @@ import { StructuresPage } from './pages/StructuresPage';
 import { SubscriptionsPage } from './pages/SubscriptionsPage';
 import { TimelinesPage } from './pages/TimelinesPage';
 import { TriagePage } from './pages/TriagePage';
+import { VisitIndexPage } from './pages/VisitIndexPage';
+import { VisitStructurePage } from './pages/VisitStructurePage';
 import { WorkspacePage } from './pages/WorkspacePage';
 
 export default function App() {
@@ -28,6 +31,9 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
+        <Route path="visit" element={<VisitIndexPage />} />
+        <Route path="visit/:slug" element={<VisitStructurePage />} />
+        <Route path="construction" element={<ConstructionPage />} />
         <Route path="auth" element={<AuthPage />} />
         <Route path="workspace" element={<WorkspacePage />} />
         <Route path="workspace/:id" element={<DraftBuilderPage />} />

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" role="img" aria-label="junes">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#145c5a"/>
+      <stop offset="100%" stop-color="#5c3a24"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#g)"/>
+  <rect x="120" y="140" width="280" height="220" fill="#8a5a3a"/>
+  <polygon points="110,140 410,140 360,70 160,70" fill="#d8c4a8"/>
+  <rect x="0" y="360" width="800" height="40" fill="#1a2f2e" opacity=".7"/>
+  <text x="40" y="430" fill="#e7f1ef" font-family="Georgia, serif" font-size="28">junes</text>
+  <text x="40" y="465" fill="#c5d8d4" font-family="sans-serif" font-size="14">Creek Street time-series placeholder</text>
+</svg>

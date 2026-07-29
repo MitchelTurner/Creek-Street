@@ -12,6 +12,7 @@ import {
   seats,
   structures,
 } from '../data/phase0-seed';
+import { meetingSummaries, structurePhotos } from '../data/phase4-seed';
 
 const PUBLIC_STATUSES = new Set([
   'FILED',
@@ -50,12 +51,15 @@ export class MemoryStore {
     );
     const appIds = new Set(apps.map((a) => a.id));
     const decs = decisions.filter((d) => appIds.has(d.applicationId));
+    const photos = structurePhotos
+      .filter((p) => p.structureId === s.id && p.moderationStatus === 'APPROVED')
+      .sort((a, b) => (a.yearApprox ?? 0) - (b.yearApprox ?? 0));
     return {
       ...s,
       parcel,
       applications: apps,
       decisions: decs,
-      photos: [] as unknown[],
+      photos,
     };
   }
 
@@ -150,15 +154,15 @@ export class MemoryStore {
       .sort((a, b) => b.scheduledAt.localeCompare(a.scheduledAt))
       .map((m) => ({
         ...m,
-        // Never expose unpublished AI summaries (none in Phase 0 seed).
-        summary: null,
+        // Never expose unpublished / unreviewed AI summaries.
+        summary: publishedSummary(m.id),
       }));
   }
 
   getMeeting(id: string) {
     const m = meetings.find((x) => x.id === id);
     if (!m) return null;
-    return { ...m, summary: null };
+    return { ...m, summary: publishedSummary(m.id) };
   }
 
   listCriteria() {
@@ -215,4 +219,22 @@ export class MemoryStore {
       parcelId: s.parcelId,
     };
   }
+}
+
+function publishedSummary(meetingId: string) {
+  const s = meetingSummaries.find(
+    (x) => x.meetingId === meetingId && x.isPublished && x.reviewedAt,
+  );
+  if (!s) return null;
+  return {
+    id: s.id,
+    body: s.body,
+    perItem: s.perItem,
+    model: s.model,
+    generatedAt: s.generatedAt,
+    reviewedBy: s.reviewedBy,
+    reviewedAt: s.reviewedAt,
+    generatedByAi: true,
+    humanReviewed: true,
+  };
 }

@@ -1,6 +1,8 @@
 import { NavLink, Outlet } from 'react-router-dom';
 
 const links = [
+  { to: '/visit', label: 'Visit' },
+  { to: '/construction', label: 'Build window' },
   { to: '/workspace', label: 'Workspace' },
   { to: '/official', label: 'Board portal' },
   { to: '/triage', label: 'Triage' },

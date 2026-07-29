@@ -7,6 +7,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { SubscriptionNotifyService } from '../notify/subscription.notify';
 import { AuthGuard, CurrentUser } from '../phase2/auth.guard';
 import { Roles, RolesGuard } from '../phase2/roles.guard';
 import { IngestQueueService } from './ingest.queue';
@@ -29,6 +30,7 @@ export class IngestController {
   constructor(
     private readonly store: IngestStore,
     private readonly queue: IngestQueueService,
+    private readonly notify: SubscriptionNotifyService,
   ) {}
 
   @Get('status')
@@ -38,6 +40,7 @@ export class IngestController {
       queue: this.queue.status(),
       sources: this.store.listSources(),
       recentRuns: this.store.listRuns(30),
+      recentDeliveries: this.notify.listDeliveries(20),
       policy: {
         robots:
           'Never scrape borough.ketchikan.ak.us against robots.txt. Prefer Clerk feeds, kgbak.us CivicPlus, or ArcGIS REST.',

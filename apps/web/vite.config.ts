@@ -13,4 +13,15 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    // Fingerprinted assets are CDN-cacheable forever; HTML stays short-lived at the edge.
+    assetsInlineLimit: 4096,
+    rollupOptions: {
+      output: {
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash][extname]',
+      },
+    },
+  },
 });

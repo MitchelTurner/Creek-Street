@@ -11,7 +11,8 @@
     "dev:web": "npm run dev -w @creek-street/web",
     "build": "npm run build -w @creek-street/api && npm run build -w @creek-street/web",
     "seed": "npm run seed -w @creek-street/api",
-    "lint": "npm run lint -w @creek-street/api && npm run lint -w @creek-street/web"
+    "lint": "npm run lint -w @creek-street/api && npm run lint -w @creek-street/web",
+    "test": "npm run test -w @creek-street/api"
   },
   "engines": {
     "node": ">=20"

@@ -1,6 +1,7 @@
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Queue, Worker, type Job } from 'bullmq';
 import IORedis from 'ioredis';
+import { SubscriptionNotifyService } from '../notify/subscription.notify';
 import { runAdapter } from './adapters';
 import { IngestStore } from './ingest.store';
 import type { IngestSourceId } from './ingest.types';
@@ -15,7 +16,10 @@ export class IngestQueueService implements OnModuleInit, OnModuleDestroy {
   private worker: Worker | null = null;
   private mode: 'bullmq' | 'inline' = 'inline';
 
-  constructor(private readonly store: IngestStore) {}
+  constructor(
+    private readonly store: IngestStore,
+    private readonly notify: SubscriptionNotifyService,
+  ) {}
 
   async onModuleInit() {
     const redisUrl = process.env.REDIS_URL;
@@ -86,7 +90,7 @@ export class IngestQueueService implements OnModuleInit, OnModuleDestroy {
     try {
       const result = await runAdapter(sourceId, wm);
       const status = result.skipped ? 'skipped' : 'succeeded';
-      return this.store.finishRun(
+      const finished = this.store.finishRun(
         run,
         status,
         result.message,
@@ -95,6 +99,14 @@ export class IngestQueueService implements OnModuleInit, OnModuleDestroy {
         result.fingerprint,
         result.skipped ? wm.robotsAllowed : true,
       );
+      if (!result.skipped && result.fanout.length) {
+        const fan = this.notify.fanout(result.fanout, {
+          sourceId,
+          message: result.message,
+        });
+        this.log.log(`Fanout ${result.fanout.join(',')} notified=${fan.notified}`);
+      }
+      return finished;
     } catch (e) {
       return this.store.finishRun(
         run,

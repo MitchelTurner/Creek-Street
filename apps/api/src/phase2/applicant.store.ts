@@ -292,6 +292,15 @@ export class ApplicantStore {
     return this.subscriptions.filter((s) => s.channel === 'RSS' && s.confirmedAt);
   }
 
+  listConfirmedEmailSubscriptions() {
+    return this.subscriptions.filter((s) => s.channel === 'EMAIL' && s.confirmedAt);
+  }
+
+  /** All confirmed subscriptions (email + RSS) for ingest fanout. */
+  listConfirmedSubscriptions() {
+    return this.subscriptions.filter((s) => s.confirmedAt);
+  }
+
   submitPhoto(input: Omit<PhotoSubmission, 'id' | 'createdAt' | 'moderationStatus' | 'reviewedAt' | 'reviewedBy' | 'storageKey'> & {
     buffer: Buffer;
     fileName: string;

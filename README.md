@@ -4,7 +4,9 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0 + Phase 1 + Phase 2
+## Current release: Phase 0–6 (launch hardening)
+
+See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
 **Phase 0 — public mirror** (zero auth, zero legal exposure):
 
@@ -55,6 +57,14 @@ Deliberation does **not** turn on by default. That is intentional.
 - Hard robots.txt respect — `borough.ketchikan.ak.us` blocked; fail closed if robots unreachable
 - PostGIS `ST_DWithin` + pgvector SQL helpers (`apps/api/src/geo/postgis.sql`)
 - Railway/Docker deploy stubs; staff ingest console at `/admin/ingest`
+
+**Phase 6 — launch hardening:**
+
+- GitHub Actions CI (`lint` · `test` · `build`)
+- Vitest gates: robots hard-block, contract dark-by-default, DRAFT never public, unreviewed summaries hidden
+- CDN-friendly `Cache-Control` / `stale-while-revalidate` on public GET + fingerprinted web assets
+- Subscription email stub + RSS polish; ingest fanout → `recentDeliveries`
+- [LAUNCH.md](./LAUNCH.md) checklist
 
 ### Hard legal constraints (schema + API)
 

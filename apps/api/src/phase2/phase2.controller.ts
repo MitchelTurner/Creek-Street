@@ -229,20 +229,37 @@ export class Phase2Controller {
 
   @Get('subscriptions/rss/:token.xml')
   @Header('Content-Type', 'application/rss+xml; charset=utf-8')
+  @Header('Cache-Control', 'public, max-age=120, stale-while-revalidate=300')
   rss(@Param('token') token: string) {
     const sub = this.store.rssFeed().find((s) => s.unsubToken === token);
     if (!sub) throw new NotFoundException('Feed not found');
+    // DRAFT never appears — public statuses only.
     const items = applications
-      .filter((a) => ['FILED', 'SCHEDULED', 'BOARD_REVIEWED'].includes(a.status))
-      .slice(0, 20);
+      .filter((a) =>
+        ['FILED', 'SCHEDULED', 'BOARD_REVIEWED', 'FORWARDED', 'APPROVED', 'APPROVED_W_CONDITIONS', 'DENIED'].includes(
+          a.status,
+        ),
+      )
+      .slice(0, 25);
+    const built = new Date().toUTCString();
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0"><channel>
-<title>Creek Street Design Review — ${sub.scope}</title>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel>
+<title>Creek Street Design Review — ${escapeXml(sub.scope)}</title>
 <link>https://creek-street.local/docket</link>
-<description>Subscription feed for HD zone applications. Preparation tool; not a borough property.</description>
+<atom:link href="https://creek-street.local/api/subscriptions/rss/${escapeXml(token)}.xml" rel="self" type="application/rss+xml"/>
+<description>Subscription feed for HD zone applications. Independent hub operated by Mitchel Turner Dev, LLC — not a borough property. Verify against borough records before filing.</description>
+<language>en-us</language>
+<lastBuildDate>${built}</lastBuildDate>
+<ttl>60</ttl>
 ${items
   .map(
-    (a) => `<item><title>${escapeXml(a.caseNumber ?? a.id)}</title><description>${escapeXml(a.description)}</description><guid>${a.id}</guid></item>`,
+    (a) => `<item>
+<title>${escapeXml(a.caseNumber ?? a.id)} — ${escapeXml(a.status)}</title>
+<link>https://creek-street.local/docket/${escapeXml(a.id)}</link>
+<description>${escapeXml(a.description)}</description>
+<guid isPermaLink="false">${escapeXml(a.id)}</guid>
+<category>${escapeXml(a.status)}</category>
+</item>`,
   )
   .join('\n')}
 </channel></rss>`;

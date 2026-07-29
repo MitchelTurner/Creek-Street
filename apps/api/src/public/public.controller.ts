@@ -7,7 +7,7 @@ export class PublicController {
 
   @Get('health')
   health() {
-    return { ok: true, phase: 5, store: 'memory' };
+    return { ok: true, phase: 6, store: 'memory' };
   }
 
   @Get('meta')
@@ -16,13 +16,13 @@ export class PublicController {
   }
 
   @Get('map')
-  @Header('Cache-Control', 'public, max-age=300')
+  @Header('Cache-Control', 'public, max-age=300, stale-while-revalidate=600')
   map() {
     return this.store.districtMap();
   }
 
   @Get('structures')
-  @Header('Cache-Control', 'public, max-age=300')
+  @Header('Cache-Control', 'public, max-age=300, stale-while-revalidate=600')
   structures(@Query('contributing') contributing?: string) {
     let flag: boolean | undefined;
     if (contributing === 'true') flag = true;
@@ -31,7 +31,7 @@ export class PublicController {
   }
 
   @Get('structures/:slug')
-  @Header('Cache-Control', 'public, max-age=120')
+  @Header('Cache-Control', 'public, max-age=120, stale-while-revalidate=300')
   structure(@Param('slug') slug: string) {
     const row = this.store.getStructureBySlug(slug);
     if (!row) throw new NotFoundException('Structure not found');
@@ -39,7 +39,7 @@ export class PublicController {
   }
 
   @Get('applications')
-  @Header('Cache-Control', 'public, max-age=60')
+  @Header('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
   applications(@Query('status') status?: string, @Query('q') q?: string) {
     return this.store.listApplications({ status, q });
   }
@@ -52,13 +52,13 @@ export class PublicController {
   }
 
   @Get('decisions')
-  @Header('Cache-Control', 'public, max-age=120')
+  @Header('Cache-Control', 'public, max-age=120, stale-while-revalidate=300')
   decisions(@Query('q') q?: string) {
     return this.store.listDecisions({ q });
   }
 
   @Get('meetings')
-  @Header('Cache-Control', 'public, max-age=60')
+  @Header('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
   meetings() {
     return this.store.listMeetings();
   }
@@ -71,7 +71,7 @@ export class PublicController {
   }
 
   @Get('guidance')
-  @Header('Cache-Control', 'public, max-age=600')
+  @Header('Cache-Control', 'public, max-age=600, stale-while-revalidate=1200')
   guidance() {
     return {
       sections: this.store.listGuidance(),
@@ -82,7 +82,7 @@ export class PublicController {
   }
 
   @Get('board/seats')
-  @Header('Cache-Control', 'public, max-age=300')
+  @Header('Cache-Control', 'public, max-age=300, stale-while-revalidate=600')
   seats() {
     return {
       seats: this.store.listSeats(),

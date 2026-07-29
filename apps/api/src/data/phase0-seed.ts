@@ -567,6 +567,20 @@ export const applications: SeedApplication[] = [
     source: 'MIRRORED',
     sourceDocUrl: null,
   },
+  {
+    id: 'app_sample_draft',
+    caseNumber: null,
+    parcelId: 'parcel_5cs',
+    structureId: 'struct_5cs',
+    applicantName: 'Private draft (must never be public)',
+    projectType: 'EXTERIOR_ALTERATION',
+    description:
+      'Seed DRAFT used to prove public endpoints never leak unfiled applicant work.',
+    status: 'DRAFT',
+    filedAt: null,
+    source: 'APPLICANT_DRAFT',
+    sourceDocUrl: null,
+  },
 ];
 
 export const decisions: SeedDecision[] = [

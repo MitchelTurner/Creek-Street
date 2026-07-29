@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ComplianceModule } from './compliance/compliance.module';
 import { GeoModule } from './geo/geo.module';
 import { IngestModule } from './ingest/ingest.module';
 import { OpsModule } from './ops/ops.module';
@@ -15,6 +16,7 @@ import { StoreModule } from './store/store.module';
     OpsModule,
     PrismaModule,
     StoreModule,
+    ComplianceModule,
     PublicModule,
     Phase1Module,
     Phase2Module,

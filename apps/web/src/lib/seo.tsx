@@ -94,6 +94,11 @@ const ROUTES: Record<string, { title: string; description: string }> = {
     title: `Ingest admin · ${SITE}`,
     description: 'Staff ingest console for watermarked source sync.',
   },
+  '/compliance': {
+    title: `Compliance & readiness · ${SITE}`,
+    description:
+      'Public Records Act posture, retention hooks, and processor-agreement checklist for the Creek Street hub.',
+  },
 };
 
 function upsertMeta(attr: 'name' | 'property', key: string, content: string) {

@@ -21,6 +21,7 @@ const links = [
   { to: '/board', label: 'Board' },
   { to: '/photos', label: 'Photos' },
   { to: '/opendata', label: 'Open data' },
+  { to: '/compliance', label: 'Compliance' },
 ];
 
 export function Layout() {

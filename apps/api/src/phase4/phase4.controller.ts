@@ -10,13 +10,17 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { AuditStore } from '../compliance/audit.store';
 import { AuthGuard, CurrentUser } from '../phase2/auth.guard';
 import { Roles, RolesGuard } from '../phase2/roles.guard';
 import { Phase4Service } from './phase4.service';
 
 @Controller()
 export class Phase4Controller {
-  constructor(private readonly phase4: Phase4Service) {}
+  constructor(
+    private readonly phase4: Phase4Service,
+    private readonly audit: AuditStore,
+  ) {}
 
   @Get('tourism')
   @Header('Cache-Control', 'public, max-age=300')
@@ -95,13 +99,23 @@ export class Phase4Controller {
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('STAFF', 'ADMIN')
   review(
-    @CurrentUser() user: { email: string },
+    @CurrentUser() user: { id: string; email: string; role: string },
     @Param('id') id: string,
     @Body() body: { publish?: boolean },
   ) {
     if (body.publish == null) throw new BadRequestException('publish boolean required');
     const row = this.phase4.reviewSummary(id, user.email, body.publish);
     if (!row) throw new NotFoundException('Summary not found');
+    this.audit.record({
+      action: 'summary.review',
+      actor: user,
+      resourceType: 'meeting_summary',
+      resourceId: id,
+      summary: body.publish
+        ? `Published meeting summary ${id}`
+        : `Reviewed (kept unpublished) summary ${id}`,
+      meta: { publish: body.publish },
+    });
     return { summary: row };
   }
 }

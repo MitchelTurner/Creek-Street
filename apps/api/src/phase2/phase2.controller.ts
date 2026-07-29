@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Header,
   Headers,
@@ -17,6 +18,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Response } from 'express';
+import { AuditStore } from '../compliance/audit.store';
 import { applications } from '../data/phase0-seed';
 import {
   AuthRateLimitGuard,
@@ -34,6 +36,7 @@ export class Phase2Controller {
   constructor(
     private readonly store: ApplicantStore,
     private readonly phase2: Phase2Service,
+    private readonly audit: AuditStore,
   ) {}
 
   @Get('phase2/disclaimer')
@@ -79,6 +82,39 @@ export class Phase2Controller {
   @UseGuards(AuthGuard)
   me(@CurrentUser() user: AuthedUser) {
     return { user, disclaimer: this.phase2.disclaimer() };
+  }
+
+  @Get('applicant/export')
+  @UseGuards(AuthGuard)
+  @Header('Cache-Control', 'no-store')
+  exportAccount(@CurrentUser() user: AuthedUser) {
+    const pack = this.store.exportAccount(user.id);
+    if (!pack) throw new NotFoundException('Account not found');
+    this.audit.record({
+      action: 'applicant.export',
+      actor: user,
+      resourceType: 'user',
+      resourceId: user.id,
+      summary: `Applicant exported account data (${user.email})`,
+    });
+    return pack;
+  }
+
+  @Delete('applicant/account')
+  @UseGuards(AuthGuard)
+  deleteAccount(@CurrentUser() user: AuthedUser, @Headers('authorization') authorization?: string) {
+    const result = this.store.deleteAccount(user.id);
+    if (!result.ok) throw new BadRequestException(result.reason);
+    const token = authorization?.startsWith('Bearer ') ? authorization.slice(7) : undefined;
+    if (token) this.store.logout(token);
+    this.audit.record({
+      action: 'applicant.delete',
+      actor: { id: user.id, email: user.email, role: user.role },
+      resourceType: 'user',
+      resourceId: user.id,
+      summary: `Applicant deleted account (${result.email}); drafts=${result.deletedDrafts}`,
+    });
+    return result;
   }
 
   // ── Applicant drafts ──────────────────────────────────────────────────────
@@ -360,6 +396,14 @@ ${items
     if (!body.status) throw new BadRequestException('status required');
     const photo = this.store.moderatePhoto(id, body.status, user.email);
     if (!photo) throw new NotFoundException('Photo not found');
+    this.audit.record({
+      action: 'photo.moderate',
+      actor: user,
+      resourceType: 'photo',
+      resourceId: id,
+      summary: `Photo ${body.status.toLowerCase()} by ${user.email}`,
+      meta: { status: body.status },
+    });
     return { photo };
   }
 

@@ -7,6 +7,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { AuditStore } from '../compliance/audit.store';
 import { SubscriptionNotifyService } from '../notify/subscription.notify';
 import { AuthGuard, CurrentUser } from '../phase2/auth.guard';
 import { Roles, RolesGuard } from '../phase2/roles.guard';
@@ -31,6 +32,7 @@ export class IngestController {
     private readonly store: IngestStore,
     private readonly queue: IngestQueueService,
     private readonly notify: SubscriptionNotifyService,
+    private readonly audit: AuditStore,
   ) {}
 
   @Get('status')
@@ -51,17 +53,35 @@ export class IngestController {
   }
 
   @Post('run/:sourceId')
-  async runOne(@Param('sourceId') sourceId: string, @CurrentUser() user: { email: string }) {
+  async runOne(
+    @Param('sourceId') sourceId: string,
+    @CurrentUser() user: { id: string; email: string; role: string },
+  ) {
     if (!SOURCES.includes(sourceId as IngestSourceId)) {
       throw new BadRequestException(`Unknown source. Valid: ${SOURCES.join(', ')}`);
     }
     const result = await this.queue.enqueue(sourceId as IngestSourceId);
+    this.audit.record({
+      action: 'ingest.run',
+      actor: user,
+      resourceType: 'ingest_source',
+      resourceId: sourceId,
+      summary: `Ingest run requested for ${sourceId}`,
+      meta: { status: result.status },
+    });
     return { ...result, requestedBy: user.email };
   }
 
   @Post('run-all')
-  async runAll(@CurrentUser() user: { email: string }) {
+  async runAll(@CurrentUser() user: { id: string; email: string; role: string }) {
     const results = await this.queue.enqueueAll();
+    this.audit.record({
+      action: 'ingest.run_all',
+      actor: user,
+      resourceType: 'ingest',
+      resourceId: null,
+      summary: `Ingest run-all requested (${results.length} sources)`,
+    });
     return { requestedBy: user.email, results };
   }
 }

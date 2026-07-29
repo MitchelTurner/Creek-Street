@@ -67,9 +67,56 @@ export function WorkspacePage() {
       <DisclaimerBanner />
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm">
         <p className="text-ink/60">Signed in as {user.email}</p>
-        <button type="button" onClick={() => logout()} className="underline text-ink/50">
-          Sign out
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="button"
+            className="underline text-ink/50"
+            onClick={async () => {
+              const res = await fetch('/api/applicant/export', { headers: authHeaders() });
+              if (!res.ok) {
+                setError(await res.text());
+                return;
+              }
+              const blob = await res.blob();
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'creek-street-account-export.json';
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+          >
+            Export my data
+          </button>
+          <button
+            type="button"
+            className="underline text-cedar-deep/80"
+            onClick={async () => {
+              if (
+                !window.confirm(
+                  'Delete your account and private drafts? Demo accounts cannot be deleted. This cannot be undone.',
+                )
+              ) {
+                return;
+              }
+              const res = await fetch('/api/applicant/account', {
+                method: 'DELETE',
+                headers: authHeaders(),
+              });
+              if (!res.ok) {
+                setError(await res.text());
+                return;
+              }
+              logout();
+              window.location.href = '/';
+            }}
+          >
+            Delete account
+          </button>
+          <button type="button" onClick={() => logout()} className="underline text-ink/50">
+            Sign out
+          </button>
+        </div>
       </div>
 
       <form onSubmit={createDraft} className="mt-8 flex flex-wrap items-end gap-3">

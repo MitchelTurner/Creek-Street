@@ -17,4 +17,5 @@
   <url><loc>/timelines</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
   <url><loc>/photos</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>/construction</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>/compliance</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
 </urlset>

@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0–9 (delivery & ops)
+## Current release: Phase 0–10 (compliance & audit)
 
 See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
@@ -87,6 +87,13 @@ Deliberation does **not** turn on by default. That is intentional.
 - Security headers + `X-Request-Id` + JSON access logs on every API request
 - Readiness reports mail mode + rate-limit flag
 
+**Phase 10 — compliance & audit:**
+
+- Staff-action audit log (`GET /api/compliance/audit`) for ingest, photo moderation, summary review, account export/delete
+- Applicant data export + account delete (`/api/applicant/export`, `DELETE /api/applicant/account`)
+- Public retention / PRA posture + processor readiness checklist (`/compliance`)
+- MemberNotes remain author-scoped export from the board portal
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).
@@ -138,6 +145,8 @@ npm run seed
 - Staff ingest: `GET /api/ingest/status` · `POST /api/ingest/run/:sourceId` · `POST /api/ingest/run-all`
 - Geo: `GET /api/geo/status` · `GET /api/geo/notice-set?parcelId=` · `GET /api/geo/embeddings/status`
 - Ops: `GET /api/ready` · `GET /api/sitemap.xml` · `GET /api/sitemap/paths`
+- Compliance: `GET /api/compliance/readiness` · `GET /api/compliance/retention` · staff `GET /api/compliance/audit`
+- Applicant: `GET /api/applicant/export` · `DELETE /api/applicant/account`
 
 Demo accounts (password `creek-demo` for all):
 

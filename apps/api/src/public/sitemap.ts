@@ -18,6 +18,7 @@ const STATIC_PATHS = [
   '/timelines',
   '/photos',
   '/construction',
+  '/compliance',
 ];
 
 /** Public sitemap paths only — never workspace/official/admin/auth. */

@@ -301,6 +301,66 @@ export class ApplicantStore {
     return this.subscriptions.filter((s) => s.confirmedAt);
   }
 
+  /** Applicant-owned data package (no password hashes / session tokens). */
+  exportAccount(userId: string) {
+    const user = this.users.find((u) => u.id === userId);
+    if (!user) return null;
+    return {
+      exportedAt: new Date().toISOString(),
+      user: this.publicUser(user),
+      drafts: this.listDrafts(userId),
+      subscriptions: this.listSubscriptions(userId).map((s) => ({
+        id: s.id,
+        email: s.email,
+        scope: s.scope,
+        channel: s.channel,
+        projectTypes: s.projectTypes,
+        createdAt: s.createdAt,
+        confirmedAt: s.confirmedAt,
+      })),
+      photosSubmitted: this.photos
+        .filter((p) => p.submittedByUserId === userId)
+        .map((p) => ({
+          id: p.id,
+          structureId: p.structureId,
+          caption: p.caption,
+          credit: p.credit,
+          yearApprox: p.yearApprox,
+          moderationStatus: p.moderationStatus,
+          createdAt: p.createdAt,
+        })),
+      note: 'Preparation materials only — not borough board records. Password hashes and session tokens are never exported.',
+    };
+  }
+
+  /** Soft-delete account data owned by the user. Demo accounts are protected. */
+  deleteAccount(userId: string) {
+    const DEMO = new Set(['user_demo', 'user_board', 'user_staff']);
+    if (DEMO.has(userId)) {
+      return { ok: false as const, reason: 'Demo accounts cannot be deleted.' };
+    }
+    const user = this.users.find((u) => u.id === userId);
+    if (!user) return { ok: false as const, reason: 'User not found' };
+
+    const draftIds = new Set(this.drafts.filter((d) => d.userId === userId).map((d) => d.id));
+    for (const d of this.drafts.filter((x) => x.userId === userId)) {
+      for (const doc of d.documents) this.files.delete(doc.storageKey);
+    }
+    this.drafts = this.drafts.filter((d) => d.userId !== userId);
+    this.subscriptions = this.subscriptions.filter((s) => s.userId !== userId);
+    for (const p of this.photos.filter((x) => x.submittedByUserId === userId)) {
+      this.files.delete(p.storageKey);
+    }
+    this.photos = this.photos.filter((p) => p.submittedByUserId !== userId);
+    this.sessions = this.sessions.filter((s) => s.userId !== userId);
+    this.users = this.users.filter((u) => u.id !== userId);
+    return {
+      ok: true as const,
+      deletedDrafts: draftIds.size,
+      email: user.email,
+    };
+  }
+
   submitPhoto(input: Omit<PhotoSubmission, 'id' | 'createdAt' | 'moderationStatus' | 'reviewedAt' | 'reviewedBy' | 'storageKey'> & {
     buffer: Buffer;
     fileName: string;

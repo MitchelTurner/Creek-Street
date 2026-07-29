@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { AuthPage } from './pages/AuthPage';
 import { BoardPage } from './pages/BoardPage';
+import { CompliancePage } from './pages/CompliancePage';
 import { ConstructionPage } from './pages/ConstructionPage';
 import { DecisionsPage } from './pages/DecisionsPage';
 import { DocketPage } from './pages/DocketPage';
@@ -57,6 +58,7 @@ export default function App() {
         <Route path="guidance" element={<GuidancePage />} />
         <Route path="board" element={<BoardPage />} />
         <Route path="opendata" element={<OpenDataPage />} />
+        <Route path="compliance" element={<CompliancePage />} />
       </Route>
     </Routes>
   );

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GeoService } from '../geo/geo.service';
+import { MailService } from '../ops/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -7,10 +8,12 @@ export class ReadinessService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly geo: GeoService,
+    private readonly mail: MailService,
   ) {}
 
   async check() {
     const geo = await this.geo.status();
+    const mail = this.mail.status();
     const memoryDefault = (process.env.USE_MEMORY_STORE ?? 'true').toLowerCase() !== 'false';
     const redisConfigured = Boolean(process.env.REDIS_URL);
     const phase3Active =
@@ -30,13 +33,16 @@ export class ReadinessService {
       postgis: geo.postgis,
       pgvector: geo.pgvector,
       phase3Contract: phase3Active,
+      mail: mail.mode,
+      rateLimitEnabled: (process.env.RATE_LIMIT_DISABLED ?? 'false').toLowerCase() !== 'true',
     };
 
     return {
       ready: checks.api,
-      phase: 8,
+      phase: 9,
       checks,
       noticeMethod: geo.noticeMethod,
+      mail,
       contractMessage: phase3Active
         ? 'Official workflow unlocked'
         : 'Official deliberation dark (expected until MOU)',

@@ -14,7 +14,7 @@ export class PublicController {
   health() {
     return {
       ok: true,
-      phase: 8,
+      phase: 9,
       store: (process.env.USE_MEMORY_STORE ?? 'true').toLowerCase() === 'false' ? 'prisma' : 'memory',
     };
   }

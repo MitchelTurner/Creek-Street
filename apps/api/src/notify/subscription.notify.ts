@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { applications } from '../data/phase0-seed';
+import { MailService } from '../ops/mail.service';
 import { ApplicantStore } from '../phase2/applicant.store';
 
 export type NotifyEvent = {
@@ -11,23 +12,26 @@ export type NotifyEvent = {
 };
 
 /**
- * Phase 6 subscription delivery stub.
- * Logs email payloads (wire SMTP_URL later). RSS stays pull-based;
- * fanout records a delivery log for admin visibility.
+ * Subscription delivery — email via MailService (SMTP or stub), RSS pull-based.
  */
 @Injectable()
 export class SubscriptionNotifyService {
   private readonly log = new Logger(SubscriptionNotifyService.name);
-  private deliveries: Array<NotifyEvent & { email: string; channel: string; id: string }> = [];
+  private deliveries: Array<
+    NotifyEvent & { email: string; channel: string; id: string; mailMode?: string }
+  > = [];
 
-  constructor(private readonly applicants: ApplicantStore) {}
+  constructor(
+    private readonly applicants: ApplicantStore,
+    private readonly mail: MailService,
+  ) {}
 
   listDeliveries(limit = 50) {
     return this.deliveries.slice(0, limit);
   }
 
   /** Fan out ingest topics (e.g. subscriptions.district_wide, rss.feeds). */
-  fanout(topics: string[], context?: { sourceId?: string; message?: string }) {
+  async fanout(topics: string[], context?: { sourceId?: string; message?: string }) {
     if (!topics.length) return { notified: 0, topics };
 
     const event: NotifyEvent = {
@@ -47,21 +51,40 @@ export class SubscriptionNotifyService {
       (t) => t.startsWith('subscriptions.') || t === 'rss.feeds',
     );
     if (shouldNotify) {
-      notified = this.deliver(event);
+      notified = await this.deliver(event);
     }
     return { notified, topics, event };
   }
 
-  private deliver(event: NotifyEvent) {
+  private async deliver(event: NotifyEvent) {
     const emailSubs = this.applicants.listConfirmedEmailSubscriptions();
+    const origin = process.env.PUBLIC_WEB_ORIGIN ?? 'https://creek-street.local';
     for (const sub of emailSubs) {
+      const text = [
+        event.body,
+        '',
+        `Open the docket: ${origin}${event.link ?? '/docket'}`,
+        '',
+        'Creek Street Design Review Hub — Mitchel Turner Dev, LLC (not a borough property).',
+        'To stop alerts, use your unsubscribe token from the subscriptions page.',
+      ].join('\n');
+
+      const mailResult = await this.mail.send({
+        to: sub.email,
+        subject: event.title,
+        text,
+      });
+
       this.deliveries.unshift({
         id: `dlv_${this.deliveries.length + 1}`,
         email: sub.email,
         channel: 'EMAIL',
+        mailMode: mailResult.mode,
         ...event,
       });
-      this.log.log(`[email-stub] to=${sub.email} subject="${event.title}"`);
+      if (!mailResult.accepted) {
+        this.log.warn(`Delivery failed to=${sub.email}: ${mailResult.error}`);
+      }
     }
 
     const rssCount = this.applicants.rssFeed().length;
@@ -71,6 +94,7 @@ export class SubscriptionNotifyService {
         id: `dlv_rss_${this.deliveries.length + 1}`,
         email: 'rss@local',
         channel: 'RSS',
+        mailMode: 'pull',
         ...event,
         body: `${event.body} (${rssCount} RSS feeds; ${publicCount} public applications).`,
       });

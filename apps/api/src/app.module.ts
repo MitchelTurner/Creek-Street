@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { GeoModule } from './geo/geo.module';
 import { IngestModule } from './ingest/ingest.module';
+import { OpsModule } from './ops/ops.module';
 import { Phase1Module } from './phase1/phase1.module';
 import { Phase2Module } from './phase2/phase2.module';
 import { Phase3Module } from './phase3/phase3.module';
@@ -11,6 +12,7 @@ import { StoreModule } from './store/store.module';
 
 @Module({
   imports: [
+    OpsModule,
     PrismaModule,
     StoreModule,
     PublicModule,

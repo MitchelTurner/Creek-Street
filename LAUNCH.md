@@ -31,8 +31,10 @@ Phase 3 vars stay blank until MOU/contract.
 - [ ] Railway: set env from `apps/api/.env.example`; deploy monorepo (`railway.toml`)
 - [ ] Web origin proxies `/api` or sets `VITE_*` if split hosts
 - [ ] CDN / edge: public GET routes send `Cache-Control` + `stale-while-revalidate` (see interceptor)
-- [ ] Health: `GET /api/health` → `{ ok: true, phase: 8 }`
-- [ ] Readiness: `GET /api/ready` → `ready: true` (prisma/redis/postgis optional)
+- [ ] Health: `GET /api/health` → `{ ok: true, phase: 9 }`
+- [ ] Readiness: `GET /api/ready` → `ready: true` (prisma/redis/postgis/mail optional)
+- [ ] Mail: set `SMTP_URL` + `SMTP_FROM` in production; confirm `checks.mail` is `smtp`
+- [ ] Rate limits: burst `POST /api/auth/login` → expect `429 RATE_LIMITED` (or set `RATE_LIMIT_DISABLED=true` only in trusted local demos)
 - [ ] Persistence: when using Postgres, `USE_MEMORY_STORE=false`, run migrations + seed, confirm `GET /api/geo/status` shows `postgis: true` after helpers apply
 - [ ] SEO: `/robots.txt` and `/sitemap.xml` reachable; private paths (`/workspace`, `/official`, `/admin`) not listed
 - [ ] A11y smoke: keyboard tab reaches skip link → main; reduced-motion respected

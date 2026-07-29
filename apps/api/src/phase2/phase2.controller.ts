@@ -18,6 +18,11 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Response } from 'express';
 import { applications } from '../data/phase0-seed';
+import {
+  AuthRateLimitGuard,
+  PhotoRateLimitGuard,
+  SubscriptionRateLimitGuard,
+} from '../ops/rate-limit';
 import { ApplicantStore } from './applicant.store';
 import { AuthGuard, CurrentUser } from './auth.guard';
 import { Phase2Service } from './phase2.service';
@@ -40,6 +45,7 @@ export class Phase2Controller {
   // ── Auth ──────────────────────────────────────────────────────────────────
 
   @Post('auth/register')
+  @UseGuards(AuthRateLimitGuard)
   async register(@Body() body: { email?: string; password?: string }) {
     if (!body.email || !body.password || body.password.length < 8) {
       throw new BadRequestException('Email and password (8+ chars) required');
@@ -54,6 +60,7 @@ export class Phase2Controller {
   }
 
   @Post('auth/login')
+  @UseGuards(AuthRateLimitGuard)
   async login(@Body() body: { email?: string; password?: string }) {
     if (!body.email || !body.password) throw new BadRequestException('Email and password required');
     const session = await this.store.login(body.email, body.password);
@@ -171,6 +178,7 @@ export class Phase2Controller {
   // ── Subscriptions ─────────────────────────────────────────────────────────
 
   @Post('subscriptions')
+  @UseGuards(SubscriptionRateLimitGuard)
   createSubscription(
     @Body()
     body: {
@@ -293,6 +301,7 @@ ${items
   // ── Photo crowdsourcing ───────────────────────────────────────────────────
 
   @Post('photos/submit')
+  @UseGuards(PhotoRateLimitGuard)
   @UseInterceptors(FileInterceptor('file'))
   submitPhoto(
     @Body()

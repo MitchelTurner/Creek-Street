@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0–8 (SEO & accessibility)
+## Current release: Phase 0–9 (delivery & ops)
 
 See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
@@ -79,6 +79,13 @@ Deliberation does **not** turn on by default. That is intentional.
 - Skip link, landmarks, `:focus-visible`, `prefers-reduced-motion`, print CSS
 - Static `robots.txt` + `sitemap.xml`; dynamic `GET /api/sitemap.xml` (public paths only)
 - Readiness: `GET /api/ready` (prisma / redis / postgis / contract probes)
+
+**Phase 9 — delivery & ops:**
+
+- SMTP mail via `SMTP_URL` (nodemailer); stub log when unset
+- Rate limits on auth / subscriptions / photo submit (`429 RATE_LIMITED`)
+- Security headers + `X-Request-Id` + JSON access logs on every API request
+- Readiness reports mail mode + rate-limit flag
 
 ### Hard legal constraints (schema + API)
 

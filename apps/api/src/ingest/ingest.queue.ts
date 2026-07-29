@@ -107,7 +107,7 @@ export class IngestQueueService implements OnModuleInit, OnModuleDestroy {
         result.skipped ? wm.robotsAllowed : true,
       );
       if (!result.skipped && result.fanout.length) {
-        const fan = this.notify.fanout(result.fanout, {
+        const fan = await this.notify.fanout(result.fanout, {
           sourceId,
           message,
         });

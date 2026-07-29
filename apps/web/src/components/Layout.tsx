@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
+import { RouteSeo } from '../lib/seo';
 
 const links = [
   { to: '/visit', label: 'Visit' },
@@ -25,9 +26,14 @@ const links = [
 export function Layout() {
   return (
     <div className="min-h-screen flex flex-col">
+      <RouteSeo />
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+
       <header className="sticky top-0 z-40 border-b border-ink/10 bg-foam/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 md:px-6">
-          <NavLink to="/" className="group flex min-w-0 flex-col">
+          <NavLink to="/" className="group flex min-w-0 flex-col" aria-label="Creek Street Design Review Hub home">
             <span className="font-display text-lg font-semibold tracking-tight text-ink md:text-xl group-hover:text-creek-bright transition-colors">
               Creek Street
             </span>
@@ -35,13 +41,16 @@ export function Layout() {
               Design Review Hub
             </span>
           </NavLink>
-          <nav className="hidden lg:flex flex-wrap items-center justify-end gap-x-4 gap-y-1 text-sm font-medium text-ink/70">
+          <nav
+            className="hidden lg:flex flex-wrap items-center justify-end gap-x-4 gap-y-1 text-sm font-medium text-ink/70"
+            aria-label="Primary"
+          >
             {links.map((l) => (
               <NavLink
                 key={l.to}
                 to={l.to}
                 className={({ isActive }) =>
-                  `transition-colors hover:text-creek ${isActive ? 'text-creek' : ''}`
+                  `rounded-sm transition-colors hover:text-creek ${isActive ? 'text-creek' : ''}`
                 }
               >
                 {l.label}
@@ -49,10 +58,16 @@ export function Layout() {
             ))}
           </nav>
           <details className="relative lg:hidden">
-            <summary className="cursor-pointer list-none rounded-md border border-ink/15 px-3 py-1.5 text-sm font-medium">
+            <summary
+              className="cursor-pointer list-none rounded-md border border-ink/15 px-3 py-1.5 text-sm font-medium"
+              aria-label="Open navigation menu"
+            >
               Menu
             </summary>
-            <div className="absolute right-0 mt-2 w-56 rounded-lg border border-ink/10 bg-foam p-2 shadow-lg">
+            <nav
+              className="absolute right-0 mt-2 w-56 rounded-lg border border-ink/10 bg-foam p-2 shadow-lg"
+              aria-label="Mobile"
+            >
               {links.map((l) => (
                 <NavLink
                   key={l.to}
@@ -62,12 +77,12 @@ export function Layout() {
                   {l.label}
                 </NavLink>
               ))}
-            </div>
+            </nav>
           </details>
         </div>
       </header>
 
-      <main className="flex-1">
+      <main id="main-content" className="flex-1" tabIndex={-1}>
         <Outlet />
       </main>
 
@@ -87,6 +102,10 @@ export function Layout() {
             <p>
               <a className="underline decoration-brass/60 underline-offset-4 hover:text-foam" href="/opendata">
                 Open data & license
+              </a>
+              {' · '}
+              <a className="underline decoration-brass/60 underline-offset-4 hover:text-foam" href="/sitemap.xml">
+                Sitemap
               </a>
             </p>
           </div>

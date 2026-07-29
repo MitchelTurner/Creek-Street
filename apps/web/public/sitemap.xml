@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>/visit</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>/map</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>/structures</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>/docket</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>/decisions</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>/meetings</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>/guidance</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>/board</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>/opendata</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>/triage</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>/permits</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>/precedents</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>/notice</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>/timelines</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>/photos</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>/construction</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+</urlset>

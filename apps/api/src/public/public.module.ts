@@ -1,8 +1,12 @@
 import { Module } from '@nestjs/common';
-import { PublicController } from './public.controller';
+import { GeoModule } from '../geo/geo.module';
 import { OpenDataController } from './opendata.controller';
+import { PublicController } from './public.controller';
+import { ReadinessService } from './readiness.service';
 
 @Module({
+  imports: [GeoModule],
   controllers: [PublicController, OpenDataController],
+  providers: [ReadinessService],
 })
 export class PublicModule {}

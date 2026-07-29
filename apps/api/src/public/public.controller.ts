@@ -1,17 +1,48 @@
-import { Controller, Get, Header, NotFoundException, Param, Query } from '@nestjs/common';
+import { Controller, Get, Header, Headers, NotFoundException, Param, Query } from '@nestjs/common';
 import { MemoryStore } from '../store/memory.store';
+import { ReadinessService } from './readiness.service';
+import { publicSitemapPaths, renderSitemapXml } from './sitemap';
 
 @Controller()
 export class PublicController {
-  constructor(private readonly store: MemoryStore) {}
+  constructor(
+    private readonly store: MemoryStore,
+    private readonly readiness: ReadinessService,
+  ) {}
 
   @Get('health')
   health() {
     return {
       ok: true,
-      phase: 7,
+      phase: 8,
       store: (process.env.USE_MEMORY_STORE ?? 'true').toLowerCase() === 'false' ? 'prisma' : 'memory',
     };
+  }
+
+  @Get('ready')
+  @Header('Cache-Control', 'no-store')
+  ready() {
+    return this.readiness.check();
+  }
+
+  @Get('sitemap.xml')
+  @Header('Content-Type', 'application/xml; charset=utf-8')
+  @Header('Cache-Control', 'public, max-age=300, stale-while-revalidate=600')
+  sitemap(
+    @Headers('host') host?: string,
+    @Headers('x-forwarded-host') xfHost?: string,
+    @Headers('x-forwarded-proto') xfProto?: string,
+  ) {
+    const h = xfHost || host || 'creek-street.local';
+    const proto = xfProto || 'https';
+    const origin = process.env.PUBLIC_WEB_ORIGIN || `${proto}://${h}`;
+    return renderSitemapXml(origin);
+  }
+
+  @Get('sitemap/paths')
+  @Header('Cache-Control', 'public, max-age=300')
+  sitemapPaths() {
+    return { paths: publicSitemapPaths(), note: 'Public surfaces only — no workspace/official/admin/auth.' };
   }
 
   @Get('meta')

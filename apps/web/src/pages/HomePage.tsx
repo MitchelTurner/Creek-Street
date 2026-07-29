@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { api, type Meta } from '../lib/api';
+import { DEFAULT_DESC, JsonLd, SITE } from '../lib/seo';
 
 export function HomePage() {
   const [meta, setMeta] = useState<Meta | null>(null);
@@ -9,9 +10,31 @@ export function HomePage() {
     api.meta().then(setMeta).catch(() => setMeta(null));
   }, []);
 
+  const jsonLd = useMemo(
+    () => ({
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: SITE,
+      description: DEFAULT_DESC,
+      url: typeof window !== 'undefined' ? window.location.origin : 'https://creek-street.local',
+      publisher: {
+        '@type': 'Organization',
+        name: 'Mitchel Turner Dev, LLC',
+        description: 'Independent operator — not a borough property.',
+      },
+      about: {
+        '@type': 'GovernmentOrganization',
+        name: 'Creek Street Historic District Architectural Design Review Board',
+        parentOrganization: 'Ketchikan Gateway Borough',
+      },
+    }),
+    [],
+  );
+
   return (
     <div>
-      <section className="relative min-h-[92vh] overflow-hidden border-b border-ink/10">
+      <JsonLd data={jsonLd} />
+      <section className="relative min-h-[92vh] overflow-hidden border-b border-ink/10" aria-label="Hero">
         <div
           className="absolute inset-0"
           style={{

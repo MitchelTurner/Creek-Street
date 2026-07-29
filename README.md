@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0–7 (persistence & geo)
+## Current release: Phase 0–8 (SEO & accessibility)
 
 See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
@@ -73,6 +73,13 @@ Deliberation does **not** turn on by default. That is intentional.
 - Precedent embedding persist (TF-IDF → `PrecedentEmbedding`); pgvector helper when extension present
 - `GET /api/geo/status` · `GET /api/geo/notice-set` · `GET /api/geo/embeddings/status`
 
+**Phase 8 — SEO & accessibility:**
+
+- Per-route document titles, meta/OG tags, canonical URLs, home JSON-LD
+- Skip link, landmarks, `:focus-visible`, `prefers-reduced-motion`, print CSS
+- Static `robots.txt` + `sitemap.xml`; dynamic `GET /api/sitemap.xml` (public paths only)
+- Readiness: `GET /api/ready` (prisma / redis / postgis / contract probes)
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).
@@ -123,6 +130,7 @@ npm run seed
 - `GET /api/summaries` · staff `POST /api/summaries/:id/review`
 - Staff ingest: `GET /api/ingest/status` · `POST /api/ingest/run/:sourceId` · `POST /api/ingest/run-all`
 - Geo: `GET /api/geo/status` · `GET /api/geo/notice-set?parcelId=` · `GET /api/geo/embeddings/status`
+- Ops: `GET /api/ready` · `GET /api/sitemap.xml` · `GET /api/sitemap/paths`
 
 Demo accounts (password `creek-demo` for all):
 

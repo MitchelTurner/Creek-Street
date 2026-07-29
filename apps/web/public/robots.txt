@@ -1,0 +1,11 @@
+# Site robots for the Creek Street Design Review Hub (this app).
+# Unrelated to borough scrape policy — see API ingest robots hard-block.
+
+User-agent: *
+Allow: /
+Disallow: /workspace
+Disallow: /official
+Disallow: /admin
+Disallow: /auth
+
+Sitemap: /sitemap.xml

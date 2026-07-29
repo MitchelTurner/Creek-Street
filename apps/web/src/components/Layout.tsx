@@ -1,9 +1,12 @@
 import { NavLink, Outlet } from 'react-router-dom';
 
 const links = [
+  { to: '/workspace', label: 'Workspace' },
   { to: '/triage', label: 'Triage' },
   { to: '/permits', label: 'Permits' },
   { to: '/precedents', label: 'Precedents' },
+  { to: '/notice', label: 'Notice' },
+  { to: '/timelines', label: 'Timelines' },
   { to: '/map', label: 'Map' },
   { to: '/structures', label: 'Structures' },
   { to: '/docket', label: 'Docket' },
@@ -11,6 +14,7 @@ const links = [
   { to: '/meetings', label: 'Meetings' },
   { to: '/guidance', label: 'Rules' },
   { to: '/board', label: 'Board' },
+  { to: '/photos', label: 'Photos' },
   { to: '/opendata', label: 'Open data' },
 ];
 

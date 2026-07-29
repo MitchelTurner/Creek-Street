@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0 + Phase 1
+## Current release: Phase 0 + Phase 1 + Phase 2
 
 **Phase 0 — public mirror** (zero auth, zero legal exposure):
 
@@ -21,7 +21,18 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 - Multi-agency permit trigger map (`/permits`) — data rows with `verifiedAt`; unverified gated behind opt-in
 - Visual precedent library + lexical similarity search (`/precedents`) — TF-IDF until pgvector embeddings land
 
-Phase 2 (applicant workspace) and Phase 3 (contract-gated official workflow) are not started.
+**Phase 2 — applicant workspace & retention** (still zero official status):
+
+- Auth + private drafts (`/auth`, `/workspace`)
+- Pre-application builder: triage → criteria → exhibits → agencies → preparation PDF
+- Document checklist with completeness validation
+- Subscriptions (email + RSS)
+- Notice lookup citing **KGBC 18.90.060** (600 ft in city) and **18.90.020** (HD district-wide notice)
+- Timeline expectations (suppress n&lt;5)
+- Historic photo crowdsourcing with moderation queue
+- Disclaimer on every applicant surface
+
+Phase 3 (contract-gated official workflow / deliberation) is **not** started.
 
 ### Hard legal constraints (schema + API)
 
@@ -60,11 +71,16 @@ npm run prisma:migrate -w @creek-street/api
 npm run seed
 ```
 
-## Phase 1 API
+## Phase 1–2 API
 
-- `GET /api/triage/flows` · `GET /api/triage/flows/:projectType` · `POST /api/triage/evaluate`
-- `GET /api/permits/triggers?...` (verified-only unless `includeUnverified=true`)
-- `GET /api/precedents` · `GET /api/precedents/similar?q=`
+- `GET /api/triage/flows` · `POST /api/triage/evaluate`
+- `GET /api/permits/triggers?...` · `GET /api/precedents` · `GET /api/precedents/similar?q=`
+- `POST /api/auth/register|login` · `GET /api/auth/me`
+- `CRUD /api/applicant/drafts` · document upload · `GET .../package.pdf`
+- `POST /api/subscriptions` · `GET /api/notice` · `GET /api/timelines`
+- `POST /api/photos/submit` · moderation endpoints (staff)
+
+Demo applicant: `applicant@example.com` / `creek-demo`
 
 ## Open data
 

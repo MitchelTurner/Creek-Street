@@ -39,16 +39,16 @@ export function HomePage() {
           </p>
           <div className="animate-rise-delay-2 mt-8 flex flex-wrap gap-3">
             <Link
-              to="/triage"
+              to="/workspace"
               className="rounded-md bg-board px-5 py-3 text-sm font-semibold text-ink transition hover:bg-foam"
             >
-              Do I need review?
+              Applicant workspace
             </Link>
             <Link
-              to="/decisions"
+              to="/triage"
               className="rounded-md border border-foam/40 px-5 py-3 text-sm font-semibold text-foam transition hover:bg-foam/10"
             >
-              Decision archive
+              Do I need review?
             </Link>
           </div>
         </div>

@@ -1,24 +1,38 @@
 import { Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
+import { AuthPage } from './pages/AuthPage';
 import { BoardPage } from './pages/BoardPage';
 import { DecisionsPage } from './pages/DecisionsPage';
 import { DocketPage } from './pages/DocketPage';
+import { DraftBuilderPage } from './pages/DraftBuilderPage';
 import { GuidancePage } from './pages/GuidancePage';
 import { HomePage } from './pages/HomePage';
 import { MapPage } from './pages/MapPage';
 import { MeetingsPage } from './pages/MeetingsPage';
+import { NoticePage } from './pages/NoticePage';
 import { OpenDataPage } from './pages/OpenDataPage';
 import { PermitsPage } from './pages/PermitsPage';
+import { PhotosPage } from './pages/PhotosPage';
 import { PrecedentsPage } from './pages/PrecedentsPage';
 import { StructureDetailPage } from './pages/StructureDetailPage';
 import { StructuresPage } from './pages/StructuresPage';
+import { SubscriptionsPage } from './pages/SubscriptionsPage';
+import { TimelinesPage } from './pages/TimelinesPage';
 import { TriagePage } from './pages/TriagePage';
+import { WorkspacePage } from './pages/WorkspacePage';
 
 export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
+        <Route path="auth" element={<AuthPage />} />
+        <Route path="workspace" element={<WorkspacePage />} />
+        <Route path="workspace/:id" element={<DraftBuilderPage />} />
+        <Route path="subscriptions" element={<SubscriptionsPage />} />
+        <Route path="notice" element={<NoticePage />} />
+        <Route path="timelines" element={<TimelinesPage />} />
+        <Route path="photos" element={<PhotosPage />} />
         <Route path="triage" element={<TriagePage />} />
         <Route path="permits" element={<PermitsPage />} />
         <Route path="precedents" element={<PrecedentsPage />} />

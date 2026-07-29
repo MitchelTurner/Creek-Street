@@ -1,0 +1,13 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "npm run start -w @creek-street/api"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+
+# Expected Railway services:
+# - Postgres (enable postgis + vector extensions)
+# - Redis (BullMQ ingest workers)
+# - Web static or separate Vite build served via CDN / nginx

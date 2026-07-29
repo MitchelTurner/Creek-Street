@@ -7,7 +7,7 @@ export class PublicController {
 
   @Get('health')
   health() {
-    return { ok: true, phase: 4, store: 'memory' };
+    return { ok: true, phase: 5, store: 'memory' };
   }
 
   @Get('meta')

@@ -8,6 +8,7 @@ import { DocketPage } from './pages/DocketPage';
 import { DraftBuilderPage } from './pages/DraftBuilderPage';
 import { GuidancePage } from './pages/GuidancePage';
 import { HomePage } from './pages/HomePage';
+import { IngestAdminPage } from './pages/IngestAdminPage';
 import { MapPage } from './pages/MapPage';
 import { MeetingsPage } from './pages/MeetingsPage';
 import { NoticePage } from './pages/NoticePage';
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="workspace/:id" element={<DraftBuilderPage />} />
         <Route path="official" element={<OfficialPortalPage />} />
         <Route path="official/applications/:id" element={<OfficialApplicationPage />} />
+        <Route path="admin/ingest" element={<IngestAdminPage />} />
         <Route path="subscriptions" element={<SubscriptionsPage />} />
         <Route path="notice" element={<NoticePage />} />
         <Route path="timelines" element={<TimelinesPage />} />

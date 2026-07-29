@@ -5,6 +5,7 @@ const links = [
   { to: '/construction', label: 'Build window' },
   { to: '/workspace', label: 'Workspace' },
   { to: '/official', label: 'Board portal' },
+  { to: '/admin/ingest', label: 'Ingest' },
   { to: '/triage', label: 'Triage' },
   { to: '/permits', label: 'Permits' },
   { to: '/precedents', label: 'Precedents' },

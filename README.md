@@ -48,6 +48,14 @@ Deliberation does **not** turn on by default. That is intentional.
 - Construction-window calendar (`/construction`) — backward-plan filing from build season using ship-call density + timeline medians
 - Meeting AI summaries — **unpublished until human review**; public surfaces only show reviewed+published rows
 
+**Phase 5 — ingest & production infra:**
+
+- BullMQ + Redis workers (inline fallback when `REDIS_URL` unset)
+- Watermarked source adapters: Clerk/CivicPlus, borough GIS, NRHP, ktnport, embeddings, meeting summaries
+- Hard robots.txt respect — `borough.ketchikan.ak.us` blocked; fail closed if robots unreachable
+- PostGIS `ST_DWithin` + pgvector SQL helpers (`apps/api/src/geo/postgis.sql`)
+- Railway/Docker deploy stubs; staff ingest console at `/admin/ingest`
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).
@@ -96,6 +104,7 @@ npm run seed
 - `GET /api/tourism` · `GET /api/tourism/:slug`
 - `GET /api/construction/window` · `GET /api/construction/ships`
 - `GET /api/summaries` · staff `POST /api/summaries/:id/review`
+- Staff ingest: `GET /api/ingest/status` · `POST /api/ingest/run/:sourceId` · `POST /api/ingest/run-all`
 
 Demo accounts (password `creek-demo` for all):
 

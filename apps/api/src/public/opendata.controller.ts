@@ -1,10 +1,10 @@
 import { Controller, Get, Header, Res } from '@nestjs/common';
 import type { Response } from 'express';
-import { MemoryStore } from '../store/memory.store';
+import { PublicStore } from '../store/public.store';
 
 @Controller('opendata')
 export class OpenDataController {
-  constructor(private readonly store: MemoryStore) {}
+  constructor(private readonly store: PublicStore) {}
 
   @Get()
   @Header('Cache-Control', 'public, max-age=300')
@@ -12,6 +12,7 @@ export class OpenDataController {
     return {
       license: this.store.license(),
       meta: this.store.meta(),
+      backend: this.store.backend(),
       endpoints: {
         bundle: '/api/opendata/bundle.json',
         structures: '/api/opendata/structures.csv',
@@ -37,8 +38,8 @@ export class OpenDataController {
   }
 
   @Get('structures.csv')
-  structuresCsv(@Res() res: Response) {
-    const rows = this.store.listStructures();
+  async structuresCsv(@Res() res: Response) {
+    const rows = await this.store.listStructures();
     const csv = toCsv(
       ['id', 'publicSlug', 'addressLabel', 'commonName', 'yearBuilt', 'nrhpContributing', 'sourceDocUrl'],
       rows.map((r) => [
@@ -46,17 +47,17 @@ export class OpenDataController {
         r.publicSlug,
         r.addressLabel,
         r.commonName ?? '',
-        r.yearBuilt ?? '',
-        r.nrhpContributing,
-        r.sourceDocUrl,
+        r.yearBuilt == null ? '' : r.yearBuilt,
+        r.nrhpContributing == null ? '' : r.nrhpContributing,
+        r.sourceDocUrl ?? '',
       ]),
     );
     sendCsv(res, 'structures.csv', csv);
   }
 
   @Get('applications.csv')
-  applicationsCsv(@Res() res: Response) {
-    const rows = this.store.listApplications();
+  async applicationsCsv(@Res() res: Response) {
+    const rows = await this.store.listApplications();
     const csv = toCsv(
       ['id', 'caseNumber', 'projectType', 'status', 'filedAt', 'description', 'sourceDocUrl'],
       rows.map((r) => [
@@ -73,8 +74,8 @@ export class OpenDataController {
   }
 
   @Get('decisions.csv')
-  decisionsCsv(@Res() res: Response) {
-    const rows = this.store.listDecisions();
+  async decisionsCsv(@Res() res: Response) {
+    const rows = await this.store.listDecisions();
     const csv = toCsv(
       ['id', 'applicationId', 'recommendation', 'finalOutcome', 'decidedAt', 'sourceDocUrl'],
       rows.map((r) => [
@@ -90,8 +91,8 @@ export class OpenDataController {
   }
 
   @Get('meetings.csv')
-  meetingsCsv(@Res() res: Response) {
-    const rows = this.store.listMeetings();
+  async meetingsCsv(@Res() res: Response) {
+    const rows = await this.store.listMeetings();
     const csv = toCsv(
       ['id', 'scheduledAt', 'status', 'quorumMet', 'location'],
       rows.map((r) => [r.id, r.scheduledAt, r.status, r.quorumMet ?? '', r.location]),
@@ -100,8 +101,8 @@ export class OpenDataController {
   }
 
   @Get('seats.csv')
-  seatsCsv(@Res() res: Response) {
-    const rows = this.store.listSeats();
+  async seatsCsv(@Res() res: Response) {
+    const rows = await this.store.listSeats();
     const csv = toCsv(
       ['id', 'label', 'seatType', 'memberName', 'termStart', 'termEnd', 'isVacant'],
       rows.map((r) => [
@@ -118,9 +119,9 @@ export class OpenDataController {
   }
 }
 
-function toCsv(headers: string[], rows: (string | number | boolean)[][]) {
-  const esc = (v: string | number | boolean) => {
-    const s = String(v);
+function toCsv(headers: string[], rows: (string | number | boolean | null | undefined)[][]) {
+  const esc = (v: string | number | boolean | null | undefined) => {
+    const s = v == null ? '' : String(v);
     if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
     return s;
   };

@@ -1,5 +1,5 @@
 import { Controller, Get, Header, Headers, NotFoundException, Param, Query } from '@nestjs/common';
-import { MemoryStore } from '../store/memory.store';
+import { PublicStore } from '../store/public.store';
 import { ReadinessService } from './readiness.service';
 import { SearchService } from './search.service';
 import { publicSitemapPaths, renderSitemapXml } from './sitemap';
@@ -7,7 +7,7 @@ import { publicSitemapPaths, renderSitemapXml } from './sitemap';
 @Controller()
 export class PublicController {
   constructor(
-    private readonly store: MemoryStore,
+    private readonly store: PublicStore,
     private readonly readiness: ReadinessService,
     private readonly searchService: SearchService,
   ) {}
@@ -16,8 +16,8 @@ export class PublicController {
   health() {
     return {
       ok: true,
-      phase: 11,
-      store: (process.env.USE_MEMORY_STORE ?? 'true').toLowerCase() === 'false' ? 'prisma' : 'memory',
+      phase: 12,
+      store: this.store.backend(),
     };
   }
 
@@ -78,8 +78,8 @@ export class PublicController {
 
   @Get('structures/:slug')
   @Header('Cache-Control', 'public, max-age=120, stale-while-revalidate=300')
-  structure(@Param('slug') slug: string) {
-    const row = this.store.getStructureBySlug(slug);
+  async structure(@Param('slug') slug: string) {
+    const row = await this.store.getStructureBySlug(slug);
     if (!row) throw new NotFoundException('Structure not found');
     return row;
   }
@@ -91,8 +91,8 @@ export class PublicController {
   }
 
   @Get('applications/:id')
-  application(@Param('id') id: string) {
-    const row = this.store.getApplication(id);
+  async application(@Param('id') id: string) {
+    const row = await this.store.getApplication(id);
     if (!row) throw new NotFoundException('Application not found');
     return row;
   }
@@ -110,8 +110,8 @@ export class PublicController {
   }
 
   @Get('meetings/:id')
-  meeting(@Param('id') id: string) {
-    const row = this.store.getMeeting(id);
+  async meeting(@Param('id') id: string) {
+    const row = await this.store.getMeeting(id);
     if (!row) throw new NotFoundException('Meeting not found');
     return row;
   }
@@ -129,9 +129,9 @@ export class PublicController {
 
   @Get('board/seats')
   @Header('Cache-Control', 'public, max-age=300, stale-while-revalidate=600')
-  seats() {
+  async seats() {
     return {
-      seats: this.store.listSeats(),
+      seats: await this.store.listSeats(),
       apply: this.store.meta().applyForBoard,
       note: 'Roster terms marked “confirm with Clerk” are placeholders until borough appointment records are mirrored.',
     };

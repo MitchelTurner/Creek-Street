@@ -13,17 +13,7 @@ import {
   structures,
 } from '../data/phase0-seed';
 import { meetingSummaries, structurePhotos } from '../data/phase4-seed';
-
-const PUBLIC_STATUSES = new Set([
-  'FILED',
-  'SCHEDULED',
-  'BOARD_REVIEWED',
-  'FORWARDED',
-  'APPROVED',
-  'APPROVED_W_CONDITIONS',
-  'DENIED',
-  'WITHDRAWN',
-]);
+import { PUBLIC_STATUS_SET as PUBLIC_STATUSES } from './public-statuses';
 
 @Injectable()
 export class MemoryStore {

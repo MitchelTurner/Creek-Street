@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GeoService } from '../geo/geo.service';
 import { MailService } from '../ops/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { PublicStore } from '../store/public.store';
 
 @Injectable()
 export class ReadinessService {
@@ -9,6 +10,7 @@ export class ReadinessService {
     private readonly prisma: PrismaService,
     private readonly geo: GeoService,
     private readonly mail: MailService,
+    private readonly publicStore: PublicStore,
   ) {}
 
   async check() {
@@ -29,6 +31,7 @@ export class ReadinessService {
       api: true,
       memoryStore: memoryDefault,
       prisma: this.prisma.enabled,
+      publicBackend: this.publicStore.backend(),
       redisConfigured,
       postgis: geo.postgis,
       pgvector: geo.pgvector,
@@ -39,7 +42,7 @@ export class ReadinessService {
 
     return {
       ready: checks.api,
-      phase: 11,
+      phase: 12,
       checks,
       noticeMethod: geo.noticeMethod,
       mail,

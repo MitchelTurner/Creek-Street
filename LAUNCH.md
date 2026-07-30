@@ -31,8 +31,9 @@ Phase 3 vars stay blank until MOU/contract.
 - [ ] Railway: set env from `apps/api/.env.example`; deploy monorepo (`railway.toml`)
 - [ ] Web origin proxies `/api` or sets `VITE_*` if split hosts
 - [ ] CDN / edge: public GET routes send `Cache-Control` + `stale-while-revalidate` (see interceptor)
-- [ ] Health: `GET /api/health` → `{ ok: true, phase: 11 }`
-- [ ] Readiness: `GET /api/ready` → `ready: true` (prisma/redis/postgis/mail optional)
+- [ ] Health: `GET /api/health` → `{ ok: true, phase: 12, store: "memory"|"prisma" }`
+- [ ] Readiness: `GET /api/ready` → `ready: true` (prisma/redis/postgis/mail optional); `checks.publicBackend` matches health
+- [ ] Persistence path: `USE_MEMORY_STORE=false`, migrate + seed, confirm health `store: "prisma"` and docket still has no DRAFT
 - [ ] Compliance: `/compliance` checklist visible; staff audit export works after a moderated action
 - [ ] Applicant: export JSON from workspace; delete blocked for demo accounts
 - [ ] Search: `GET /api/search?q=creek` returns hits; `/search` UI works; DRAFT text never appears

@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0–11 (search & performance)
+## Current release: Phase 0–12 (Prisma public store)
 
 See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
@@ -99,6 +99,13 @@ Deliberation does **not** turn on by default. That is intentional.
 - Public lexical search across structures / docket / decisions / meetings / guidance (`GET /api/search?q=`)
 - Search UI at `/search` (deferred query, never indexes DRAFT or unpublished summaries)
 - Route-level `React.lazy` code splitting + Vite `manualChunks` for maplibre / react
+
+**Phase 12 — Prisma public store:**
+
+- `PublicStore` dual-read: Prisma when `USE_MEMORY_STORE=false` + connected `DATABASE_URL`, else memory seed
+- Public + open-data endpoints go through `PublicStore` (DRAFT still hard-filtered; unpublished summaries stay private)
+- Automatic memory fallback if a Prisma query fails
+- Health/ready report `store` / `publicBackend`: `prisma` | `memory`
 
 ### Hard legal constraints (schema + API)
 

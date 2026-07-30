@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0–29 (criterion teaching atlas)
+## Current release: Phase 0–30 (structure civic dossier)
 
 See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
@@ -224,6 +224,13 @@ Deliberation does **not** turn on by default. That is intentional.
 - UI at `/guidance/criteria/:key`; wired from guidance, precedents, decision sheets, and search
 - Empty criteria allowed; unknown keys → 404; never DRAFT / AI body / MemberNotes
 
+**Phase 30 — structure civic dossier:**
+
+- Structure sheet: `GET /api/structures/:slug/sheet` · `…/sheet.pdf` (thin `GET /structures/:slug` kept)
+- NRHP facts → public cases → decisions → criteria → precedents → related meetings
+- `/structures/:slug` UI upgraded with PDF download and deep-links across the teaching loop
+- DRAFT apps filtered; no MemberNotes or AI summary body
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).
@@ -290,6 +297,7 @@ npm run seed
 - Meeting summary sheet: `GET /api/meetings/:id/summary-sheet` · `GET /api/meetings/:id/summary-sheet.pdf`
 - Decision sheet: `GET /api/decisions/:id` · `GET /api/decisions/:id/sheet.pdf`
 - Criterion atlas: `GET /api/guidance/criteria` · `GET /api/guidance/criteria/:key` · `GET /api/guidance/criteria/:key/sheet.pdf`
+- Structure dossier: `GET /api/structures/:slug/sheet` · `GET /api/structures/:slug/sheet.pdf`
 - Ops: staff `GET /api/ops/dashboard` · `GET /api/ops/queue` · `GET /api/ops/aging` · brief `GET /api/ops/brief/preview` · `POST /api/ops/brief/send` · alerts `GET /api/ops/alerts/preview` · `POST /api/ops/alerts/send` · scheduler `GET /api/ops/scheduler` · `POST /api/ops/scheduler/{enable,disable,tick}` · claims `POST /api/ops/queue/:kind/:id/{claim,release}`
 
 Demo accounts (password `creek-demo` for all):

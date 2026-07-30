@@ -17,6 +17,7 @@ import { MeetingAgendaService } from './meeting-agenda.service';
 import { MeetingSummarySheetService } from './meeting-summary-sheet.service';
 import { ReadinessService } from './readiness.service';
 import { SearchService } from './search.service';
+import { StructureSheetService } from './structure-sheet.service';
 import { publicSitemapPaths, renderSitemapXml } from './sitemap';
 
 @Controller()
@@ -30,13 +31,14 @@ export class PublicController {
     private readonly meetingSummaries: MeetingSummarySheetService,
     private readonly decisionSheets: DecisionSheetService,
     private readonly criterionAtlas: CriterionAtlasService,
+    private readonly structureSheets: StructureSheetService,
   ) {}
 
   @Get('health')
   health() {
     return {
       ok: true,
-      phase: 29,
+      phase: 30,
       store: this.store.backend(),
       opsDashboard: true,
       staffQueue: true,
@@ -53,6 +55,7 @@ export class PublicController {
       meetingSummarySheet: true,
       decisionSheet: true,
       criterionAtlas: true,
+      structureSheet: true,
     };
   }
 
@@ -117,6 +120,27 @@ export class PublicController {
     const row = await this.store.getStructureBySlug(slug);
     if (!row) throw new NotFoundException('Structure not found');
     return row;
+  }
+
+  @Get('structures/:slug/sheet')
+  @Header('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
+  structureSheet(@Param('slug') slug: string) {
+    const row = this.structureSheets.sheet(slug);
+    if (!row) throw new NotFoundException('Structure not found');
+    return row;
+  }
+
+  @Get('structures/:slug/sheet.pdf')
+  @Header('Cache-Control', 'public, max-age=60')
+  async structureSheetPdf(@Param('slug') slug: string, @Res() res: Response) {
+    const buf = await this.structureSheets.buildPdf(slug);
+    if (!buf) throw new NotFoundException('Structure not found');
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="creek-street-structure-${slug}.pdf"`,
+    );
+    res.send(buf);
   }
 
   @Get('applications')

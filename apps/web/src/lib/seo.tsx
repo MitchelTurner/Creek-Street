@@ -138,8 +138,9 @@ function matchRoute(pathname: string) {
   }
   if (pathname.startsWith('/structures/')) {
     return {
-      title: `Structure · ${SITE}`,
-      description: 'Creek Street Historic District structure detail from the NRHP inventory.',
+      title: `Structure dossier · ${SITE}`,
+      description:
+        'Civic dossier for a Creek Street structure — inventory, cases, decisions, and meetings.',
     };
   }
   if (pathname.startsWith('/workspace/')) {

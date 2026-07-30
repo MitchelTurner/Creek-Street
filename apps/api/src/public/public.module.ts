@@ -10,6 +10,7 @@ import { OpenDataController } from './opendata.controller';
 import { PublicController } from './public.controller';
 import { ReadinessService } from './readiness.service';
 import { SearchService } from './search.service';
+import { StructureSheetService } from './structure-sheet.service';
 
 @Module({
   imports: [GeoModule, Phase4Module],
@@ -22,6 +23,7 @@ import { SearchService } from './search.service';
     MeetingSummarySheetService,
     DecisionSheetService,
     CriterionAtlasService,
+    StructureSheetService,
   ],
   exports: [
     ReadinessService,
@@ -30,6 +32,7 @@ import { SearchService } from './search.service';
     MeetingSummarySheetService,
     DecisionSheetService,
     CriterionAtlasService,
+    StructureSheetService,
   ],
 })
 export class PublicModule {}

@@ -8,8 +8,10 @@ RUN npm ci
 
 FROM deps AS build
 COPY . .
-RUN npm run build -w @creek-street/api \
-  && npm run prisma:generate -w @creek-street/api
+# Prisma client must exist before nest/tsc — otherwise $queryRawUnsafe and
+# store findMany results are untyped and the Docker build fails.
+RUN npm run prisma:generate -w @creek-street/api \
+  && npm run build -w @creek-street/api
 
 FROM node:22-bookworm-slim AS runner
 WORKDIR /app

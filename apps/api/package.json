@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "nest start --watch",
-    "build": "nest build",
+    "build": "prisma generate && nest build",
     "start": "node dist/main.js",
     "seed": "tsx prisma/seed.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "lint": "tsc --noEmit",
+    "lint": "prisma generate && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
   },

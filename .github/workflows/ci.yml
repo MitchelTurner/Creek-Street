@@ -18,6 +18,8 @@ jobs:
           cache: npm
       - name: Install
         run: npm ci
+      - name: Prisma generate
+        run: npm run prisma:generate -w @creek-street/api
       - name: Lint
         run: npm run lint
       - name: Test (legal / robots / contract gates)

@@ -1,10 +1,18 @@
-import { Controller, Get, Header, Headers, Post, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Header,
+  Headers,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AuditStore } from '../compliance/audit.store';
 import { AuthGuard, CurrentUser } from '../phase2/auth.guard';
 import { Roles, RolesGuard } from '../phase2/roles.guard';
 import { AdminDashboardService } from './admin-dashboard.service';
+import { OpsAgingService } from './ops-aging.service';
 import { OpsBriefService } from './ops-brief.service';
-import { OpsQueueService } from './ops-queue.service';
 
 @Controller('ops')
 @UseGuards(AuthGuard, RolesGuard)
@@ -12,8 +20,8 @@ import { OpsQueueService } from './ops-queue.service';
 export class AdminController {
   constructor(
     private readonly adminDashboard: AdminDashboardService,
-    private readonly opsQueue: OpsQueueService,
     private readonly opsBrief: OpsBriefService,
+    private readonly opsAging: OpsAgingService,
     private readonly audit: AuditStore,
   ) {}
 
@@ -26,7 +34,13 @@ export class AdminController {
   @Get('queue')
   @Header('Cache-Control', 'no-store')
   getQueue() {
-    return this.opsQueue.snapshot();
+    return this.opsAging.enrichedQueue();
+  }
+
+  @Get('aging')
+  @Header('Cache-Control', 'no-store')
+  getAging() {
+    return this.opsAging.snapshot();
   }
 
   @Get('brief/preview')
@@ -68,6 +82,48 @@ export class AdminController {
       summary: `Ops brief sent by ${user.email} to ${result.recipients} staff recipient(s)`,
       meta: { mode: result.mode },
     });
+    return result;
+  }
+
+  @Get('alerts/preview')
+  @Header('Cache-Control', 'no-store')
+  alertPreview(
+    @Headers('host') host?: string,
+    @Headers('x-forwarded-host') xfHost?: string,
+    @Headers('x-forwarded-proto') xfProto?: string,
+  ) {
+    const h = xfHost || host || 'creek-street.local';
+    const proto = xfProto || 'https';
+    const origin = process.env.PUBLIC_WEB_ORIGIN || `${proto}://${h}`;
+    return this.opsAging.previewAlert(origin);
+  }
+
+  @Post('alerts/send')
+  @Header('Cache-Control', 'no-store')
+  async alertSend(
+    @CurrentUser() user: { id: string; email: string; role: string },
+    @Query('force') force?: string,
+    @Headers('host') host?: string,
+    @Headers('x-forwarded-host') xfHost?: string,
+    @Headers('x-forwarded-proto') xfProto?: string,
+  ) {
+    const h = xfHost || host || 'creek-street.local';
+    const proto = xfProto || 'https';
+    const origin = process.env.PUBLIC_WEB_ORIGIN || `${proto}://${h}`;
+    const result = await this.opsAging.sendAlert({
+      origin,
+      force: force === '1' || force === 'true',
+    });
+    if (result.sent) {
+      this.audit.record({
+        action: 'ops.alert.send',
+        actor: user,
+        resourceType: 'ops_alert',
+        resourceId: 'stale_queue',
+        summary: `Stale queue alert sent by ${user.email} to ${result.recipients} staff (${result.staleTotal} stale)`,
+        meta: { mode: result.mode, staleTotal: result.staleTotal },
+      });
+    }
     return result;
   }
 }

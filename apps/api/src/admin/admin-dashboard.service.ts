@@ -7,6 +7,7 @@ import { IngestQueueService } from '../ingest/ingest.queue';
 import { IngestStore } from '../ingest/ingest.store';
 import { MailService } from '../ops/mail.service';
 import { ReadinessService } from '../public/readiness.service';
+import { OpsAgingService } from './ops-aging.service';
 import { OpsBriefService } from './ops-brief.service';
 
 /**
@@ -24,6 +25,7 @@ export class AdminDashboardService {
     private readonly ingestQueue: IngestQueueService,
     private readonly ingestStore: IngestStore,
     private readonly opsBrief: OpsBriefService,
+    private readonly opsAging: OpsAgingService,
   ) {}
 
   async snapshot() {
@@ -31,6 +33,7 @@ export class AdminDashboardService {
     const geo = await this.geo.status();
     const checklist = this.compliance.readinessChecklist();
     const openItems = checklist.items.filter((i) => !i.done);
+    const aging = this.opsAging.snapshot();
 
     return {
       phase: 15,
@@ -45,6 +48,14 @@ export class AdminDashboardService {
       mail: this.mail.status(),
       digest: this.digest.lastDigest(),
       opsBrief: this.opsBrief.lastBrief(),
+      aging: {
+        thresholds: aging.thresholds,
+        staleTotal: aging.counts.staleTotal,
+        stalePhotos: aging.counts.stalePhotos,
+        staleSummaries: aging.counts.staleSummaries,
+        staleIngestRuns: aging.counts.staleIngestRuns,
+        lastAlert: aging.lastAlert,
+      },
       ingest: {
         queue: this.ingestQueue.status(),
         sources: this.ingestStore.listSources().map((s) => ({
@@ -68,6 +79,8 @@ export class AdminDashboardService {
         ingest: '/admin/ingest',
         compliance: '/compliance',
         briefPreview: '/api/ops/brief/preview',
+        alertPreview: '/api/ops/alerts/preview',
+        aging: '/api/ops/aging',
         digestPreview: '/api/digest/preview',
         meetingsIcs: '/api/meetings.ics',
         ready: '/api/ready',

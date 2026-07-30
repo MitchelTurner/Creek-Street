@@ -34,6 +34,25 @@ type OpsDashboard = {
     subject: string;
     preview: string;
   } | null;
+  aging: {
+    thresholds: {
+      photoHours: number;
+      summaryHours: number;
+      ingestHours: number;
+      alertCooldownHours: number;
+    };
+    staleTotal: number;
+    stalePhotos: number;
+    staleSummaries: number;
+    staleIngestRuns: number;
+    lastAlert: {
+      at: string;
+      sent: boolean;
+      reason: string;
+      recipients: number;
+      staleTotal: number;
+    } | null;
+  };
   ingest: {
     queue: { mode: string; redisConfigured: boolean; queue: string };
     sources: Array<{
@@ -77,6 +96,8 @@ export function OpsDashboardPage() {
   const [briefBusy, setBriefBusy] = useState(false);
   const [briefPreview, setBriefPreview] = useState<string | null>(null);
   const [briefNote, setBriefNote] = useState<string | null>(null);
+  const [alertBusy, setAlertBusy] = useState(false);
+  const [alertNote, setAlertNote] = useState<string | null>(null);
 
   const isStaff = Boolean(user && (user.role === 'STAFF' || user.role === 'ADMIN'));
 
@@ -144,6 +165,34 @@ export function OpsDashboardPage() {
     }
   }
 
+  async function sendStaleAlert(force = false) {
+    setAlertBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/ops/alerts/send${force ? '?force=1' : ''}`, {
+        method: 'POST',
+        headers: authHeaders(),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const json = (await res.json()) as {
+        sent: boolean;
+        reason: string;
+        recipients: number;
+        staleTotal: number;
+      };
+      setAlertNote(
+        json.sent
+          ? `Stale alert sent to ${json.recipients} staff (${json.staleTotal} stale).`
+          : `Alert not sent (${json.reason}).`,
+      );
+      reload();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setAlertBusy(false);
+    }
+  }
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 md:px-6">
       <PageHeader
@@ -176,6 +225,14 @@ export function OpsDashboardPage() {
         >
           Send ops brief
         </button>
+        <button
+          type="button"
+          onClick={() => void sendStaleAlert(false)}
+          disabled={alertBusy}
+          className="rounded-md border border-ink/15 px-4 py-2 font-semibold text-ink disabled:opacity-50"
+        >
+          Send stale alert
+        </button>
         <Link to="/admin/queue" className="rounded-md border border-ink/15 px-4 py-2 font-medium text-ink/80">
           Work queue
         </Link>
@@ -189,6 +246,7 @@ export function OpsDashboardPage() {
 
       {error ? <p className="mb-4 text-sm text-red-700">{error}</p> : null}
       {briefNote ? <p className="mb-4 text-sm text-ink/70">{briefNote}</p> : null}
+      {alertNote ? <p className="mb-4 text-sm text-ink/70">{alertNote}</p> : null}
       {loading && !data ? <p className="text-sm text-ink/50">Loading dashboard…</p> : null}
 
       {data ? (
@@ -196,6 +254,34 @@ export function OpsDashboardPage() {
           <p className="text-xs uppercase tracking-[0.14em] text-ink/45">
             Phase {data.phase} · generated {new Date(data.at).toLocaleString()}
           </p>
+
+          <section className="space-y-3">
+            <h2 className="font-display text-2xl text-ink">Queue aging</h2>
+            <p className="text-sm text-ink/65">
+              Stale totals use env thresholds (defaults 48h photos / 24h summaries / 12h failed
+              ingest). Alerts skip when nothing is stale or cooldown is active.
+            </p>
+            <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <Stat label="Stale total" value={String(data.aging.staleTotal)} />
+              <Stat label="Stale photos" value={String(data.aging.stalePhotos)} />
+              <Stat label="Stale summaries" value={String(data.aging.staleSummaries)} />
+              <Stat label="Stale ingest" value={String(data.aging.staleIngestRuns)} />
+            </dl>
+            <p className="text-sm text-ink/55">
+              Thresholds: {data.aging.thresholds.photoHours}h / {data.aging.thresholds.summaryHours}h
+              / {data.aging.thresholds.ingestHours}h · cooldown{' '}
+              {data.aging.thresholds.alertCooldownHours}h
+            </p>
+            {data.aging.lastAlert?.sent ? (
+              <p className="text-sm text-ink/70">
+                Last alert {new Date(data.aging.lastAlert.at).toLocaleString()} ·{' '}
+                {data.aging.lastAlert.recipients} recipient(s) · {data.aging.lastAlert.staleTotal}{' '}
+                stale
+              </p>
+            ) : (
+              <p className="text-sm text-ink/70">No stale alert sent yet this process.</p>
+            )}
+          </section>
 
           <section className="space-y-3">
             <h2 className="font-display text-2xl text-ink">Staff ops brief</h2>

@@ -121,7 +121,8 @@ export class ApplicantStore {
       },
     );
 
-    // Demo pending photo for Phase 16 staff queue smoke tests
+    // Demo pending photo for Phase 16/18 staff queue + aging smoke tests (~72h old)
+    const stalePhotoAt = new Date(Date.now() - 72 * 3600000).toISOString();
     this.photos.push({
       id: 'photo_pending_demo',
       structureId: 'struct_dollys',
@@ -132,7 +133,7 @@ export class ApplicantStore {
       submittedByUserId: 'user_demo',
       submitterEmail: 'applicant@example.com',
       moderationStatus: 'PENDING',
-      createdAt: now,
+      createdAt: stalePhotoAt,
       reviewedAt: null,
       reviewedBy: null,
     });

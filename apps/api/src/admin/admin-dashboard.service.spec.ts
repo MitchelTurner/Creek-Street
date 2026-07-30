@@ -32,6 +32,23 @@ describe('AdminDashboardService', () => {
         listRuns: () => [],
       } as never,
       { lastBrief: () => null } as never,
+      {
+        snapshot: () => ({
+          thresholds: {
+            photoHours: 48,
+            summaryHours: 24,
+            ingestHours: 12,
+            alertCooldownHours: 6,
+          },
+          counts: {
+            staleTotal: 2,
+            stalePhotos: 1,
+            staleSummaries: 1,
+            staleIngestRuns: 0,
+          },
+          lastAlert: null,
+        }),
+      } as never,
     );
 
     const snap = await svc.snapshot();
@@ -41,7 +58,9 @@ describe('AdminDashboardService', () => {
     expect(snap.links.ingest).toBe('/admin/ingest');
     expect(snap.links.queue).toBe('/admin/queue');
     expect(snap.links.briefPreview).toBe('/api/ops/brief/preview');
+    expect(snap.links.alertPreview).toBe('/api/ops/alerts/preview');
     expect(snap.mail.mode).toBe('stub');
     expect(snap.opsBrief).toBeNull();
+    expect(snap.aging.staleTotal).toBe(2);
   });
 });

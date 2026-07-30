@@ -31,7 +31,7 @@ Phase 3 vars stay blank until MOU/contract.
 - [ ] Railway: set env from `apps/api/.env.example`; deploy monorepo (`railway.toml`)
 - [ ] Web origin proxies `/api` or sets `VITE_*` if split hosts
 - [ ] CDN / edge: public GET routes send `Cache-Control` + `stale-while-revalidate` (see interceptor)
-- [ ] Health: `GET /api/health` → `{ ok: true, phase: 17, store: "memory"|"prisma" }`
+- [ ] Health: `GET /api/health` → `{ ok: true, phase: 18, store: "memory"|"prisma" }`
 - [ ] Readiness: `GET /api/ready` → `ready: true` (prisma/redis/postgis/mail optional); `checks.publicBackend` matches health
 - [ ] Persistence path: `USE_MEMORY_STORE=false`, migrate + seed, confirm health `store: "prisma"` and docket still has no DRAFT
 - [ ] Packet: `GET /api/meetings/mtg_2026_08/packet.pdf` returns `%PDF`; board download logs `meeting.packet_download`
@@ -41,6 +41,7 @@ Phase 3 vars stay blank until MOU/contract.
 - [ ] Ops: staff `GET /api/ops/dashboard` returns snapshot; `/admin/ops` loads for `staff@example.com`
 - [ ] Queue: staff `GET /api/ops/queue` includes pending summary draft; `/admin/queue` can approve demo photo and review summary
 - [ ] Ops brief: staff `GET /api/ops/brief/preview` omits AI summary body; `POST /api/ops/brief/send` audits `ops.brief.send`
+- [ ] Aging: `GET /api/ops/aging` shows stale demo photo/summary/ingest; stale alert omits AI body; cooldown blocks repeat send
 - [ ] Compliance: `/compliance` checklist visible; staff audit export works after a moderated action
 - [ ] Applicant: export JSON from workspace; delete blocked for demo accounts
 - [ ] Search: `GET /api/search?q=creek` returns hits; `/search` UI works; DRAFT text never appears

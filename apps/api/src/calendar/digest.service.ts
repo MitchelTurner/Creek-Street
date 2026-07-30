@@ -75,7 +75,7 @@ export class DigestService {
       ...(upcoming.length
         ? upcoming.map(
             (m) =>
-              `• ${new Date(m.scheduledAt).toLocaleString('en-US', { timeZone: 'America/Juneau' })} — ${m.location}`,
+              `• ${new Date(m.scheduledAt).toLocaleString('en-US', { timeZone: 'America/Juneau' })} — ${m.location} — ${base}/meetings/${m.id}`,
           )
         : ['• (none scheduled in mirror)']),
       '',

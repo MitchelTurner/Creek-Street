@@ -20,6 +20,7 @@ describe('DigestService', () => {
     expect(body).toContain('weekly digest');
     expect(body).toContain('https://example.test/api/meetings.ics');
     expect(body).toContain('https://example.test/docket/app_sample_pending');
+    expect(body).toContain('https://example.test/meetings/mtg_2026_08');
     expect(body.toLowerCase()).not.toContain('must never be public');
     expect(body).not.toContain('app_sample_draft');
   });

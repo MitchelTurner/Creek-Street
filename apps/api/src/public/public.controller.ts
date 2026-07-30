@@ -11,6 +11,7 @@ import {
 import type { Response } from 'express';
 import { PublicStore } from '../store/public.store';
 import { CaseBriefService } from './case-brief.service';
+import { MeetingAgendaService } from './meeting-agenda.service';
 import { ReadinessService } from './readiness.service';
 import { SearchService } from './search.service';
 import { publicSitemapPaths, renderSitemapXml } from './sitemap';
@@ -22,13 +23,14 @@ export class PublicController {
     private readonly readiness: ReadinessService,
     private readonly searchService: SearchService,
     private readonly caseBriefs: CaseBriefService,
+    private readonly meetingAgendas: MeetingAgendaService,
   ) {}
 
   @Get('health')
   health() {
     return {
       ok: true,
-      phase: 25,
+      phase: 26,
       store: this.store.backend(),
       opsDashboard: true,
       staffQueue: true,
@@ -41,6 +43,7 @@ export class PublicController {
       publicOutcomesDigest: true,
       caseBrief: true,
       caseBriefDigest: true,
+      meetingAgenda: true,
     };
   }
 
@@ -158,6 +161,27 @@ export class PublicController {
     const row = await this.store.getMeeting(id);
     if (!row) throw new NotFoundException('Meeting not found');
     return row;
+  }
+
+  @Get('meetings/:id/agenda')
+  @Header('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
+  meetingAgenda(@Param('id') id: string) {
+    const row = this.meetingAgendas.agenda(id);
+    if (!row) throw new NotFoundException('Meeting not found');
+    return row;
+  }
+
+  @Get('meetings/:id/agenda.pdf')
+  @Header('Cache-Control', 'public, max-age=60')
+  async meetingAgendaPdf(@Param('id') id: string, @Res() res: Response) {
+    const buf = await this.meetingAgendas.buildPdf(id);
+    if (!buf) throw new NotFoundException('Meeting not found');
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="creek-street-meeting-agenda-${id}.pdf"`,
+    );
+    res.send(buf);
   }
 
   @Get('guidance')

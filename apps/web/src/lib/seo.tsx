@@ -160,6 +160,12 @@ function matchRoute(pathname: string) {
       description: 'Mirrored board meeting decisions and votes — public records only.',
     };
   }
+  if (pathname.startsWith('/meetings/')) {
+    return {
+      title: `Meeting agenda · ${SITE}`,
+      description: 'Mirrored Design Review Board agenda with public case links.',
+    };
+  }
   if (pathname.startsWith('/official/meetings/') && pathname.endsWith('/outcomes')) {
     return {
       title: `Board meeting outcomes · ${SITE}`,

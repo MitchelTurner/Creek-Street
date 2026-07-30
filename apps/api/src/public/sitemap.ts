@@ -29,13 +29,21 @@ export function publicSitemapPaths() {
   const visitPaths = structures
     .filter((s) => s.nrhpContributing)
     .map((s) => `/visit/${s.publicSlug}`);
+  const meetingPages = meetings.map((m) => `/meetings/${m.id}`);
   const heldOutcomes = meetings
     .filter((m) => m.status === 'HELD')
     .map((m) => `/meetings/${m.id}/outcomes`);
   const caseBriefs = applications
     .filter((a) => PUBLIC_STATUS_SET.has(a.status))
     .map((a) => `/docket/${a.id}`);
-  return [...STATIC_PATHS, ...structurePaths, ...visitPaths, ...heldOutcomes, ...caseBriefs];
+  return [
+    ...STATIC_PATHS,
+    ...structurePaths,
+    ...visitPaths,
+    ...meetingPages,
+    ...heldOutcomes,
+    ...caseBriefs,
+  ];
 }
 
 export function renderSitemapXml(origin: string) {

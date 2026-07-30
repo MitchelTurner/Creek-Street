@@ -117,7 +117,7 @@ export class SearchService {
           id: m.id,
           title: `Meeting ${new Date(m.scheduledAt).toLocaleDateString('en-US', { timeZone: 'America/Juneau' })}`,
           snippet: truncate(m.agendaItems.map((i) => i.title).join('; ') || m.location),
-          href: `/meetings`,
+          href: `/meetings/${m.id}`,
           score,
         });
       }

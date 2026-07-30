@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
 import { SourceLink } from '../components/SourceLink';
+import { statusLabel } from '../lib/api';
 
-type Outcomes = {
+type Agenda = {
   phase: number;
   meeting: {
     id: string;
@@ -11,6 +12,7 @@ type Outcomes = {
     location: string;
     status: string;
     quorumMet: boolean | null;
+    agendaUrl: string | null;
     minutesUrl: string | null;
     videoUrl: string | null;
   };
@@ -23,6 +25,7 @@ type Outcomes = {
       projectType: string;
       description: string;
       status: string;
+      caseBriefUi: string;
     } | null;
     structure: {
       commonName: string | null;
@@ -30,31 +33,29 @@ type Outcomes = {
       publicSlug: string;
     } | null;
     decision: {
-      id: string;
       recommendation: string;
       conditions: string | null;
       voteFor: number | null;
       voteAgainst: number | null;
       finalOutcome: string | null;
-      decidedAt: string | null;
-      sourceDocUrl: string;
     } | null;
     note: string | null;
   }>;
+  outcomes: { ui: string; pdf: string } | null;
   disclaimer: string;
 };
 
-export function MeetingOutcomesPage() {
+export function MeetingAgendaPage() {
   const { id = '' } = useParams();
-  const [data, setData] = useState<Outcomes | null>(null);
+  const [data, setData] = useState<Agenda | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
-    fetch(`/api/meetings/${id}/outcomes`)
+    fetch(`/api/meetings/${id}/agenda`)
       .then(async (r) => {
         if (!r.ok) throw new Error(await r.text());
-        return r.json() as Promise<Outcomes>;
+        return r.json() as Promise<Agenda>;
       })
       .then(setData)
       .catch((e: Error) => setError(e.message));
@@ -63,24 +64,18 @@ export function MeetingOutcomesPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 md:px-6">
       <PageHeader
-        title="Meeting outcomes"
-        lede="Mirrored decisions and votes for a held meeting — public record facts only. Not a substitute for Clerk minutes."
+        title="Meeting agenda"
+        lede="Mirrored agenda items with public case links. Not a substitute for Clerk agendas or minutes."
       />
 
-      <p className="mb-6 flex flex-wrap gap-4 text-sm">
+      <p className="mb-6 text-sm">
         <Link to="/meetings" className="font-semibold text-creek underline">
           ← Meeting calendar
-        </Link>
-        <Link to={`/meetings/${id}`} className="font-semibold text-creek underline">
-          Agenda brief
         </Link>
       </p>
 
       {error ? <p className="mb-4 text-sm text-red-700">{error}</p> : null}
-
-      {!data && !error ? (
-        <p className="text-sm text-ink/50">Loading outcomes…</p>
-      ) : null}
+      {!data && !error ? <p className="text-sm text-ink/50">Loading agenda…</p> : null}
 
       {data ? (
         <div className="space-y-8">
@@ -95,7 +90,7 @@ export function MeetingOutcomesPage() {
               · {data.meeting.location}
             </p>
             <p className="text-sm text-ink/55">
-              {data.meeting.status}
+              {data.meeting.status.replace(/_/g, ' ')}
               {data.meeting.quorumMet === true ? ' · quorum met' : ''}
               {data.meeting.quorumMet === false ? ' · quorum failed' : ''}
             </p>
@@ -105,15 +100,15 @@ export function MeetingOutcomesPage() {
                 {data.summary.reviewedAt
                   ? ` · reviewed ${new Date(data.summary.reviewedAt).toLocaleDateString()}`
                   : ''}
-                ). Summary text is not shown on this outcomes sheet.
+                ). Summary text is not shown on this agenda sheet.
               </p>
             ) : null}
             <div className="flex flex-wrap gap-4 pt-1 text-sm">
               <a
-                href={`/api/meetings/${id}/outcomes.pdf`}
+                href={`/api/meetings/${id}/agenda.pdf`}
                 className="font-semibold text-creek underline underline-offset-4"
               >
-                Download outcomes PDF
+                Download agenda PDF
               </a>
               <a
                 href={`/api/meetings/${id}/packet.pdf`}
@@ -121,6 +116,17 @@ export function MeetingOutcomesPage() {
               >
                 Mirror packet PDF
               </a>
+              {data.outcomes ? (
+                <Link
+                  to={data.outcomes.ui}
+                  className="font-semibold text-creek underline underline-offset-4"
+                >
+                  View outcomes
+                </Link>
+              ) : null}
+              {data.meeting.agendaUrl ? (
+                <SourceLink href={data.meeting.agendaUrl} label="Clerk agenda" />
+              ) : null}
               {data.meeting.minutesUrl ? (
                 <SourceLink href={data.meeting.minutesUrl} label="Minutes" />
               ) : null}
@@ -131,7 +137,7 @@ export function MeetingOutcomesPage() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="font-display text-2xl text-ink">Agenda outcomes</h2>
+            <h2 className="font-display text-2xl text-ink">Agenda items</h2>
             <ul className="space-y-4">
               {data.items.map((item) => (
                 <li key={item.agendaItem.id} className="border-b border-ink/10 pb-4">
@@ -143,12 +149,12 @@ export function MeetingOutcomesPage() {
                       <p className="mt-2 text-sm text-ink/70">
                         <Link
                           className="font-semibold text-creek underline"
-                          to={`/docket/${item.application.id}`}
+                          to={item.application.caseBriefUi}
                         >
                           {item.application.caseNumber ?? item.application.id}
                         </Link>{' '}
                         · {item.application.projectType.replace(/_/g, ' ')} ·{' '}
-                        {item.application.status}
+                        {statusLabel(item.application.status)}
                       </p>
                       <p className="mt-1 text-sm text-ink/65">
                         {item.structure?.publicSlug ? (
@@ -162,38 +168,16 @@ export function MeetingOutcomesPage() {
                           (item.structure?.commonName ?? item.structure?.addressLabel ?? '—')
                         )}
                       </p>
+                      <p className="mt-2 text-sm leading-relaxed text-ink/70">
+                        {item.application.description}
+                      </p>
                       {item.decision ? (
-                        <div className="mt-3 space-y-1 text-sm text-ink/75">
-                          <p>
-                            <span className="font-semibold text-ink">Recommendation:</span>{' '}
-                            {item.decision.recommendation}
-                          </p>
-                          {item.decision.conditions ? (
-                            <p>
-                              <span className="font-semibold text-ink">Conditions:</span>{' '}
-                              {item.decision.conditions}
-                            </p>
-                          ) : null}
-                          <p>
-                            Vote {item.decision.voteFor ?? '—'}–{item.decision.voteAgainst ?? '—'} ·{' '}
-                            {item.decision.finalOutcome ?? '—'}
-                          </p>
-                          {item.decision.sourceDocUrl ? (
-                            <p>
-                              <a
-                                className="underline"
-                                href={item.decision.sourceDocUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                Source document
-                              </a>
-                            </p>
-                          ) : null}
-                        </div>
-                      ) : (
-                        <p className="mt-2 text-sm text-ink/55">No mirrored decision for this item.</p>
-                      )}
+                        <p className="mt-2 text-sm text-ink/60">
+                          Mirrored decision: vote {item.decision.voteFor ?? '—'}–
+                          {item.decision.voteAgainst ?? '—'} ·{' '}
+                          {item.decision.finalOutcome ?? '—'}
+                        </p>
+                      ) : null}
                     </>
                   ) : (
                     <p className="mt-2 text-sm text-ink/55">{item.note}</p>

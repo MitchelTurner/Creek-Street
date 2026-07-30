@@ -39,6 +39,7 @@ type CaseBrief = {
     scheduledAt: string;
     location: string;
     status: string;
+    agendaUi?: string;
     outcomes: { ui: string; pdf: string } | null;
     packetPdf: string;
     minutesUrl: string | null;
@@ -190,6 +191,12 @@ export function CaseBriefPage() {
                       </p>
                     </div>
                     <div className="flex flex-wrap gap-3 text-xs">
+                      <Link
+                        to={m.agendaUi ?? `/meetings/${m.id}`}
+                        className="font-semibold text-creek underline underline-offset-4"
+                      >
+                        Agenda
+                      </Link>
                       {m.outcomes ? (
                         <Link
                           to={m.outcomes.ui}

@@ -32,7 +32,14 @@ export function MeetingsPage() {
         {rows.map((m) => (
           <li key={m.id} className="grid gap-3 py-5 md:grid-cols-[180px_1fr]">
             <div>
-              <p className="font-display text-xl font-semibold">{formatDate(m.scheduledAt)}</p>
+              <p className="font-display text-xl font-semibold">
+                <Link
+                  to={`/meetings/${m.id}`}
+                  className="text-ink underline-offset-4 hover:text-creek hover:underline"
+                >
+                  {formatDate(m.scheduledAt)}
+                </Link>
+              </p>
               <p className="mt-1 text-xs uppercase tracking-wide text-ink/45">{m.status.replace(/_/g, ' ')}</p>
               {m.quorumMet === false && (
                 <p className="mt-2 text-xs font-semibold text-cedar-deep">Failed quorum</p>
@@ -48,6 +55,12 @@ export function MeetingsPage() {
                 ))}
               </ul>
               <div className="mt-3 flex flex-wrap gap-4 text-xs">
+                <Link
+                  to={`/meetings/${m.id}`}
+                  className="font-semibold text-creek underline underline-offset-4"
+                >
+                  Open agenda
+                </Link>
                 <a
                   href={`/api/meetings/${m.id}/packet.pdf`}
                   className="font-semibold text-creek underline underline-offset-4"

@@ -31,4 +31,10 @@ describe('SearchService', () => {
     const appHit = res.hits.find((h) => h.type === 'application' && h.id === 'app_sample_sign');
     expect(appHit?.href).toBe('/docket/app_sample_sign');
   });
+
+  it('deep-links meetings to agenda pages', () => {
+    const res = search.search('Assembly Chambers');
+    const hit = res.hits.find((h) => h.type === 'meeting' && h.id === 'mtg_2026_08');
+    expect(hit?.href).toBe('/meetings/mtg_2026_08');
+  });
 });

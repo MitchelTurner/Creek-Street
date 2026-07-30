@@ -49,6 +49,7 @@ export class CaseBriefService {
         agendaUrl: m.agendaUrl,
         minutesUrl: m.minutesUrl,
         videoUrl: m.videoUrl,
+        agendaUi: `/meetings/${m.id}`,
         outcomes:
           m.status === 'HELD'
             ? {

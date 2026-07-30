@@ -10,6 +10,8 @@ describe('public sitemap', () => {
     expect(paths).not.toContain('/docket/app_sample_draft');
     expect(paths).toContain('/meetings/mtg_2026_08');
     expect(paths).toContain('/meetings/mtg_2023_04');
+    expect(paths).toContain('/meetings/mtg_2023_04/summary');
+    expect(paths).not.toContain('/meetings/mtg_2024_02/summary');
     expect(paths).toContain('/visit');
     expect(paths.some((p) => p.startsWith('/structures/'))).toBe(true);
     expect(paths.some((p) => p.startsWith('/workspace'))).toBe(false);

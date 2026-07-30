@@ -1,4 +1,5 @@
 import { applications, meetings, structures } from '../data/phase0-seed';
+import { meetingSummaries } from '../data/phase4-seed';
 import { PUBLIC_STATUS_SET } from '../store/public-statuses';
 
 const STATIC_PATHS = [
@@ -33,6 +34,9 @@ export function publicSitemapPaths() {
   const heldOutcomes = meetings
     .filter((m) => m.status === 'HELD')
     .map((m) => `/meetings/${m.id}/outcomes`);
+  const publishedSummaries = meetingSummaries
+    .filter((s) => s.isPublished && s.reviewedAt)
+    .map((s) => `/meetings/${s.meetingId}/summary`);
   const caseBriefs = applications
     .filter((a) => PUBLIC_STATUS_SET.has(a.status))
     .map((a) => `/docket/${a.id}`);
@@ -42,6 +46,7 @@ export function publicSitemapPaths() {
     ...visitPaths,
     ...meetingPages,
     ...heldOutcomes,
+    ...publishedSummaries,
     ...caseBriefs,
   ];
 }

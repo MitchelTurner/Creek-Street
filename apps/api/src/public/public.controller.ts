@@ -12,6 +12,7 @@ import type { Response } from 'express';
 import { PublicStore } from '../store/public.store';
 import { CaseBriefService } from './case-brief.service';
 import { MeetingAgendaService } from './meeting-agenda.service';
+import { MeetingSummarySheetService } from './meeting-summary-sheet.service';
 import { ReadinessService } from './readiness.service';
 import { SearchService } from './search.service';
 import { publicSitemapPaths, renderSitemapXml } from './sitemap';
@@ -24,13 +25,14 @@ export class PublicController {
     private readonly searchService: SearchService,
     private readonly caseBriefs: CaseBriefService,
     private readonly meetingAgendas: MeetingAgendaService,
+    private readonly meetingSummaries: MeetingSummarySheetService,
   ) {}
 
   @Get('health')
   health() {
     return {
       ok: true,
-      phase: 26,
+      phase: 27,
       store: this.store.backend(),
       opsDashboard: true,
       staffQueue: true,
@@ -44,6 +46,7 @@ export class PublicController {
       caseBrief: true,
       caseBriefDigest: true,
       meetingAgenda: true,
+      meetingSummarySheet: true,
     };
   }
 
@@ -180,6 +183,27 @@ export class PublicController {
     res.setHeader(
       'Content-Disposition',
       `attachment; filename="creek-street-meeting-agenda-${id}.pdf"`,
+    );
+    res.send(buf);
+  }
+
+  @Get('meetings/:id/summary-sheet')
+  @Header('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
+  meetingSummarySheet(@Param('id') id: string) {
+    const row = this.meetingSummaries.sheet(id);
+    if (!row) throw new NotFoundException('Published summary not found');
+    return row;
+  }
+
+  @Get('meetings/:id/summary-sheet.pdf')
+  @Header('Cache-Control', 'public, max-age=60')
+  async meetingSummarySheetPdf(@Param('id') id: string, @Res() res: Response) {
+    const buf = await this.meetingSummaries.buildPdf(id);
+    if (!buf) throw new NotFoundException('Published summary not found');
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="creek-street-meeting-summary-${id}.pdf"`,
     );
     res.send(buf);
   }

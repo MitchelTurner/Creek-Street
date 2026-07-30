@@ -74,6 +74,11 @@ export function MeetingOutcomesPage() {
         <Link to={`/meetings/${id}`} className="font-semibold text-creek underline">
           Agenda brief
         </Link>
+        {data?.summary ? (
+          <Link to={`/meetings/${id}/summary`} className="font-semibold text-creek underline">
+            Summary sheet
+          </Link>
+        ) : null}
       </p>
 
       {error ? <p className="mb-4 text-sm text-red-700">{error}</p> : null}

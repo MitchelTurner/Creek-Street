@@ -39,6 +39,9 @@ const MeetingAgendaPage = lazy(() =>
 const MeetingOutcomesPage = lazy(() =>
   import('./pages/MeetingOutcomesPage').then((m) => ({ default: m.MeetingOutcomesPage })),
 );
+const MeetingSummaryPage = lazy(() =>
+  import('./pages/MeetingSummaryPage').then((m) => ({ default: m.MeetingSummaryPage })),
+);
 const NoticePage = lazy(() => import('./pages/NoticePage').then((m) => ({ default: m.NoticePage })));
 const OfficialApplicationPage = lazy(() =>
   import('./pages/OfficialApplicationPage').then((m) => ({ default: m.OfficialApplicationPage })),
@@ -138,6 +141,7 @@ export default function App() {
             <Route path="decisions" element={<DecisionsPage />} />
             <Route path="meetings" element={<MeetingsPage />} />
             <Route path="meetings/:id/outcomes" element={<MeetingOutcomesPage />} />
+            <Route path="meetings/:id/summary" element={<MeetingSummaryPage />} />
             <Route path="meetings/:id" element={<MeetingAgendaPage />} />
             <Route path="guidance" element={<GuidancePage />} />
             <Route path="board" element={<BoardPage />} />

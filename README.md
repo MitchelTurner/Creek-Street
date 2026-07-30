@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0–26 (meeting agenda brief)
+## Current release: Phase 0–27 (meeting summary sheet)
 
 See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
@@ -203,6 +203,13 @@ Deliberation does **not** turn on by default. That is intentional.
 - UI at `/meetings/:id`; wired from calendar, search, case briefs, and outcomes
 - Sitemap + weekly digest deep-link upcoming meetings; AI summary metadata only
 
+**Phase 27 — meeting summary sheet:**
+
+- Published summary sheet: `GET /api/meetings/:id/summary-sheet` · `…/summary-sheet.pdf` (404 if unpublished)
+- Body + per-item text only after human review; deep-links to `/docket/:id`
+- UI at `/meetings/:id/summary`; linked from calendar, agenda, and outcomes when published
+- Sitemap includes published summary paths only; soft probe `GET /api/meetings/:id/summary` unchanged
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).
@@ -266,6 +273,7 @@ npm run seed
 - Outcomes digest: `GET /api/digest/outcomes/:meetingId/preview` · staff `POST /api/digest/outcomes/:meetingId/send`
 - Case digest: `GET /api/digest/case/:applicationId/preview` · staff `POST /api/digest/case/:applicationId/send`
 - Meeting agenda: `GET /api/meetings/:id/agenda` · `GET /api/meetings/:id/agenda.pdf`
+- Meeting summary sheet: `GET /api/meetings/:id/summary-sheet` · `GET /api/meetings/:id/summary-sheet.pdf`
 - Ops: staff `GET /api/ops/dashboard` · `GET /api/ops/queue` · `GET /api/ops/aging` · brief `GET /api/ops/brief/preview` · `POST /api/ops/brief/send` · alerts `GET /api/ops/alerts/preview` · `POST /api/ops/alerts/send` · scheduler `GET /api/ops/scheduler` · `POST /api/ops/scheduler/{enable,disable,tick}` · claims `POST /api/ops/queue/:kind/:id/{claim,release}`
 
 Demo accounts (password `creek-demo` for all):

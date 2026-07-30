@@ -2,6 +2,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 import { RouteSeo } from '../lib/seo';
 
 const links = [
+  { to: '/search', label: 'Search' },
   { to: '/visit', label: 'Visit' },
   { to: '/construction', label: 'Build window' },
   { to: '/workspace', label: 'Workspace' },

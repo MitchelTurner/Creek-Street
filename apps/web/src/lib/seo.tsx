@@ -99,6 +99,11 @@ const ROUTES: Record<string, { title: string; description: string }> = {
     description:
       'Public Records Act posture, retention hooks, and processor-agreement checklist for the Creek Street hub.',
   },
+  '/search': {
+    title: `Search · ${SITE}`,
+    description:
+      'Search the Creek Street public mirror — structures, docket, decisions, meetings, and HD guidance.',
+  },
 };
 
 function upsertMeta(attr: 'name' | 'property', key: string, content: string) {

@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0–10 (compliance & audit)
+## Current release: Phase 0–11 (search & performance)
 
 See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
@@ -94,6 +94,12 @@ Deliberation does **not** turn on by default. That is intentional.
 - Public retention / PRA posture + processor readiness checklist (`/compliance`)
 - MemberNotes remain author-scoped export from the board portal
 
+**Phase 11 — search & performance:**
+
+- Public lexical search across structures / docket / decisions / meetings / guidance (`GET /api/search?q=`)
+- Search UI at `/search` (deferred query, never indexes DRAFT or unpublished summaries)
+- Route-level `React.lazy` code splitting + Vite `manualChunks` for maplibre / react
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).
@@ -147,6 +153,7 @@ npm run seed
 - Ops: `GET /api/ready` · `GET /api/sitemap.xml` · `GET /api/sitemap/paths`
 - Compliance: `GET /api/compliance/readiness` · `GET /api/compliance/retention` · staff `GET /api/compliance/audit`
 - Applicant: `GET /api/applicant/export` · `DELETE /api/applicant/account`
+- Search: `GET /api/search?q=`
 
 Demo accounts (password `creek-demo` for all):
 

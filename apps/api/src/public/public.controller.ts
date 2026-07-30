@@ -1,6 +1,7 @@
 import { Controller, Get, Header, Headers, NotFoundException, Param, Query } from '@nestjs/common';
 import { MemoryStore } from '../store/memory.store';
 import { ReadinessService } from './readiness.service';
+import { SearchService } from './search.service';
 import { publicSitemapPaths, renderSitemapXml } from './sitemap';
 
 @Controller()
@@ -8,14 +9,24 @@ export class PublicController {
   constructor(
     private readonly store: MemoryStore,
     private readonly readiness: ReadinessService,
+    private readonly searchService: SearchService,
   ) {}
 
   @Get('health')
   health() {
     return {
       ok: true,
-      phase: 10,
+      phase: 11,
       store: (process.env.USE_MEMORY_STORE ?? 'true').toLowerCase() === 'false' ? 'prisma' : 'memory',
+    };
+  }
+
+  @Get('search')
+  @Header('Cache-Control', 'public, max-age=30, stale-while-revalidate=60')
+  search(@Query('q') q?: string, @Query('limit') limit?: string) {
+    return {
+      ...this.searchService.search(q ?? '', limit ? Number(limit) : 20),
+      note: 'Public mirror only — DRAFT applications and unpublished summaries are never indexed.',
     };
   }
 

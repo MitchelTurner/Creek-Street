@@ -62,10 +62,10 @@ export function HomePage() {
           </p>
           <div className="animate-rise-delay-2 mt-8 flex flex-wrap gap-3">
             <Link
-              to="/workspace"
+              to="/search"
               className="rounded-md bg-board px-5 py-3 text-sm font-semibold text-ink transition hover:bg-foam"
             >
-              Applicant workspace
+              Search the mirror
             </Link>
             <Link
               to="/triage"

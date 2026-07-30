@@ -2,6 +2,7 @@ import { structures } from '../data/phase0-seed';
 
 const STATIC_PATHS = [
   '/',
+  '/search',
   '/visit',
   '/map',
   '/structures',

@@ -10,10 +10,11 @@ import { MeetingOutcomesService } from './meeting-outcomes.service';
 import { MeetingPrepService } from './meeting-prep.service';
 import { Phase3Controller } from './phase3.controller';
 import { Phase3Service } from './phase3.service';
+import { PublicMeetingOutcomesController } from './public-meeting-outcomes.controller';
 
 @Module({
   imports: [Phase1Module, Phase2Module, Phase4Module],
-  controllers: [Phase3Controller],
+  controllers: [Phase3Controller, PublicMeetingOutcomesController],
   providers: [
     ContractGate,
     BoardStore,
@@ -23,6 +24,6 @@ import { Phase3Service } from './phase3.service';
     RolesGuard,
     Reflector,
   ],
-  exports: [ContractGate],
+  exports: [ContractGate, MeetingOutcomesService],
 })
 export class Phase3Module {}

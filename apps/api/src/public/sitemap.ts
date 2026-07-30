@@ -1,4 +1,4 @@
-import { structures } from '../data/phase0-seed';
+import { meetings, structures } from '../data/phase0-seed';
 
 const STATIC_PATHS = [
   '/',
@@ -28,7 +28,10 @@ export function publicSitemapPaths() {
   const visitPaths = structures
     .filter((s) => s.nrhpContributing)
     .map((s) => `/visit/${s.publicSlug}`);
-  return [...STATIC_PATHS, ...structurePaths, ...visitPaths];
+  const heldOutcomes = meetings
+    .filter((m) => m.status === 'HELD')
+    .map((m) => `/meetings/${m.id}/outcomes`);
+  return [...STATIC_PATHS, ...structurePaths, ...visitPaths, ...heldOutcomes];
 }
 
 export function renderSitemapXml(origin: string) {

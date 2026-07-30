@@ -48,4 +48,13 @@ describe('MeetingOutcomesService', () => {
       });
     }
   });
+
+  it('exposes a public view without contract status', () => {
+    const pub = makeSvc().publicOutcomes('mtg_2023_04');
+    expect(pub).not.toBeNull();
+    expect(pub!.phase).toBe(23);
+    expect(pub).not.toHaveProperty('contract');
+    expect(pub!.links.json).toBe('/api/meetings/mtg_2023_04/outcomes');
+    expect(pub!.links.ui).toBe('/meetings/mtg_2023_04/outcomes');
+  });
 });

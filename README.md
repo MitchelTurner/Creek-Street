@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0–22 (meeting outcomes)
+## Current release: Phase 0–23 (public outcomes & digest)
 
 See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
@@ -175,6 +175,13 @@ Deliberation does **not** turn on by default. That is intentional.
 - `400 MEETING_NOT_HELD` for scheduled meetings; UI at `/official/meetings/:id/outcomes`
 - “Open outcomes” on board portal past meetings
 
+**Phase 23 — public outcomes & subscriber digest:**
+
+- Zero-auth public mirror: `GET /api/meetings/:id/outcomes` · `…/outcomes.pdf` (HELD only)
+- Public UI at `/meetings/:id/outcomes`; “View outcomes” on `/meetings` for held meetings
+- Staff outcomes digest: `GET /api/digest/outcomes/:meetingId/preview` · `POST …/send`
+- Sitemap includes held-meeting outcomes paths; digest never includes DRAFT or AI body
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).
@@ -232,7 +239,9 @@ npm run seed
 - Packets: `GET /api/meetings/:id/packet.pdf` · board `GET /api/board/meetings/:id/packet.pdf`
 - Meeting prep: board `GET /api/board/meetings/:id/prep` · `GET /api/board/meetings/:id/prep.pdf`
 - Meeting outcomes: board `GET /api/board/meetings/:id/outcomes` · `GET /api/board/meetings/:id/outcomes.pdf`
+- Public outcomes: `GET /api/meetings/:id/outcomes` · `GET /api/meetings/:id/outcomes.pdf`
 - Calendar: `GET /api/meetings.ics` · digest `GET /api/digest/preview` · staff `POST /api/digest/send`
+- Outcomes digest: `GET /api/digest/outcomes/:meetingId/preview` · staff `POST /api/digest/outcomes/:meetingId/send`
 - Ops: staff `GET /api/ops/dashboard` · `GET /api/ops/queue` · `GET /api/ops/aging` · brief `GET /api/ops/brief/preview` · `POST /api/ops/brief/send` · alerts `GET /api/ops/alerts/preview` · `POST /api/ops/alerts/send` · scheduler `GET /api/ops/scheduler` · `POST /api/ops/scheduler/{enable,disable,tick}` · claims `POST /api/ops/queue/:kind/:id/{claim,release}`
 
 Demo accounts (password `creek-demo` for all):

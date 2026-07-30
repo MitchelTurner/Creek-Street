@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
 import { SourceLink } from '../components/SourceLink';
 import { api, formatDate, type Meeting } from '../lib/api';
@@ -53,6 +54,14 @@ export function MeetingsPage() {
                 >
                   Download mirror packet (PDF)
                 </a>
+                {m.status === 'HELD' ? (
+                  <Link
+                    to={`/meetings/${m.id}/outcomes`}
+                    className="font-semibold text-creek underline underline-offset-4"
+                  >
+                    View outcomes
+                  </Link>
+                ) : null}
                 {m.agendaUrl && <SourceLink href={m.agendaUrl} label="Agenda" />}
                 {m.minutesUrl && <SourceLink href={m.minutesUrl} label="Minutes" />}
                 {m.videoUrl && <SourceLink href={m.videoUrl} label="Video" />}

@@ -46,6 +46,7 @@ Phase 3 vars stay blank until MOU/contract.
 - [ ] Claims: `POST /api/ops/queue/photo/photo_pending_demo/claim` then second staff gets `409 QUEUE_ITEM_CLAIMED`
 - [ ] Prep: board `GET /api/board/meetings/mtg_2026_08/prep` lists public case + similar; prep PDF audits `board.meeting.prep_download`; no DRAFT/AI body
 - [ ] Outcomes: board `GET /api/board/meetings/mtg_2023_04/outcomes` shows decision votes; `mtg_2026_08` → `MEETING_NOT_HELD`; PDF audits `board.meeting.outcomes_download`
+- [ ] Public outcomes: `GET /api/meetings/mtg_2023_04/outcomes` (no auth); `/meetings/mtg_2023_04/outcomes` UI; staff outcomes digest preview/send audits `digest.outcomes.send`
 - [ ] Compliance: `/compliance` checklist visible; staff audit export works after a moderated action
 - [ ] Applicant: export JSON from workspace; delete blocked for demo accounts
 - [ ] Search: `GET /api/search?q=creek` returns hits; `/search` UI works; DRAFT text never appears

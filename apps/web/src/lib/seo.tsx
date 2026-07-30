@@ -148,9 +148,15 @@ function matchRoute(pathname: string) {
       description: 'Private pre-application package builder.',
     };
   }
-  if (pathname.startsWith('/official/meetings/') && pathname.endsWith('/outcomes')) {
+  if (pathname.startsWith('/meetings/') && pathname.endsWith('/outcomes')) {
     return {
       title: `Meeting outcomes · ${SITE}`,
+      description: 'Mirrored board meeting decisions and votes — public records only.',
+    };
+  }
+  if (pathname.startsWith('/official/meetings/') && pathname.endsWith('/outcomes')) {
+    return {
+      title: `Board meeting outcomes · ${SITE}`,
       description: 'Mirrored board meeting decisions and votes — public records only.',
     };
   }

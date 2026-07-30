@@ -30,6 +30,9 @@ const MapPage = lazy(() => import('./pages/MapPage').then((m) => ({ default: m.M
 const MeetingsPage = lazy(() =>
   import('./pages/MeetingsPage').then((m) => ({ default: m.MeetingsPage })),
 );
+const MeetingOutcomesPage = lazy(() =>
+  import('./pages/MeetingOutcomesPage').then((m) => ({ default: m.MeetingOutcomesPage })),
+);
 const NoticePage = lazy(() => import('./pages/NoticePage').then((m) => ({ default: m.NoticePage })));
 const OfficialApplicationPage = lazy(() =>
   import('./pages/OfficialApplicationPage').then((m) => ({ default: m.OfficialApplicationPage })),
@@ -127,6 +130,7 @@ export default function App() {
             <Route path="docket" element={<DocketPage />} />
             <Route path="decisions" element={<DecisionsPage />} />
             <Route path="meetings" element={<MeetingsPage />} />
+            <Route path="meetings/:id/outcomes" element={<MeetingOutcomesPage />} />
             <Route path="guidance" element={<GuidancePage />} />
             <Route path="board" element={<BoardPage />} />
             <Route path="opendata" element={<OpenDataPage />} />

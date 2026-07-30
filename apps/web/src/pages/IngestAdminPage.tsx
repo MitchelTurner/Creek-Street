@@ -100,6 +100,26 @@ export function IngestAdminPage() {
     }
   }
 
+  async function sendOutcomesDigest() {
+    setBusy('outcomes');
+    setError(null);
+    try {
+      const res = await fetch('/api/digest/outcomes/mtg_2023_04/send', {
+        method: 'POST',
+        headers: authHeaders(),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const result = await res.json();
+      window.alert(
+        `Outcomes digest sent to ${result.recipients} recipient(s) (${result.mode}).`,
+      );
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 md:px-6">
       <PageHeader
@@ -123,6 +143,22 @@ export function IngestAdminPage() {
           rel="noreferrer"
         >
           Preview digest
+        </a>
+        <button
+          type="button"
+          disabled={busy === 'outcomes'}
+          onClick={() => void sendOutcomesDigest()}
+          className="rounded-md bg-creek px-4 py-2 font-semibold text-foam disabled:opacity-50"
+        >
+          {busy === 'outcomes' ? 'Sending outcomes…' : 'Send outcomes digest (demo)'}
+        </button>
+        <a
+          href="/api/digest/outcomes/mtg_2023_04/preview"
+          className="rounded-md border border-ink/15 px-4 py-2 font-semibold text-ink"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Preview outcomes digest
         </a>
         <a
           href="/api/meetings.ics"

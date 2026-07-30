@@ -27,6 +27,14 @@ type OpsDashboard = {
     subject: string;
     preview: string;
   } | null;
+  outcomesDigest: {
+    at: string;
+    recipients: number;
+    mode: string;
+    subject: string;
+    preview: string;
+    meetingId?: string;
+  } | null;
   opsBrief: {
     at: string;
     recipients: number;
@@ -457,11 +465,28 @@ export function OpsDashboardPage() {
                   <p className="text-sm text-ink/55">{data.digest.subject}</p>
                 </>
               ) : (
-                <p className="text-sm text-ink/70">No digest sent yet this process.</p>
+                <p className="text-sm text-ink/70">No weekly digest sent yet this process.</p>
               )}
-              <a className="text-sm font-semibold text-creek underline" href="/api/digest/preview">
-                Preview digest
-              </a>
+              {data.outcomesDigest ? (
+                <p className="text-sm text-ink/70">
+                  Last outcomes digest {new Date(data.outcomesDigest.at).toLocaleString()} ·{' '}
+                  {data.outcomesDigest.meetingId ?? 'meeting'} · {data.outcomesDigest.recipients}{' '}
+                  recipient(s)
+                </p>
+              ) : (
+                <p className="text-sm text-ink/55">No outcomes digest sent yet this process.</p>
+              )}
+              <div className="flex flex-wrap gap-3">
+                <a className="text-sm font-semibold text-creek underline" href="/api/digest/preview">
+                  Preview weekly digest
+                </a>
+                <a
+                  className="text-sm font-semibold text-creek underline"
+                  href="/api/digest/outcomes/mtg_2023_04/preview"
+                >
+                  Preview outcomes digest
+                </a>
+              </div>
             </div>
           </section>
 

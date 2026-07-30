@@ -120,6 +120,31 @@ export class MeetingOutcomesService {
         packetPdf: `/api/board/meetings/${meetingId}/packet.pdf`,
         ui: `/official/meetings/${meetingId}/outcomes`,
         portal: '/official',
+        publicJson: `/api/meetings/${meetingId}/outcomes`,
+        publicPdf: `/api/meetings/${meetingId}/outcomes.pdf`,
+        publicUi: `/meetings/${meetingId}/outcomes`,
+      },
+    };
+  }
+
+  /**
+   * Phase 23 — same public facts as board outcomes, without contract status.
+   * Safe for zero-auth surfaces and subscriber digests.
+   */
+  publicOutcomes(meetingId: string) {
+    const row = this.outcomes(meetingId);
+    if (!row) return null;
+    const { contract: _contract, ...rest } = row;
+    return {
+      ...rest,
+      phase: 23,
+      links: {
+        json: `/api/meetings/${meetingId}/outcomes`,
+        pdf: `/api/meetings/${meetingId}/outcomes.pdf`,
+        packetPdf: `/api/meetings/${meetingId}/packet.pdf`,
+        ui: `/meetings/${meetingId}/outcomes`,
+        meetings: '/meetings',
+        decisions: '/decisions',
       },
     };
   }

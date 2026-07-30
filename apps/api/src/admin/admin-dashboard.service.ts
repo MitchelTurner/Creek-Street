@@ -7,6 +7,7 @@ import { IngestQueueService } from '../ingest/ingest.queue';
 import { IngestStore } from '../ingest/ingest.store';
 import { MailService } from '../ops/mail.service';
 import { ReadinessService } from '../public/readiness.service';
+import { OpsBriefService } from './ops-brief.service';
 
 /**
  * Phase 15 — consolidated staff ops snapshot.
@@ -22,6 +23,7 @@ export class AdminDashboardService {
     private readonly compliance: ComplianceService,
     private readonly ingestQueue: IngestQueueService,
     private readonly ingestStore: IngestStore,
+    private readonly opsBrief: OpsBriefService,
   ) {}
 
   async snapshot() {
@@ -42,6 +44,7 @@ export class AdminDashboardService {
       },
       mail: this.mail.status(),
       digest: this.digest.lastDigest(),
+      opsBrief: this.opsBrief.lastBrief(),
       ingest: {
         queue: this.ingestQueue.status(),
         sources: this.ingestStore.listSources().map((s) => ({
@@ -64,6 +67,7 @@ export class AdminDashboardService {
         queue: '/admin/queue',
         ingest: '/admin/ingest',
         compliance: '/compliance',
+        briefPreview: '/api/ops/brief/preview',
         digestPreview: '/api/digest/preview',
         meetingsIcs: '/api/meetings.ics',
         ready: '/api/ready',

@@ -308,6 +308,13 @@ export class ApplicantStore {
     return this.subscriptions.filter((s) => s.channel === 'RSS' && s.confirmedAt);
   }
 
+  listStaffEmails() {
+    return this.users
+      .filter((u) => u.role === 'STAFF' || u.role === 'ADMIN')
+      .map((u) => u.email)
+      .sort();
+  }
+
   listConfirmedEmailSubscriptions() {
     return this.subscriptions.filter((s) => s.channel === 'EMAIL' && s.confirmedAt);
   }

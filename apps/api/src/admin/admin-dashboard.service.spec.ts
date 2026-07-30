@@ -31,6 +31,7 @@ describe('AdminDashboardService', () => {
         listSources: () => [],
         listRuns: () => [],
       } as never,
+      { lastBrief: () => null } as never,
     );
 
     const snap = await svc.snapshot();
@@ -39,6 +40,8 @@ describe('AdminDashboardService', () => {
     expect(snap.compliance.openItems).toHaveLength(1);
     expect(snap.links.ingest).toBe('/admin/ingest');
     expect(snap.links.queue).toBe('/admin/queue');
+    expect(snap.links.briefPreview).toBe('/api/ops/brief/preview');
     expect(snap.mail.mode).toBe('stub');
+    expect(snap.opsBrief).toBeNull();
   });
 });

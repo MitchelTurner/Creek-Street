@@ -124,7 +124,7 @@ export function StaffQueuePage() {
           Refresh
         </button>
         <Link to="/admin/ops" className="rounded-md border border-ink/15 px-4 py-2 font-medium text-ink/80">
-          Ops dashboard
+          Ops dashboard / send brief
         </Link>
         <Link to="/admin/ingest" className="rounded-md border border-ink/15 px-4 py-2 font-medium text-ink/80">
           Ingest console

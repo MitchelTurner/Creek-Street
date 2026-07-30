@@ -8,6 +8,7 @@ import { Phase4Module } from '../phase4/phase4.module';
 import { PublicModule } from '../public/public.module';
 import { AdminController } from './admin.controller';
 import { AdminDashboardService } from './admin-dashboard.service';
+import { OpsBriefService } from './ops-brief.service';
 import { OpsQueueService } from './ops-queue.service';
 
 @Module({
@@ -21,6 +22,6 @@ import { OpsQueueService } from './ops-queue.service';
     IngestModule,
   ],
   controllers: [AdminController],
-  providers: [AdminDashboardService, OpsQueueService],
+  providers: [AdminDashboardService, OpsQueueService, OpsBriefService],
 })
 export class AdminModule {}

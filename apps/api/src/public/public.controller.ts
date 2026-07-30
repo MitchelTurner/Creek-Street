@@ -16,10 +16,11 @@ export class PublicController {
   health() {
     return {
       ok: true,
-      phase: 16,
+      phase: 17,
       store: this.store.backend(),
       opsDashboard: true,
       staffQueue: true,
+      opsBrief: true,
     };
   }
 

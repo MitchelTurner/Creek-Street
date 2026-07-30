@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0–16 (staff work queue)
+## Current release: Phase 0–17 (staff ops brief)
 
 See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
@@ -133,6 +133,13 @@ Deliberation does **not** turn on by default. That is intentional.
 - Staff UI at `/admin/queue` with approve/reject photo and review/publish summary actions
 - Demo pending photo + failed ingest seed for local smoke; public surfaces still never show drafts
 
+**Phase 17 — staff ops brief:**
+
+- Staff-only email brief: `GET /api/ops/brief/preview` · `POST /api/ops/brief/send` · `GET /api/ops/brief/last`
+- Body = queue counts + photo metadata + summary **ids only** (never AI body) + failed ingest + readiness
+- Delivered to STAFF/ADMIN emails via `MailService`; audited as `ops.brief.send`
+- Preview/send controls on `/admin/ops`
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).
@@ -189,7 +196,7 @@ npm run seed
 - Search: `GET /api/search?q=`
 - Packets: `GET /api/meetings/:id/packet.pdf` · board `GET /api/board/meetings/:id/packet.pdf`
 - Calendar: `GET /api/meetings.ics` · digest `GET /api/digest/preview` · staff `POST /api/digest/send`
-- Ops: staff `GET /api/ops/dashboard` · `GET /api/ops/queue`
+- Ops: staff `GET /api/ops/dashboard` · `GET /api/ops/queue` · brief `GET /api/ops/brief/preview` · `POST /api/ops/brief/send`
 
 Demo accounts (password `creek-demo` for all):
 

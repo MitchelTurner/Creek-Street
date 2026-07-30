@@ -27,6 +27,13 @@ type OpsDashboard = {
     subject: string;
     preview: string;
   } | null;
+  opsBrief: {
+    at: string;
+    recipients: number;
+    mode: string;
+    subject: string;
+    preview: string;
+  } | null;
   ingest: {
     queue: { mode: string; redisConfigured: boolean; queue: string };
     sources: Array<{
@@ -67,6 +74,9 @@ export function OpsDashboardPage() {
   const [data, setData] = useState<OpsDashboard | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [briefBusy, setBriefBusy] = useState(false);
+  const [briefPreview, setBriefPreview] = useState<string | null>(null);
+  const [briefNote, setBriefNote] = useState<string | null>(null);
 
   const isStaff = Boolean(user && (user.role === 'STAFF' || user.role === 'ADMIN'));
 
@@ -95,6 +105,45 @@ export function OpsDashboardPage() {
   if (!user) return <Navigate to="/auth" replace />;
   if (!isStaff) return <Navigate to="/official" replace />;
 
+  async function loadBriefPreview() {
+    setBriefBusy(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/ops/brief/preview', { headers: authHeaders() });
+      if (!res.ok) throw new Error(await res.text());
+      const json = (await res.json()) as {
+        body: string;
+        staffRecipients: string[];
+        note: string;
+      };
+      setBriefPreview(json.body);
+      setBriefNote(`${json.note} Recipients: ${json.staffRecipients.join(', ') || '(none)'}`);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBriefBusy(false);
+    }
+  }
+
+  async function sendBrief() {
+    setBriefBusy(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/ops/brief/send', {
+        method: 'POST',
+        headers: authHeaders(),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const json = (await res.json()) as { recipients: number; mode: string };
+      setBriefNote(`Ops brief sent to ${json.recipients} staff recipient(s) (${json.mode}).`);
+      reload();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBriefBusy(false);
+    }
+  }
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 md:px-6">
       <PageHeader
@@ -111,6 +160,22 @@ export function OpsDashboardPage() {
         >
           {loading ? 'Refreshing…' : 'Refresh'}
         </button>
+        <button
+          type="button"
+          onClick={() => void loadBriefPreview()}
+          disabled={briefBusy}
+          className="rounded-md border border-ink/15 px-4 py-2 font-medium text-ink/80 disabled:opacity-50"
+        >
+          {briefBusy ? 'Working…' : 'Preview ops brief'}
+        </button>
+        <button
+          type="button"
+          onClick={() => void sendBrief()}
+          disabled={briefBusy}
+          className="rounded-md border border-ink/15 px-4 py-2 font-semibold text-ink disabled:opacity-50"
+        >
+          Send ops brief
+        </button>
         <Link to="/admin/queue" className="rounded-md border border-ink/15 px-4 py-2 font-medium text-ink/80">
           Work queue
         </Link>
@@ -123,6 +188,7 @@ export function OpsDashboardPage() {
       </div>
 
       {error ? <p className="mb-4 text-sm text-red-700">{error}</p> : null}
+      {briefNote ? <p className="mb-4 text-sm text-ink/70">{briefNote}</p> : null}
       {loading && !data ? <p className="text-sm text-ink/50">Loading dashboard…</p> : null}
 
       {data ? (
@@ -130,6 +196,27 @@ export function OpsDashboardPage() {
           <p className="text-xs uppercase tracking-[0.14em] text-ink/45">
             Phase {data.phase} · generated {new Date(data.at).toLocaleString()}
           </p>
+
+          <section className="space-y-3">
+            <h2 className="font-display text-2xl text-ink">Staff ops brief</h2>
+            <p className="text-sm text-ink/65">
+              Email STAFF/ADMIN with queue counts and readiness. Never includes AI summary body,
+              DRAFT applications, or MemberNotes.
+            </p>
+            {data.opsBrief ? (
+              <p className="text-sm text-ink/70">
+                Last sent {new Date(data.opsBrief.at).toLocaleString()} · {data.opsBrief.recipients}{' '}
+                recipient(s) ({data.opsBrief.mode})
+              </p>
+            ) : (
+              <p className="text-sm text-ink/70">No ops brief sent yet this process.</p>
+            )}
+            {briefPreview ? (
+              <pre className="max-h-80 overflow-auto whitespace-pre-wrap border border-ink/10 bg-foam/60 p-4 text-xs text-ink/80">
+                {briefPreview}
+              </pre>
+            ) : null}
+          </section>
 
           <section className="space-y-3">
             <h2 className="font-display text-2xl text-ink">Readiness</h2>

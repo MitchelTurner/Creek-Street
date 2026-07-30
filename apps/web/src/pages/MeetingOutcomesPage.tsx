@@ -183,8 +183,14 @@ export function MeetingOutcomesPage() {
                             Vote {item.decision.voteFor ?? '—'}–{item.decision.voteAgainst ?? '—'} ·{' '}
                             {item.decision.finalOutcome ?? '—'}
                           </p>
-                          {item.decision.sourceDocUrl ? (
-                            <p>
+                          <p className="flex flex-wrap gap-3">
+                            <Link
+                              to={`/decisions/${item.decision.id}`}
+                              className="font-semibold text-creek underline"
+                            >
+                              Decision sheet
+                            </Link>
+                            {item.decision.sourceDocUrl ? (
                               <a
                                 className="underline"
                                 href={item.decision.sourceDocUrl}
@@ -193,8 +199,8 @@ export function MeetingOutcomesPage() {
                               >
                                 Source document
                               </a>
-                            </p>
-                          ) : null}
+                            ) : null}
+                          </p>
                         </div>
                       ) : (
                         <p className="mt-2 text-sm text-ink/55">No mirrored decision for this item.</p>

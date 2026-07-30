@@ -11,6 +11,7 @@ import {
 import type { Response } from 'express';
 import { PublicStore } from '../store/public.store';
 import { CaseBriefService } from './case-brief.service';
+import { DecisionSheetService } from './decision-sheet.service';
 import { MeetingAgendaService } from './meeting-agenda.service';
 import { MeetingSummarySheetService } from './meeting-summary-sheet.service';
 import { ReadinessService } from './readiness.service';
@@ -26,13 +27,14 @@ export class PublicController {
     private readonly caseBriefs: CaseBriefService,
     private readonly meetingAgendas: MeetingAgendaService,
     private readonly meetingSummaries: MeetingSummarySheetService,
+    private readonly decisionSheets: DecisionSheetService,
   ) {}
 
   @Get('health')
   health() {
     return {
       ok: true,
-      phase: 27,
+      phase: 28,
       store: this.store.backend(),
       opsDashboard: true,
       staffQueue: true,
@@ -47,6 +49,7 @@ export class PublicController {
       caseBriefDigest: true,
       meetingAgenda: true,
       meetingSummarySheet: true,
+      decisionSheet: true,
     };
   }
 
@@ -151,6 +154,27 @@ export class PublicController {
   @Header('Cache-Control', 'public, max-age=120, stale-while-revalidate=300')
   decisions(@Query('q') q?: string) {
     return this.store.listDecisions({ q });
+  }
+
+  @Get('decisions/:id')
+  @Header('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
+  decisionSheet(@Param('id') id: string) {
+    const row = this.decisionSheets.sheet(id);
+    if (!row) throw new NotFoundException('Decision not found');
+    return row;
+  }
+
+  @Get('decisions/:id/sheet.pdf')
+  @Header('Cache-Control', 'public, max-age=60')
+  async decisionSheetPdf(@Param('id') id: string, @Res() res: Response) {
+    const buf = await this.decisionSheets.buildPdf(id);
+    if (!buf) throw new NotFoundException('Decision not found');
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="creek-street-decision-${id}.pdf"`,
+    );
+    res.send(buf);
   }
 
   @Get('meetings')

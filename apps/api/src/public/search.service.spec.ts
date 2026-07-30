@@ -37,4 +37,10 @@ describe('SearchService', () => {
     const hit = res.hits.find((h) => h.type === 'meeting' && h.id === 'mtg_2026_08');
     expect(hit?.href).toBe('/meetings/mtg_2026_08');
   });
+
+  it('deep-links decisions to decision sheets', () => {
+    const res = search.search('wood substrate');
+    const hit = res.hits.find((h) => h.type === 'decision' && h.id === 'dec_sample_1');
+    expect(hit?.href).toBe('/decisions/dec_sample_1');
+  });
 });

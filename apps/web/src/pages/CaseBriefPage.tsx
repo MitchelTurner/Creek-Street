@@ -163,7 +163,13 @@ export function CaseBriefPage() {
                         Final action: {d.finalOutcome}
                       </p>
                     ) : null}
-                    <p className="mt-2">
+                    <p className="mt-2 flex flex-wrap gap-3 text-xs">
+                      <Link
+                        to={`/decisions/${d.id}`}
+                        className="font-semibold text-creek underline underline-offset-4"
+                      >
+                        Decision sheet
+                      </Link>
                       <SourceLink href={d.sourceDocUrl} />
                     </p>
                   </li>

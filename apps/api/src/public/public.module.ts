@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { GeoModule } from '../geo/geo.module';
 import { Phase4Module } from '../phase4/phase4.module';
 import { CaseBriefService } from './case-brief.service';
+import { DecisionSheetService } from './decision-sheet.service';
 import { MeetingAgendaService } from './meeting-agenda.service';
 import { MeetingSummarySheetService } from './meeting-summary-sheet.service';
 import { OpenDataController } from './opendata.controller';
@@ -18,12 +19,14 @@ import { SearchService } from './search.service';
     CaseBriefService,
     MeetingAgendaService,
     MeetingSummarySheetService,
+    DecisionSheetService,
   ],
   exports: [
     ReadinessService,
     CaseBriefService,
     MeetingAgendaService,
     MeetingSummarySheetService,
+    DecisionSheetService,
   ],
 })
 export class PublicModule {}

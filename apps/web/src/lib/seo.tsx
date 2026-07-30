@@ -154,6 +154,13 @@ function matchRoute(pathname: string) {
       description: 'Mirrored public case facts — site, decisions, and related meetings.',
     };
   }
+  if (pathname.startsWith('/decisions/')) {
+    return {
+      title: `Decision sheet · ${SITE}`,
+      description:
+        'Mirrored board recommendation, vote, final action, and linked visual precedents.',
+    };
+  }
   if (pathname.startsWith('/meetings/') && pathname.endsWith('/outcomes')) {
     return {
       title: `Meeting outcomes · ${SITE}`,

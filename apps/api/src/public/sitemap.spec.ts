@@ -12,6 +12,8 @@ describe('public sitemap', () => {
     expect(paths).toContain('/meetings/mtg_2023_04');
     expect(paths).toContain('/meetings/mtg_2023_04/summary');
     expect(paths).not.toContain('/meetings/mtg_2024_02/summary');
+    expect(paths).toContain('/decisions/dec_sample_1');
+    expect(paths).toContain('/decisions/dec_sample_2');
     expect(paths).toContain('/visit');
     expect(paths.some((p) => p.startsWith('/structures/'))).toBe(true);
     expect(paths.some((p) => p.startsWith('/workspace'))).toBe(false);

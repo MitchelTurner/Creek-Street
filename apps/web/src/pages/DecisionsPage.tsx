@@ -38,7 +38,7 @@ export function DecisionsPage() {
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p className="text-xs uppercase tracking-[0.14em] text-ink/45">
                 <Link
-                  to={`/docket/${d.applicationId}`}
+                  to={`/decisions/${d.id}`}
                   className="font-semibold text-creek underline underline-offset-4"
                 >
                   {d.application?.caseNumber ?? d.applicationId}
@@ -55,7 +55,12 @@ export function DecisionsPage() {
               <p className="mt-2 text-sm text-ink/60">{d.application.description}</p>
             )}
             <p className="mt-3 font-display text-xl font-semibold leading-snug text-ink">
-              {d.recommendation}
+              <Link
+                to={`/decisions/${d.id}`}
+                className="text-ink underline-offset-4 hover:text-creek hover:underline"
+              >
+                {d.recommendation}
+              </Link>
             </p>
             {d.conditions && (
               <p className="mt-2 text-sm text-ink/65">Conditions: {d.conditions}</p>
@@ -64,6 +69,12 @@ export function DecisionsPage() {
               <p className="mt-3 text-sm font-medium text-creek">Final action: {d.finalOutcome}</p>
             )}
             <p className="mt-3 flex flex-wrap gap-3 text-xs">
+              <Link
+                to={`/decisions/${d.id}`}
+                className="font-semibold text-creek underline underline-offset-4"
+              >
+                Decision sheet
+              </Link>
               <Link
                 to={`/docket/${d.applicationId}`}
                 className="font-semibold text-creek underline underline-offset-4"

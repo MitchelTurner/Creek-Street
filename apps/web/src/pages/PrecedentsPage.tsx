@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
 import { SourceLink } from '../components/SourceLink';
 import { api, type PrecedentRow, type SimilarResult } from '../lib/api';
@@ -83,11 +84,22 @@ export function PrecedentsPage() {
                   </figure>
                 ))}
               </div>
-              {pair.application && (
-                <p className="mt-4 text-xs text-ink/45">
-                  Linked application: {pair.application.caseNumber ?? pair.application.id}
-                </p>
-              )}
+              <p className="mt-4 flex flex-wrap gap-3 text-xs">
+                <Link
+                  to={`/decisions/${pair.key}`}
+                  className="font-semibold text-creek underline underline-offset-4"
+                >
+                  Decision sheet
+                </Link>
+                {pair.application ? (
+                  <Link
+                    to={`/docket/${pair.application.id}`}
+                    className="font-semibold text-creek underline underline-offset-4"
+                  >
+                    Case {pair.application.caseNumber ?? pair.application.id}
+                  </Link>
+                ) : null}
+              </p>
             </div>
           ))}
         </div>
@@ -121,8 +133,23 @@ export function PrecedentsPage() {
               </div>
               <p className="mt-1 text-sm text-ink/70">{r.application.description}</p>
               {r.decisions[0] && (
-                <p className="mt-2 text-sm text-creek">{r.decisions[0].recommendation}</p>
+                <p className="mt-2 text-sm text-creek">
+                  <Link
+                    to={`/decisions/${r.decisions[0].id}`}
+                    className="font-semibold underline underline-offset-4"
+                  >
+                    {r.decisions[0].recommendation}
+                  </Link>
+                </p>
               )}
+              <p className="mt-2 text-xs">
+                <Link
+                  to={`/docket/${r.application.id}`}
+                  className="font-semibold text-creek underline underline-offset-4"
+                >
+                  Case brief
+                </Link>
+              </p>
             </li>
           ))}
         </ul>

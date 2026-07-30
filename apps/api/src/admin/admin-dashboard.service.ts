@@ -52,6 +52,7 @@ export class AdminDashboardService {
       mail: this.mail.status(),
       digest: this.digest.lastDigest(),
       outcomesDigest: this.digest.lastOutcomesDigest(),
+      caseDigest: this.digest.lastCaseDigest(),
       opsBrief: this.opsBrief.lastBrief(),
       aging: {
         thresholds: aging.thresholds,
@@ -91,6 +92,7 @@ export class AdminDashboardService {
         scheduler: '/api/ops/scheduler',
         digestPreview: '/api/digest/preview',
         outcomesDigestPreview: '/api/digest/outcomes/mtg_2023_04/preview',
+        caseDigestPreview: '/api/digest/case/app_sample_sign/preview',
         meetingsIcs: '/api/meetings.ics',
         ready: '/api/ready',
         geo: '/api/geo/status',

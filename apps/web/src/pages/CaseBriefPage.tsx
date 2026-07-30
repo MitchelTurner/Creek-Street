@@ -103,6 +103,14 @@ export function CaseBriefPage() {
               >
                 Download case brief PDF
               </a>
+              <a
+                href={`/api/digest/case/${id}/preview`}
+                className="font-semibold text-creek underline underline-offset-4"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Subscriber digest preview
+              </a>
               {data.application.sourceDocUrl ? (
                 <SourceLink href={data.application.sourceDocUrl} />
               ) : null}

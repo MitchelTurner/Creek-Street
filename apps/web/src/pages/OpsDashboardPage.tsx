@@ -35,6 +35,14 @@ type OpsDashboard = {
     preview: string;
     meetingId?: string;
   } | null;
+  caseDigest: {
+    at: string;
+    recipients: number;
+    mode: string;
+    subject: string;
+    preview: string;
+    applicationId?: string;
+  } | null;
   opsBrief: {
     at: string;
     recipients: number;
@@ -476,6 +484,15 @@ export function OpsDashboardPage() {
               ) : (
                 <p className="text-sm text-ink/55">No outcomes digest sent yet this process.</p>
               )}
+              {data.caseDigest ? (
+                <p className="text-sm text-ink/70">
+                  Last case digest {new Date(data.caseDigest.at).toLocaleString()} ·{' '}
+                  {data.caseDigest.applicationId ?? 'case'} · {data.caseDigest.recipients}{' '}
+                  recipient(s)
+                </p>
+              ) : (
+                <p className="text-sm text-ink/55">No case digest sent yet this process.</p>
+              )}
               <div className="flex flex-wrap gap-3">
                 <a className="text-sm font-semibold text-creek underline" href="/api/digest/preview">
                   Preview weekly digest
@@ -485,6 +502,12 @@ export function OpsDashboardPage() {
                   href="/api/digest/outcomes/mtg_2023_04/preview"
                 >
                   Preview outcomes digest
+                </a>
+                <a
+                  className="text-sm font-semibold text-creek underline"
+                  href="/api/digest/case/app_sample_sign/preview"
+                >
+                  Preview case digest
                 </a>
               </div>
             </div>

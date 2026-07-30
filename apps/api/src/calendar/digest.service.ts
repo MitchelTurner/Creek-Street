@@ -3,6 +3,7 @@ import { applications, meetings } from '../data/phase0-seed';
 import { MailService } from '../ops/mail.service';
 import { ApplicantStore } from '../phase2/applicant.store';
 import { MeetingOutcomesService } from '../phase3/meeting-outcomes.service';
+import { CaseBriefService } from '../public/case-brief.service';
 import { PUBLIC_STATUS_SET } from '../store/public-statuses';
 
 export type DigestResult = {
@@ -11,24 +12,28 @@ export type DigestResult = {
   mode: string;
   subject: string;
   preview: string;
-  kind?: 'weekly' | 'outcomes';
+  kind?: 'weekly' | 'outcomes' | 'case';
   meetingId?: string;
+  applicationId?: string;
 };
 
 /**
  * Phase 14 — weekly (or on-demand) docket/meeting digest for EMAIL subscribers.
  * Phase 23 — post-meeting outcomes digest for a HELD meeting.
+ * Phase 25 — public case-brief digest; digests deep-link to /docket/:id.
  */
 @Injectable()
 export class DigestService {
   private readonly log = new Logger(DigestService.name);
   private last: DigestResult | null = null;
   private lastOutcomes: DigestResult | null = null;
+  private lastCase: DigestResult | null = null;
 
   constructor(
     private readonly applicants: ApplicantStore,
     private readonly mail: MailService,
     private readonly outcomes: MeetingOutcomesService,
+    private readonly caseBriefs: CaseBriefService,
   ) {}
 
   lastDigest() {
@@ -37,6 +42,10 @@ export class DigestService {
 
   lastOutcomesDigest() {
     return this.lastOutcomes;
+  }
+
+  lastCaseDigest() {
+    return this.lastCase;
   }
 
   buildBody(origin = 'https://creek-street.local') {
@@ -59,7 +68,7 @@ export class DigestService {
       `Active public docket items: ${active.length}`,
       ...active.slice(0, 10).map(
         (a) =>
-          `• ${a.caseNumber ?? a.id} — ${a.projectType.replace(/_/g, ' ')} (${a.status})`,
+          `• ${a.caseNumber ?? a.id} — ${a.projectType.replace(/_/g, ' ')} (${a.status}) — ${base}/docket/${a.id}`,
       ),
       '',
       'Upcoming mirrored meetings:',
@@ -103,7 +112,7 @@ export class DigestService {
       const vote = item.decision
         ? `vote ${item.decision.voteFor ?? '—'}–${item.decision.voteAgainst ?? '—'}; ${item.decision.finalOutcome ?? '—'}`
         : 'no mirrored decision yet';
-      return `• ${item.agendaItem.itemNumber}. ${item.application.caseNumber ?? item.application.id} — ${vote}`;
+      return `• ${item.agendaItem.itemNumber}. ${item.application.caseNumber ?? item.application.id} — ${vote} — ${base}/docket/${item.application.id}`;
     });
 
     const lines = [
@@ -132,6 +141,66 @@ export class DigestService {
     };
   }
 
+  buildCaseBody(applicationId: string, origin = 'https://creek-street.local') {
+    const base = origin.replace(/\/$/, '');
+    const data = this.caseBriefs.brief(applicationId);
+    if (!data) throw new NotFoundException('Application not found');
+
+    const label = data.application.caseNumber ?? data.application.id;
+    const decisionLines =
+      data.decisions.length === 0
+        ? ['• No mirrored decision yet']
+        : data.decisions.map((d) => {
+            const vote = `vote ${d.voteFor ?? '—'}–${d.voteAgainst ?? '—'}`;
+            return `• ${d.decidedAt?.slice(0, 10) ?? 'undated'} — ${vote} — ${d.finalOutcome ?? d.recommendation}`;
+          });
+
+    const meetingLines =
+      data.meetings.length === 0
+        ? ['• None']
+        : data.meetings.map((m) => {
+            const when = new Date(m.scheduledAt).toLocaleDateString('en-US', {
+              timeZone: 'America/Juneau',
+            });
+            const outcomes = m.outcomes ? ` — outcomes ${base}${m.outcomes.ui}` : '';
+            return `• ${when} · ${m.status}${outcomes}`;
+          });
+
+    const lines = [
+      'Creek Street Design Review — case brief',
+      '',
+      'Mirrored public case facts only. Not an official borough case file.',
+      'Operated by Mitchel Turner Dev, LLC — not a borough property.',
+      '',
+      `Case: ${label}`,
+      `Type: ${data.application.projectType.replace(/_/g, ' ')}`,
+      `Status: ${data.application.status}`,
+      data.application.filedAt ? `Filed: ${data.application.filedAt.slice(0, 10)}` : null,
+      '',
+      data.application.description,
+      '',
+      `Site: ${data.structure?.commonName ?? data.structure?.addressLabel ?? '—'}`,
+      data.parcel ? `Parcel: ${data.parcel.parcelNumber} · ${data.parcel.address}` : null,
+      '',
+      'Decisions:',
+      ...decisionLines,
+      '',
+      'Related meetings:',
+      ...meetingLines,
+      '',
+      `Case brief: ${base}/docket/${applicationId}`,
+      `PDF: ${base}/api/applications/${applicationId}/brief.pdf`,
+      '',
+      'Unsubscribe using the token from your subscriptions page.',
+    ].filter((line): line is string => line != null);
+
+    return {
+      subject: `Creek Street Design Review — case ${label}`,
+      body: lines.join('\n'),
+      applicationId,
+    };
+  }
+
   async sendWeekly(origin?: string): Promise<DigestResult> {
     const webOrigin = origin || process.env.PUBLIC_WEB_ORIGIN || 'https://creek-street.local';
     const body = this.buildBody(webOrigin);
@@ -151,6 +220,17 @@ export class DigestService {
       `Outcomes digest meeting=${meetingId} recipients=${result.recipients} mode=${result.mode}`,
     );
     return this.lastOutcomes;
+  }
+
+  async sendCase(applicationId: string, origin?: string): Promise<DigestResult> {
+    const webOrigin = origin || process.env.PUBLIC_WEB_ORIGIN || 'https://creek-street.local';
+    const { subject, body } = this.buildCaseBody(applicationId, webOrigin);
+    const result = await this.deliver(subject, body);
+    this.lastCase = { ...result, kind: 'case', applicationId };
+    this.log.log(
+      `Case digest application=${applicationId} recipients=${result.recipients} mode=${result.mode}`,
+    );
+    return this.lastCase;
   }
 
   private async deliver(subject: string, body: string): Promise<DigestResult> {

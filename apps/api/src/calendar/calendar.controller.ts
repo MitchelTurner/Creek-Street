@@ -137,4 +137,58 @@ export class CalendarController {
     });
     return result;
   }
+
+  // ── Phase 25 — case brief digest ──────────────────────────────────────────
+
+  @Get('digest/case/last')
+  @Header('Cache-Control', 'no-store')
+  lastCaseDigest() {
+    return { last: this.digest.lastCaseDigest() };
+  }
+
+  @Get('digest/case/:applicationId/preview')
+  @Header('Cache-Control', 'no-store')
+  casePreview(
+    @Param('applicationId') applicationId: string,
+    @Headers('host') host?: string,
+    @Headers('x-forwarded-host') xfHost?: string,
+    @Headers('x-forwarded-proto') xfProto?: string,
+  ) {
+    const h = xfHost || host || 'creek-street.local';
+    const proto = xfProto || 'https';
+    const origin = process.env.PUBLIC_WEB_ORIGIN || `${proto}://${h}`;
+    const { subject, body } = this.digest.buildCaseBody(applicationId, origin);
+    return {
+      subject,
+      body,
+      applicationId,
+      last: this.digest.lastCaseDigest(),
+      note: 'Preview only. Staff POST /api/digest/case/:applicationId/send to deliver to confirmed EMAIL subscribers. Public applications only; never includes DRAFT or AI summary body.',
+    };
+  }
+
+  @Post('digest/case/:applicationId/send')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('STAFF', 'ADMIN')
+  async sendCaseDigest(
+    @Param('applicationId') applicationId: string,
+    @CurrentUser() user: { id: string; email: string; role: string },
+    @Headers('host') host?: string,
+    @Headers('x-forwarded-host') xfHost?: string,
+    @Headers('x-forwarded-proto') xfProto?: string,
+  ) {
+    const h = xfHost || host || 'creek-street.local';
+    const proto = xfProto || 'https';
+    const origin = process.env.PUBLIC_WEB_ORIGIN || `${proto}://${h}`;
+    const result = await this.digest.sendCase(applicationId, origin);
+    this.audit.record({
+      action: 'digest.case.send',
+      actor: user,
+      resourceType: 'application',
+      resourceId: applicationId,
+      summary: `Case digest for ${applicationId} sent by ${user.email} to ${result.recipients} recipient(s)`,
+      meta: { mode: result.mode },
+    });
+    return result;
+  }
 }

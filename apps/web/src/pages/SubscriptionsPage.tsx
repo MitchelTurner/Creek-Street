@@ -52,7 +52,9 @@ export function SubscriptionsPage() {
         <a href="/api/meetings.ics" className="font-semibold text-creek underline underline-offset-4">
           /api/meetings.ics
         </a>
-        . Email subscribers also receive on-demand weekly digests when staff send them.
+        . Email subscribers also receive on-demand weekly, meeting-outcomes, and case-brief
+        digests when staff send them (public facts only; digests deep-link to{' '}
+        <code className="text-ink/70">/docket/:id</code>).
       </p>
 
       <form onSubmit={onSubmit} className="mt-8 space-y-4">

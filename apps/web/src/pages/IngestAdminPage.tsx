@@ -120,6 +120,24 @@ export function IngestAdminPage() {
     }
   }
 
+  async function sendCaseDigest() {
+    setBusy('case');
+    setError(null);
+    try {
+      const res = await fetch('/api/digest/case/app_sample_sign/send', {
+        method: 'POST',
+        headers: authHeaders(),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const result = await res.json();
+      window.alert(`Case digest sent to ${result.recipients} recipient(s) (${result.mode}).`);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 md:px-6">
       <PageHeader
@@ -159,6 +177,22 @@ export function IngestAdminPage() {
           rel="noreferrer"
         >
           Preview outcomes digest
+        </a>
+        <button
+          type="button"
+          disabled={busy === 'case'}
+          onClick={() => void sendCaseDigest()}
+          className="rounded-md bg-creek px-4 py-2 font-semibold text-foam disabled:opacity-50"
+        >
+          {busy === 'case' ? 'Sending case…' : 'Send case digest (demo)'}
+        </button>
+        <a
+          href="/api/digest/case/app_sample_sign/preview"
+          className="rounded-md border border-ink/15 px-4 py-2 font-semibold text-ink"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Preview case digest
         </a>
         <a
           href="/api/meetings.ics"

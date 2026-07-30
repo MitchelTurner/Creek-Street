@@ -48,6 +48,7 @@ Phase 3 vars stay blank until MOU/contract.
 - [ ] Outcomes: board `GET /api/board/meetings/mtg_2023_04/outcomes` shows decision votes; `mtg_2026_08` → `MEETING_NOT_HELD`; PDF audits `board.meeting.outcomes_download`
 - [ ] Public outcomes: `GET /api/meetings/mtg_2023_04/outcomes` (no auth); `/meetings/mtg_2023_04/outcomes` UI; staff outcomes digest preview/send audits `digest.outcomes.send`
 - [ ] Case brief: `GET /api/applications/app_sample_sign/brief` shows decisions + `mtg_2023_04` outcomes link; `app_sample_draft` → 404; `/docket/app_sample_sign` UI
+- [ ] Case digest: staff preview/send `/api/digest/case/app_sample_sign/*` audits `digest.case.send`; weekly digest body includes `/docket/app_sample_pending`
 - [ ] Compliance: `/compliance` checklist visible; staff audit export works after a moderated action
 - [ ] Applicant: export JSON from workspace; delete blocked for demo accounts
 - [ ] Search: `GET /api/search?q=creek` returns hits; `/search` UI works; DRAFT text never appears

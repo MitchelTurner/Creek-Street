@@ -40,6 +40,11 @@ const OfficialPortalPage = lazy(() =>
 const OfficialMeetingPrepPage = lazy(() =>
   import('./pages/OfficialMeetingPrepPage').then((m) => ({ default: m.OfficialMeetingPrepPage })),
 );
+const OfficialMeetingOutcomesPage = lazy(() =>
+  import('./pages/OfficialMeetingOutcomesPage').then((m) => ({
+    default: m.OfficialMeetingOutcomesPage,
+  })),
+);
 const OpenDataPage = lazy(() =>
   import('./pages/OpenDataPage').then((m) => ({ default: m.OpenDataPage })),
 );
@@ -104,6 +109,7 @@ export default function App() {
             <Route path="workspace/:id" element={<DraftBuilderPage />} />
             <Route path="official" element={<OfficialPortalPage />} />
             <Route path="official/meetings/:id" element={<OfficialMeetingPrepPage />} />
+            <Route path="official/meetings/:id/outcomes" element={<OfficialMeetingOutcomesPage />} />
             <Route path="official/applications/:id" element={<OfficialApplicationPage />} />
             <Route path="admin/ingest" element={<IngestAdminPage />} />
             <Route path="admin/ops" element={<OpsDashboardPage />} />

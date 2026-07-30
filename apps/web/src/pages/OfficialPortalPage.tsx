@@ -24,6 +24,7 @@ type Dashboard = {
     structure: { addressLabel: string; commonName: string | null } | null;
   }>;
   upcomingMeetings: Array<{ id: string; scheduledAt: string; status: string }>;
+  pastMeetings: Array<{ id: string; scheduledAt: string; status: string }>;
 };
 
 export function OfficialPortalPage() {
@@ -212,6 +213,32 @@ export function OfficialPortalPage() {
         </ul>
         <p className="mt-2 text-xs text-ink/45">
           Packets are mirrored public facts only — private MemberNotes are never attached.
+        </p>
+      </section>
+
+      <section className="mt-12">
+        <h2 className="font-display text-2xl font-semibold">Past meetings</h2>
+        <ul className="mt-4 space-y-3 text-sm">
+          {dash?.pastMeetings?.map((m) => (
+            <li key={m.id} className="flex flex-wrap items-baseline justify-between gap-3">
+              <span>
+                {new Date(m.scheduledAt).toLocaleString('en-US', { timeZone: 'America/Juneau' })} ·{' '}
+                {m.status}
+              </span>
+              <Link
+                to={`/official/meetings/${m.id}/outcomes`}
+                className="font-semibold text-creek underline underline-offset-4"
+              >
+                Open outcomes
+              </Link>
+            </li>
+          ))}
+        </ul>
+        {dash?.pastMeetings?.length === 0 ? (
+          <p className="mt-3 text-sm text-ink/50">No held meetings mirrored yet.</p>
+        ) : null}
+        <p className="mt-2 text-xs text-ink/45">
+          Outcomes show mirrored decisions and votes only — never DRAFT apps or MemberNotes.
         </p>
       </section>
 

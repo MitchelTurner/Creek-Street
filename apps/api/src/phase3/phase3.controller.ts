@@ -19,6 +19,7 @@ import { AuthGuard, CurrentUser } from '../phase2/auth.guard';
 import { Roles, RolesGuard } from '../phase2/roles.guard';
 import { BoardStore } from './board.store';
 import { ContractGate } from './contract.gate';
+import { MeetingOutcomesService } from './meeting-outcomes.service';
 import { MeetingPrepService } from './meeting-prep.service';
 import { Phase3Service } from './phase3.service';
 
@@ -32,6 +33,7 @@ export class Phase3Controller {
     private readonly board: BoardStore,
     private readonly contract: ContractGate,
     private readonly prep: MeetingPrepService,
+    private readonly outcomes: MeetingOutcomesService,
     private readonly audit: AuditStore,
   ) {}
 
@@ -136,6 +138,42 @@ export class Phase3Controller {
     res.setHeader(
       'Content-Disposition',
       `attachment; filename="creek-street-meeting-prep-${id}.pdf"`,
+    );
+    res.setHeader('Cache-Control', 'private, no-store');
+    res.send(buf);
+  }
+
+  // ── Meeting outcomes (HELD meetings; public decisions only) ───────────────
+
+  @Get('meetings/:id/outcomes')
+  @Roles('BOARD_MEMBER', 'STAFF', 'ADMIN')
+  @Header('Cache-Control', 'no-store')
+  meetingOutcomes(@Param('id') id: string) {
+    const row = this.outcomes.outcomes(id);
+    if (!row) throw new NotFoundException('Meeting not found');
+    return row;
+  }
+
+  @Get('meetings/:id/outcomes.pdf')
+  @Roles('BOARD_MEMBER', 'STAFF', 'ADMIN')
+  async meetingOutcomesPdf(
+    @CurrentUser() user: AuthedUser,
+    @Param('id') id: string,
+    @Res() res: Response,
+  ) {
+    const buf = await this.outcomes.buildPdf(id);
+    if (!buf) throw new NotFoundException('Meeting not found');
+    this.audit.record({
+      action: 'board.meeting.outcomes_download',
+      actor: user,
+      resourceType: 'meeting',
+      resourceId: id,
+      summary: `Meeting outcomes PDF downloaded by ${user.email}`,
+    });
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="creek-street-meeting-outcomes-${id}.pdf"`,
     );
     res.setHeader('Cache-Control', 'private, no-store');
     res.send(buf);

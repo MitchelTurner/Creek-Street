@@ -34,6 +34,10 @@ export class Phase3Service {
       .filter((m) => m.status === 'SCHEDULED')
       .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
 
+    const pastMeetings = meetings
+      .filter((m) => m.status === 'HELD')
+      .sort((a, b) => b.scheduledAt.localeCompare(a.scheduledAt));
+
     return {
       contract: this.contract.status(),
       constraints: {
@@ -44,6 +48,7 @@ export class Phase3Service {
       },
       docket,
       upcomingMeetings: upcoming,
+      pastMeetings,
       deliberationEnabled: this.contract.status().active,
     };
   }

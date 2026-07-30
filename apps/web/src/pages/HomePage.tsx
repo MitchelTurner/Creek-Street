@@ -94,14 +94,14 @@ export function HomePage() {
               to: '/triage',
             },
             {
+              title: 'Filing pathway',
+              body: 'One printable plan stitching triage, permits, HD notice, and file-by date — always ending at the Zoning Administrator.',
+              to: '/filing',
+            },
+            {
               title: 'Permit trigger map',
               body: 'Multi-agency jurisdiction as data. Verified rows only by default; unverified research leads stay gated.',
               to: '/permits',
-            },
-            {
-              title: 'Precedent search',
-              body: 'Visual pairs tagged by criterion, plus similarity search over the mirrored archive.',
-              to: '/precedents',
             },
           ].map((item) => (
             <Link key={item.to} to={item.to} className="group block border-t border-ink/15 pt-5">

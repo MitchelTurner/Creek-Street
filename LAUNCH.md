@@ -31,7 +31,7 @@ Phase 3 vars stay blank until MOU/contract.
 - [ ] Railway: set env from `apps/api/.env.example`; deploy monorepo (`railway.toml`)
 - [ ] Web origin proxies `/api` or sets `VITE_*` if split hosts
 - [ ] CDN / edge: public GET routes send `Cache-Control` + `stale-while-revalidate` (see interceptor)
-- [ ] Health: `GET /api/health` → `{ ok: true, phase: 22, store: "memory"|"prisma" }`
+- [ ] Health: `GET /api/health` → `{ ok: true, phase: 31, store: "memory"|"prisma" }`
 - [ ] Readiness: `GET /api/ready` → `ready: true` (prisma/redis/postgis/mail optional); `checks.publicBackend` matches health
 - [ ] Persistence path: `USE_MEMORY_STORE=false`, migrate + seed, confirm health `store: "prisma"` and docket still has no DRAFT
 - [ ] Packet: `GET /api/meetings/mtg_2026_08/packet.pdf` returns `%PDF`; board download logs `meeting.packet_download`
@@ -54,6 +54,7 @@ Phase 3 vars stay blank until MOU/contract.
 - [ ] Decision sheet: `GET /api/decisions/dec_sample_1` shows vote + `ex_sign_*` precedents; `/decisions/dec_sample_1` UI; unknown id → 404
 - [ ] Criterion atlas: `GET /api/guidance/criteria/MATERIAL_HONESTY` links `dec_sample_1`; `UNIFORMITY` empty OK; `NOT_A_CRITERION` → 404; `/guidance/criteria/:key` UI
 - [ ] Structure dossier: `GET /api/structures/20-creek-street/sheet` shows `dec_sample_1` + precedents; `star-house` has no DRAFT; `/structures/:slug` PDF works
+- [ ] Filing pathway: `GET /api/filing/plan?projectType=SIGNAGE&answers=%7B%22sign_start%22%3A%22yes%22%2C%22sign_new%22%3A%22change%22%7D&structureSlug=20-creek-street&address=24%20Creek%20Street&buildMonth=10&buildYear=2026` shows file-by + ZA step; PDF works; no DRAFT; `/filing` UI
 - [ ] Compliance: `/compliance` checklist visible; staff audit export works after a moderated action
 - [ ] Applicant: export JSON from workspace; delete blocked for demo accounts
 - [ ] Search: `GET /api/search?q=creek` returns hits; `/search` UI works; DRAFT text never appears

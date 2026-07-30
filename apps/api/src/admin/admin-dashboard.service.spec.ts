@@ -16,7 +16,11 @@ describe('AdminDashboardService', () => {
         }),
       } as never,
       { status: () => ({ mode: 'stub', sent: 0, failed: 0, from: 'x' }) } as never,
-      { lastDigest: () => null } as never,
+      {
+        lastDigest: () => null,
+        lastOutcomesDigest: () => null,
+        lastCaseDigest: () => null,
+      } as never,
       { list: () => [] } as never,
       {
         readinessChecklist: () => ({

@@ -11,6 +11,7 @@ const links = [
   { to: '/admin/queue', label: 'Queue' },
   { to: '/admin/ingest', label: 'Ingest' },
   { to: '/triage', label: 'Triage' },
+  { to: '/filing', label: 'Filing plan' },
   { to: '/permits', label: 'Permits' },
   { to: '/precedents', label: 'Precedents' },
   { to: '/notice', label: 'Notice' },

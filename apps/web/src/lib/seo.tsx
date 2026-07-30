@@ -54,6 +54,11 @@ const ROUTES: Record<string, { title: string; description: string }> = {
     title: `Triage wizard · ${SITE}`,
     description: 'Project-type triage for Creek Street design review. Always ends at the Zoning Administrator.',
   },
+  '/filing': {
+    title: `Filing pathway · ${SITE}`,
+    description:
+      'Printable applicant filing plan — triage, permits, HD notice, and file-by date. Always ends at the Zoning Administrator.',
+  },
   '/permits': {
     title: `Permit triggers · ${SITE}`,
     description: 'Multi-agency permit trigger map with verifiedAt gating for unverified rows.',

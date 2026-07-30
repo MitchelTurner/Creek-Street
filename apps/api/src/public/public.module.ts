@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
 import { GeoModule } from '../geo/geo.module';
+import { Phase1Module } from '../phase1/phase1.module';
+import { Phase2Module } from '../phase2/phase2.module';
 import { Phase4Module } from '../phase4/phase4.module';
 import { CaseBriefService } from './case-brief.service';
 import { CriterionAtlasService } from './criterion-atlas.service';
 import { DecisionSheetService } from './decision-sheet.service';
+import { FilingPlanService } from './filing-plan.service';
 import { MeetingAgendaService } from './meeting-agenda.service';
 import { MeetingSummarySheetService } from './meeting-summary-sheet.service';
 import { OpenDataController } from './opendata.controller';
@@ -13,7 +16,7 @@ import { SearchService } from './search.service';
 import { StructureSheetService } from './structure-sheet.service';
 
 @Module({
-  imports: [GeoModule, Phase4Module],
+  imports: [GeoModule, Phase1Module, Phase2Module, Phase4Module],
   controllers: [PublicController, OpenDataController],
   providers: [
     ReadinessService,
@@ -24,6 +27,7 @@ import { StructureSheetService } from './structure-sheet.service';
     DecisionSheetService,
     CriterionAtlasService,
     StructureSheetService,
+    FilingPlanService,
   ],
   exports: [
     ReadinessService,
@@ -33,6 +37,7 @@ import { StructureSheetService } from './structure-sheet.service';
     DecisionSheetService,
     CriterionAtlasService,
     StructureSheetService,
+    FilingPlanService,
   ],
 })
 export class PublicModule {}

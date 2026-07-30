@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0–30 (structure civic dossier)
+## Current release: Phase 0–31 (applicant filing pathway)
 
 See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
@@ -230,6 +230,13 @@ Deliberation does **not** turn on by default. That is intentional.
 - NRHP facts → public cases → decisions → criteria → precedents → related meetings
 - `/structures/:slug` UI upgraded with PDF download and deep-links across the teaching loop
 - DRAFT apps filtered; no MemberNotes or AI summary body
+
+**Phase 31 — applicant filing pathway:**
+
+- Zero-auth composer: `GET/POST /api/filing/plan` · `GET /api/filing/plan.pdf`
+- Stitches triage → permit triggers → HD notice → build-window file-by + criterion/structure deep-links
+- UI at `/filing`; triage completion CTAs into the plan; handoff to `/workspace` for private drafts
+- Always ends with Zoning Administrator language; never DRAFT / MemberNotes / AI body
 
 ### Hard legal constraints (schema + API)
 

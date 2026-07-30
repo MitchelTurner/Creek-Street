@@ -83,6 +83,9 @@ const SearchPage = lazy(() => import('./pages/SearchPage').then((m) => ({ defaul
 const StructureDetailPage = lazy(() =>
   import('./pages/StructureDetailPage').then((m) => ({ default: m.StructureDetailPage })),
 );
+const FilingPage = lazy(() =>
+  import('./pages/FilingPage').then((m) => ({ default: m.FilingPage })),
+);
 const StructuresPage = lazy(() =>
   import('./pages/StructuresPage').then((m) => ({ default: m.StructuresPage })),
 );
@@ -137,6 +140,7 @@ export default function App() {
             <Route path="timelines" element={<TimelinesPage />} />
             <Route path="photos" element={<PhotosPage />} />
             <Route path="triage" element={<TriagePage />} />
+            <Route path="filing" element={<FilingPage />} />
             <Route path="permits" element={<PermitsPage />} />
             <Route path="precedents" element={<PrecedentsPage />} />
             <Route path="map" element={<MapPage />} />

@@ -167,6 +167,12 @@ export function TriagePage() {
           </div>
 
           <div className="mt-6 flex flex-wrap gap-4 text-sm">
+            <Link
+              to={`/filing?projectType=${encodeURIComponent(projectType)}&answers=${encodeURIComponent(JSON.stringify(answers))}`}
+              className="font-semibold text-creek underline underline-offset-4"
+            >
+              Build filing pathway
+            </Link>
             <Link to="/permits" className="font-semibold text-creek underline underline-offset-4">
               Check multi-agency permits
             </Link>

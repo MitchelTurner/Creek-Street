@@ -1,10 +1,13 @@
 import {
+  BadRequestException,
+  Body,
   Controller,
   Get,
   Header,
   Headers,
   NotFoundException,
   Param,
+  Post,
   Query,
   Res,
 } from '@nestjs/common';
@@ -13,6 +16,7 @@ import { PublicStore } from '../store/public.store';
 import { CaseBriefService } from './case-brief.service';
 import { CriterionAtlasService } from './criterion-atlas.service';
 import { DecisionSheetService } from './decision-sheet.service';
+import { FilingPlanService, type FilingPlanInput } from './filing-plan.service';
 import { MeetingAgendaService } from './meeting-agenda.service';
 import { MeetingSummarySheetService } from './meeting-summary-sheet.service';
 import { ReadinessService } from './readiness.service';
@@ -32,13 +36,14 @@ export class PublicController {
     private readonly decisionSheets: DecisionSheetService,
     private readonly criterionAtlas: CriterionAtlasService,
     private readonly structureSheets: StructureSheetService,
+    private readonly filingPlans: FilingPlanService,
   ) {}
 
   @Get('health')
   health() {
     return {
       ok: true,
-      phase: 30,
+      phase: 31,
       store: this.store.backend(),
       opsDashboard: true,
       staffQueue: true,
@@ -56,6 +61,7 @@ export class PublicController {
       decisionSheet: true,
       criterionAtlas: true,
       structureSheet: true,
+      filingPathway: true,
     };
   }
 
@@ -304,6 +310,167 @@ export class PublicController {
       seats: await this.store.listSeats(),
       apply: this.store.meta().applyForBoard,
       note: 'Roster terms marked “confirm with Clerk” are placeholders until borough appointment records are mirrored.',
+    };
+  }
+
+  @Get('filing/plan')
+  @Header('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
+  async filingPlanGet(
+    @Query('projectType') projectType?: string,
+    @Query('answers') answers?: string,
+    @Query('address') address?: string,
+    @Query('parcelId') parcelId?: string,
+    @Query('structureSlug') structureSlug?: string,
+    @Query('buildMonth') buildMonth?: string,
+    @Query('buildYear') buildYear?: string,
+    @Query('includeUnverifiedPermits') includeUnverifiedPermits?: string,
+    @Query('inHdZone') inHdZone?: string,
+    @Query('exteriorChange') exteriorChange?: string,
+    @Query('overWater') overWater?: string,
+    @Query('inWater') inWater?: string,
+    @Query('substructure') substructure?: string,
+    @Query('groundDisturbing') groundDisturbing?: string,
+    @Query('structural') structural?: string,
+    @Query('occupancyChange') occupancyChange?: string,
+    @Query('fill') fill?: string,
+    @Query('wastewater') wastewater?: string,
+    @Query('federalNexus') federalNexus?: string,
+  ) {
+    const plan = await this.filingPlans.plan(
+      this.parseFilingQuery({
+        projectType,
+        answers,
+        address,
+        parcelId,
+        structureSlug,
+        buildMonth,
+        buildYear,
+        includeUnverifiedPermits,
+        inHdZone,
+        exteriorChange,
+        overWater,
+        inWater,
+        substructure,
+        groundDisturbing,
+        structural,
+        occupancyChange,
+        fill,
+        wastewater,
+        federalNexus,
+      }),
+    );
+    if (!plan) throw new NotFoundException('No published triage flow for this project type');
+    return plan;
+  }
+
+  @Post('filing/plan')
+  async filingPlanPost(@Body() body: FilingPlanInput) {
+    const plan = await this.filingPlans.plan({
+      ...body,
+      projectType: body.projectType?.toUpperCase(),
+      answers: body.answers ?? {},
+    });
+    if (!plan) throw new NotFoundException('No published triage flow for this project type');
+    return plan;
+  }
+
+  @Get('filing/plan.pdf')
+  @Header('Cache-Control', 'public, max-age=60')
+  async filingPlanPdf(
+    @Res() res: Response,
+    @Query('projectType') projectType?: string,
+    @Query('answers') answers?: string,
+    @Query('address') address?: string,
+    @Query('parcelId') parcelId?: string,
+    @Query('structureSlug') structureSlug?: string,
+    @Query('buildMonth') buildMonth?: string,
+    @Query('buildYear') buildYear?: string,
+    @Query('includeUnverifiedPermits') includeUnverifiedPermits?: string,
+    @Query('inHdZone') inHdZone?: string,
+    @Query('exteriorChange') exteriorChange?: string,
+    @Query('overWater') overWater?: string,
+    @Query('inWater') inWater?: string,
+    @Query('substructure') substructure?: string,
+    @Query('groundDisturbing') groundDisturbing?: string,
+    @Query('structural') structural?: string,
+    @Query('occupancyChange') occupancyChange?: string,
+    @Query('fill') fill?: string,
+    @Query('wastewater') wastewater?: string,
+    @Query('federalNexus') federalNexus?: string,
+  ) {
+    const buf = await this.filingPlans.buildPdf(
+      this.parseFilingQuery({
+        projectType,
+        answers,
+        address,
+        parcelId,
+        structureSlug,
+        buildMonth,
+        buildYear,
+        includeUnverifiedPermits,
+        inHdZone,
+        exteriorChange,
+        overWater,
+        inWater,
+        substructure,
+        groundDisturbing,
+        structural,
+        occupancyChange,
+        fill,
+        wastewater,
+        federalNexus,
+      }),
+    );
+    if (!buf) throw new NotFoundException('No published triage flow for this project type');
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="creek-street-filing-plan-${(projectType ?? 'plan').toLowerCase()}.pdf"`,
+    );
+    res.send(buf);
+  }
+
+  private parseFilingQuery(q: Record<string, string | undefined>): FilingPlanInput {
+    let answers: Record<string, string> = {};
+    if (q.answers?.trim()) {
+      try {
+        const parsed = JSON.parse(q.answers) as unknown;
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+          throw new Error('answers must be a JSON object');
+        }
+        answers = Object.fromEntries(
+          Object.entries(parsed as Record<string, unknown>).map(([k, v]) => [k, String(v)]),
+        );
+      } catch {
+        throw new BadRequestException('answers must be a URL-encoded JSON object');
+      }
+    }
+
+    const flag = (key: string) => (q[key] === 'true' ? true : q[key] === 'false' ? false : undefined);
+    const permitFlags = {
+      inHdZone: flag('inHdZone'),
+      exteriorChange: flag('exteriorChange'),
+      overWater: flag('overWater'),
+      inWater: flag('inWater'),
+      substructure: flag('substructure'),
+      groundDisturbing: flag('groundDisturbing'),
+      structural: flag('structural'),
+      occupancyChange: flag('occupancyChange'),
+      fill: flag('fill'),
+      wastewater: flag('wastewater'),
+      federalNexus: flag('federalNexus'),
+    };
+
+    return {
+      projectType: q.projectType ?? '',
+      answers,
+      address: q.address,
+      parcelId: q.parcelId,
+      structureSlug: q.structureSlug,
+      buildMonth: q.buildMonth ? Number(q.buildMonth) : undefined,
+      buildYear: q.buildYear ? Number(q.buildYear) : undefined,
+      includeUnverifiedPermits: q.includeUnverifiedPermits === 'true',
+      permitFlags,
     };
   }
 }

@@ -10,12 +10,16 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
+import type { Response } from 'express';
+import { AuditStore } from '../compliance/audit.store';
 import { AuthGuard, CurrentUser } from '../phase2/auth.guard';
 import { Roles, RolesGuard } from '../phase2/roles.guard';
 import { BoardStore } from './board.store';
 import { ContractGate } from './contract.gate';
+import { MeetingPrepService } from './meeting-prep.service';
 import { Phase3Service } from './phase3.service';
 
 type AuthedUser = { id: string; email: string; role: string };
@@ -27,6 +31,8 @@ export class Phase3Controller {
     private readonly phase3: Phase3Service,
     private readonly board: BoardStore,
     private readonly contract: ContractGate,
+    private readonly prep: MeetingPrepService,
+    private readonly audit: AuditStore,
   ) {}
 
   @Get('contract')
@@ -97,6 +103,42 @@ export class Phase3Controller {
   @Roles('BOARD_MEMBER', 'STAFF', 'ADMIN')
   exportNotes(@CurrentUser() user: AuthedUser) {
     return this.board.exportNotes(user.id);
+  }
+
+  // ── Meeting prep (public facts + own note counts; always available) ───────
+
+  @Get('meetings/:id/prep')
+  @Roles('BOARD_MEMBER', 'STAFF', 'ADMIN')
+  @Header('Cache-Control', 'no-store')
+  meetingPrep(@CurrentUser() user: AuthedUser, @Param('id') id: string) {
+    const row = this.prep.prep(id, user.id);
+    if (!row) throw new NotFoundException('Meeting not found');
+    return row;
+  }
+
+  @Get('meetings/:id/prep.pdf')
+  @Roles('BOARD_MEMBER', 'STAFF', 'ADMIN')
+  async meetingPrepPdf(
+    @CurrentUser() user: AuthedUser,
+    @Param('id') id: string,
+    @Res() res: Response,
+  ) {
+    const buf = await this.prep.buildPdf(id, user.id);
+    if (!buf) throw new NotFoundException('Meeting not found');
+    this.audit.record({
+      action: 'board.meeting.prep_download',
+      actor: user,
+      resourceType: 'meeting',
+      resourceId: id,
+      summary: `Meeting prep PDF downloaded by ${user.email}`,
+    });
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="creek-street-meeting-prep-${id}.pdf"`,
+    );
+    res.setHeader('Cache-Control', 'private, no-store');
+    res.send(buf);
   }
 
   // ── Contract-gated deliberation ───────────────────────────────────────────

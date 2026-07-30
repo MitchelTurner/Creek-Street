@@ -177,28 +177,36 @@ export function OfficialPortalPage() {
                 {new Date(m.scheduledAt).toLocaleString('en-US', { timeZone: 'America/Juneau' })} ·{' '}
                 {m.status}
               </span>
-              <button
-                type="button"
-                className="font-semibold text-creek underline underline-offset-4"
-                onClick={() => {
-                  fetch(`/api/board/meetings/${m.id}/packet.pdf`, { headers: authHeaders() })
-                    .then(async (r) => {
-                      if (!r.ok) throw new Error(await r.text());
-                      return r.blob();
-                    })
-                    .then((blob) => {
-                      const url = URL.createObjectURL(blob);
-                      const a = document.createElement('a');
-                      a.href = url;
-                      a.download = `creek-street-board-packet-${m.id}.pdf`;
-                      a.click();
-                      URL.revokeObjectURL(url);
-                    })
-                    .catch((err: Error) => setError(err.message));
-                }}
-              >
-                Packet PDF
-              </button>
+              <span className="flex flex-wrap gap-3">
+                <Link
+                  to={`/official/meetings/${m.id}`}
+                  className="font-semibold text-creek underline underline-offset-4"
+                >
+                  Open prep
+                </Link>
+                <button
+                  type="button"
+                  className="font-semibold text-ink/70 underline underline-offset-4"
+                  onClick={() => {
+                    fetch(`/api/board/meetings/${m.id}/packet.pdf`, { headers: authHeaders() })
+                      .then(async (r) => {
+                        if (!r.ok) throw new Error(await r.text());
+                        return r.blob();
+                      })
+                      .then((blob) => {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `creek-street-board-packet-${m.id}.pdf`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                      })
+                      .catch((err: Error) => setError(err.message));
+                  }}
+                >
+                  Packet PDF
+                </button>
+              </span>
             </li>
           ))}
         </ul>

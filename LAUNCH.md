@@ -31,7 +31,7 @@ Phase 3 vars stay blank until MOU/contract.
 - [ ] Railway: set env from `apps/api/.env.example`; deploy monorepo (`railway.toml`)
 - [ ] Web origin proxies `/api` or sets `VITE_*` if split hosts
 - [ ] CDN / edge: public GET routes send `Cache-Control` + `stale-while-revalidate` (see interceptor)
-- [ ] Health: `GET /api/health` → `{ ok: true, phase: 20, store: "memory"|"prisma" }`
+- [ ] Health: `GET /api/health` → `{ ok: true, phase: 21, store: "memory"|"prisma" }`
 - [ ] Readiness: `GET /api/ready` → `ready: true` (prisma/redis/postgis/mail optional); `checks.publicBackend` matches health
 - [ ] Persistence path: `USE_MEMORY_STORE=false`, migrate + seed, confirm health `store: "prisma"` and docket still has no DRAFT
 - [ ] Packet: `GET /api/meetings/mtg_2026_08/packet.pdf` returns `%PDF`; board download logs `meeting.packet_download`
@@ -44,6 +44,7 @@ Phase 3 vars stay blank until MOU/contract.
 - [ ] Aging: `GET /api/ops/aging` shows stale demo photo/summary/ingest; stale alert omits AI body; cooldown blocks repeat send
 - [ ] Scheduler: default disabled; `POST /api/ops/scheduler/enable` then `…/tick` audits `ops.alert.scheduler.tick` without force-bypass
 - [ ] Claims: `POST /api/ops/queue/photo/photo_pending_demo/claim` then second staff gets `409 QUEUE_ITEM_CLAIMED`
+- [ ] Prep: board `GET /api/board/meetings/mtg_2026_08/prep` lists public case + similar; prep PDF audits `board.meeting.prep_download`; no DRAFT/AI body
 - [ ] Compliance: `/compliance` checklist visible; staff audit export works after a moderated action
 - [ ] Applicant: export JSON from workspace; delete blocked for demo accounts
 - [ ] Search: `GET /api/search?q=creek` returns hits; `/search` UI works; DRAFT text never appears

@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0–20 (queue claim/lock)
+## Current release: Phase 0–21 (board meeting prep)
 
 See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
@@ -161,6 +161,13 @@ Deliberation does **not** turn on by default. That is intentional.
 - Queue payload includes `claim` metadata; `/admin/queue` Claim/Release + action gating
 - Audited as `ops.queue.claim` / `ops.queue.release`
 
+**Phase 21 — board meeting prep:**
+
+- Board prep brief: `GET /api/board/meetings/:id/prep` · `GET /api/board/meetings/:id/prep.pdf`
+- Agenda → public case → structure → similar precedents → own private-note **count** only
+- Never includes DRAFT apps, other members' notes, or unreviewed AI summary text
+- UI at `/official/meetings/:id`; “Open prep” on board portal upcoming meetings
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).
@@ -216,6 +223,7 @@ npm run seed
 - Applicant: `GET /api/applicant/export` · `DELETE /api/applicant/account`
 - Search: `GET /api/search?q=`
 - Packets: `GET /api/meetings/:id/packet.pdf` · board `GET /api/board/meetings/:id/packet.pdf`
+- Meeting prep: board `GET /api/board/meetings/:id/prep` · `GET /api/board/meetings/:id/prep.pdf`
 - Calendar: `GET /api/meetings.ics` · digest `GET /api/digest/preview` · staff `POST /api/digest/send`
 - Ops: staff `GET /api/ops/dashboard` · `GET /api/ops/queue` · `GET /api/ops/aging` · brief `GET /api/ops/brief/preview` · `POST /api/ops/brief/send` · alerts `GET /api/ops/alerts/preview` · `POST /api/ops/alerts/send` · scheduler `GET /api/ops/scheduler` · `POST /api/ops/scheduler/{enable,disable,tick}` · claims `POST /api/ops/queue/:kind/:id/{claim,release}`
 

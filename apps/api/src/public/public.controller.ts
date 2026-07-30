@@ -16,7 +16,7 @@ export class PublicController {
   health() {
     return {
       ok: true,
-      phase: 20,
+      phase: 21,
       store: this.store.backend(),
       opsDashboard: true,
       staffQueue: true,
@@ -24,6 +24,7 @@ export class PublicController {
       queueAging: true,
       alertScheduler: true,
       queueClaims: true,
+      meetingPrep: true,
     };
   }
 

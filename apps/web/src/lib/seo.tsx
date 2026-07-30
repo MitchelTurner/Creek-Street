@@ -86,6 +86,10 @@ const ROUTES: Record<string, { title: string; description: string }> = {
     title: `Board portal · ${SITE}`,
     description: 'Read-only board portal. Deliberation stays dark until processor agreement env is complete.',
   },
+  '/official/meetings': {
+    title: `Meeting prep · ${SITE}`,
+    description: 'Board meeting prep from mirrored public facts — not deliberation.',
+  },
   '/subscriptions': {
     title: `Alerts · ${SITE}`,
     description: 'Email and RSS subscriptions for HD zone docket updates.',
@@ -142,6 +146,12 @@ function matchRoute(pathname: string) {
     return {
       title: `Draft builder · ${SITE}`,
       description: 'Private pre-application package builder.',
+    };
+  }
+  if (pathname.startsWith('/official/meetings/')) {
+    return {
+      title: `Meeting prep · ${SITE}`,
+      description: 'Board meeting prep from mirrored public facts — not deliberation.',
     };
   }
   if (pathname.startsWith('/official/')) {

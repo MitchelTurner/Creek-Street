@@ -53,6 +53,20 @@ type OpsDashboard = {
       staleTotal: number;
     } | null;
   };
+  scheduler: {
+    phase: number;
+    enabled: boolean;
+    tickHours: number;
+    running: boolean;
+    nextTickAt: string | null;
+    lastTick: {
+      at: string;
+      triggered: string;
+      skipped: boolean;
+      skipReason: string | null;
+      alert: { sent: boolean; reason: string; recipients: number; staleTotal: number } | null;
+    } | null;
+  };
   ingest: {
     queue: { mode: string; redisConfigured: boolean; queue: string };
     sources: Array<{
@@ -98,6 +112,8 @@ export function OpsDashboardPage() {
   const [briefNote, setBriefNote] = useState<string | null>(null);
   const [alertBusy, setAlertBusy] = useState(false);
   const [alertNote, setAlertNote] = useState<string | null>(null);
+  const [schedulerBusy, setSchedulerBusy] = useState(false);
+  const [schedulerNote, setSchedulerNote] = useState<string | null>(null);
 
   const isStaff = Boolean(user && (user.role === 'STAFF' || user.role === 'ADMIN'));
 
@@ -193,6 +209,34 @@ export function OpsDashboardPage() {
     }
   }
 
+  async function schedulerAction(path: 'enable' | 'disable' | 'tick') {
+    setSchedulerBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/ops/scheduler/${path}`, {
+        method: 'POST',
+        headers: authHeaders(),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const json = (await res.json()) as Record<string, unknown>;
+      if (path === 'tick') {
+        const alert = json.alert as { sent?: boolean; reason?: string; recipients?: number } | null;
+        setSchedulerNote(
+          alert
+            ? `Manual tick: ${alert.sent ? `SENT (${alert.recipients})` : alert.reason}`
+            : 'Manual tick complete.',
+        );
+      } else {
+        setSchedulerNote(`Scheduler ${path}d.`);
+      }
+      reload();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setSchedulerBusy(false);
+    }
+  }
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 md:px-6">
       <PageHeader
@@ -247,6 +291,7 @@ export function OpsDashboardPage() {
       {error ? <p className="mb-4 text-sm text-red-700">{error}</p> : null}
       {briefNote ? <p className="mb-4 text-sm text-ink/70">{briefNote}</p> : null}
       {alertNote ? <p className="mb-4 text-sm text-ink/70">{alertNote}</p> : null}
+      {schedulerNote ? <p className="mb-4 text-sm text-ink/70">{schedulerNote}</p> : null}
       {loading && !data ? <p className="text-sm text-ink/50">Loading dashboard…</p> : null}
 
       {data ? (
@@ -281,6 +326,66 @@ export function OpsDashboardPage() {
             ) : (
               <p className="text-sm text-ink/70">No stale alert sent yet this process.</p>
             )}
+          </section>
+
+          <section className="space-y-3">
+            <h2 className="font-display text-2xl text-ink">Alert scheduler</h2>
+            <p className="text-sm text-ink/65">
+              Periodic ticks call the same stale-alert path without force — NO_STALE and cooldown
+              still apply. Default off (`OPS_ALERT_SCHEDULER_ENABLED`).
+            </p>
+            <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <Stat label="Enabled" value={data.scheduler.enabled ? 'yes' : 'no'} />
+              <Stat label="Running" value={data.scheduler.running ? 'yes' : 'no'} />
+              <Stat label="Tick hours" value={String(data.scheduler.tickHours)} />
+              <Stat
+                label="Next tick"
+                value={
+                  data.scheduler.nextTickAt
+                    ? new Date(data.scheduler.nextTickAt).toLocaleString()
+                    : '—'
+                }
+              />
+            </dl>
+            {data.scheduler.lastTick ? (
+              <p className="text-sm text-ink/70">
+                Last tick {new Date(data.scheduler.lastTick.at).toLocaleString()} ·{' '}
+                {data.scheduler.lastTick.triggered}
+                {data.scheduler.lastTick.skipped
+                  ? ` · skipped (${data.scheduler.lastTick.skipReason})`
+                  : data.scheduler.lastTick.alert
+                    ? ` · ${data.scheduler.lastTick.alert.sent ? 'SENT' : data.scheduler.lastTick.alert.reason}`
+                    : ''}
+              </p>
+            ) : (
+              <p className="text-sm text-ink/70">No scheduler tick yet this process.</p>
+            )}
+            <div className="flex flex-wrap gap-2 text-sm">
+              <button
+                type="button"
+                disabled={schedulerBusy || data.scheduler.enabled}
+                onClick={() => void schedulerAction('enable')}
+                className="rounded-md border border-ink/15 px-3 py-1.5 font-semibold text-ink disabled:opacity-50"
+              >
+                Enable
+              </button>
+              <button
+                type="button"
+                disabled={schedulerBusy || !data.scheduler.enabled}
+                onClick={() => void schedulerAction('disable')}
+                className="rounded-md border border-ink/15 px-3 py-1.5 font-semibold text-ink disabled:opacity-50"
+              >
+                Disable
+              </button>
+              <button
+                type="button"
+                disabled={schedulerBusy}
+                onClick={() => void schedulerAction('tick')}
+                className="rounded-md bg-creek px-3 py-1.5 font-semibold text-foam disabled:opacity-50"
+              >
+                Run tick now
+              </button>
+            </div>
           </section>
 
           <section className="space-y-3">

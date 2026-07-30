@@ -49,6 +49,16 @@ describe('AdminDashboardService', () => {
           lastAlert: null,
         }),
       } as never,
+      {
+        status: () => ({
+          phase: 19,
+          enabled: false,
+          tickHours: 1,
+          running: false,
+          lastTick: null,
+          nextTickAt: null,
+        }),
+      } as never,
     );
 
     const snap = await svc.snapshot();
@@ -59,8 +69,10 @@ describe('AdminDashboardService', () => {
     expect(snap.links.queue).toBe('/admin/queue');
     expect(snap.links.briefPreview).toBe('/api/ops/brief/preview');
     expect(snap.links.alertPreview).toBe('/api/ops/alerts/preview');
+    expect(snap.links.scheduler).toBe('/api/ops/scheduler');
     expect(snap.mail.mode).toBe('stub');
     expect(snap.opsBrief).toBeNull();
     expect(snap.aging.staleTotal).toBe(2);
+    expect(snap.scheduler.enabled).toBe(false);
   });
 });

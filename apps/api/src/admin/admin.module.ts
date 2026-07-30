@@ -11,6 +11,7 @@ import { AdminDashboardService } from './admin-dashboard.service';
 import { OpsAgingService } from './ops-aging.service';
 import { OpsBriefService } from './ops-brief.service';
 import { OpsQueueService } from './ops-queue.service';
+import { OpsSchedulerService } from './ops-scheduler.service';
 
 @Module({
   imports: [
@@ -23,6 +24,12 @@ import { OpsQueueService } from './ops-queue.service';
     IngestModule,
   ],
   controllers: [AdminController],
-  providers: [AdminDashboardService, OpsQueueService, OpsBriefService, OpsAgingService],
+  providers: [
+    AdminDashboardService,
+    OpsQueueService,
+    OpsBriefService,
+    OpsAgingService,
+    OpsSchedulerService,
+  ],
 })
 export class AdminModule {}

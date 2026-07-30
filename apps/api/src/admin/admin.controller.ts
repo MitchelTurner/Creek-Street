@@ -13,6 +13,7 @@ import { Roles, RolesGuard } from '../phase2/roles.guard';
 import { AdminDashboardService } from './admin-dashboard.service';
 import { OpsAgingService } from './ops-aging.service';
 import { OpsBriefService } from './ops-brief.service';
+import { OpsSchedulerService } from './ops-scheduler.service';
 
 @Controller('ops')
 @UseGuards(AuthGuard, RolesGuard)
@@ -22,6 +23,7 @@ export class AdminController {
     private readonly adminDashboard: AdminDashboardService,
     private readonly opsBrief: OpsBriefService,
     private readonly opsAging: OpsAgingService,
+    private readonly opsScheduler: OpsSchedulerService,
     private readonly audit: AuditStore,
   ) {}
 
@@ -125,5 +127,58 @@ export class AdminController {
       });
     }
     return result;
+  }
+
+  @Get('scheduler')
+  @Header('Cache-Control', 'no-store')
+  schedulerStatus() {
+    return this.opsScheduler.status();
+  }
+
+  @Post('scheduler/enable')
+  @Header('Cache-Control', 'no-store')
+  schedulerEnable(@CurrentUser() user: { id: string; email: string; role: string }) {
+    const status = this.opsScheduler.enable();
+    this.audit.record({
+      action: 'ops.alert.scheduler.enable',
+      actor: user,
+      resourceType: 'ops_scheduler',
+      resourceId: 'stale_alert',
+      summary: `Ops alert scheduler enabled by ${user.email}`,
+      meta: { tickHours: status.tickHours },
+    });
+    return status;
+  }
+
+  @Post('scheduler/disable')
+  @Header('Cache-Control', 'no-store')
+  schedulerDisable(@CurrentUser() user: { id: string; email: string; role: string }) {
+    const status = this.opsScheduler.disable();
+    this.audit.record({
+      action: 'ops.alert.scheduler.disable',
+      actor: user,
+      resourceType: 'ops_scheduler',
+      resourceId: 'stale_alert',
+      summary: `Ops alert scheduler disabled by ${user.email}`,
+    });
+    return status;
+  }
+
+  @Post('scheduler/tick')
+  @Header('Cache-Control', 'no-store')
+  async schedulerTick(
+    @CurrentUser() user: { id: string; email: string; role: string },
+    @Headers('host') host?: string,
+    @Headers('x-forwarded-host') xfHost?: string,
+    @Headers('x-forwarded-proto') xfProto?: string,
+  ) {
+    const h = xfHost || host || 'creek-street.local';
+    const proto = xfProto || 'https';
+    const origin = process.env.PUBLIC_WEB_ORIGIN || `${proto}://${h}`;
+    return this.opsScheduler.tick({
+      triggered: 'manual',
+      origin,
+      actor: user,
+    });
   }
 }

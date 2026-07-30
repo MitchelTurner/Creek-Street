@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0–18 (queue aging & alerts)
+## Current release: Phase 0–19 (alert scheduler)
 
 See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
@@ -147,6 +147,13 @@ Deliberation does **not** turn on by default. That is intentional.
 - Thresholds via env: `OPS_STALE_PHOTO_HOURS` · `OPS_STALE_SUMMARY_HOURS` · `OPS_STALE_INGEST_HOURS` · `OPS_ALERT_COOLDOWN_HOURS`
 - Alert email is staff-only and never includes AI summary body
 
+**Phase 19 — alert scheduler:**
+
+- Periodic stale-alert dispatcher (default off): `OPS_ALERT_SCHEDULER_ENABLED` · `OPS_ALERT_TICK_HOURS`
+- Staff controls: `GET /api/ops/scheduler` · `POST …/enable|disable|tick`
+- Auto ticks call `sendAlert({ force: false })` — inherits NO_STALE + cooldown; audited as `ops.alert.scheduler.tick`
+- Scheduler card on `/admin/ops`
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).
@@ -203,7 +210,7 @@ npm run seed
 - Search: `GET /api/search?q=`
 - Packets: `GET /api/meetings/:id/packet.pdf` · board `GET /api/board/meetings/:id/packet.pdf`
 - Calendar: `GET /api/meetings.ics` · digest `GET /api/digest/preview` · staff `POST /api/digest/send`
-- Ops: staff `GET /api/ops/dashboard` · `GET /api/ops/queue` · `GET /api/ops/aging` · brief `GET /api/ops/brief/preview` · `POST /api/ops/brief/send` · alerts `GET /api/ops/alerts/preview` · `POST /api/ops/alerts/send`
+- Ops: staff `GET /api/ops/dashboard` · `GET /api/ops/queue` · `GET /api/ops/aging` · brief `GET /api/ops/brief/preview` · `POST /api/ops/brief/send` · alerts `GET /api/ops/alerts/preview` · `POST /api/ops/alerts/send` · scheduler `GET /api/ops/scheduler` · `POST /api/ops/scheduler/{enable,disable,tick}`
 
 Demo accounts (password `creek-demo` for all):
 

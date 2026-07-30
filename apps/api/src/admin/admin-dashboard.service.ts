@@ -9,6 +9,7 @@ import { MailService } from '../ops/mail.service';
 import { ReadinessService } from '../public/readiness.service';
 import { OpsAgingService } from './ops-aging.service';
 import { OpsBriefService } from './ops-brief.service';
+import { OpsSchedulerService } from './ops-scheduler.service';
 
 /**
  * Phase 15 — consolidated staff ops snapshot.
@@ -26,6 +27,7 @@ export class AdminDashboardService {
     private readonly ingestStore: IngestStore,
     private readonly opsBrief: OpsBriefService,
     private readonly opsAging: OpsAgingService,
+    private readonly opsScheduler: OpsSchedulerService,
   ) {}
 
   async snapshot() {
@@ -56,6 +58,7 @@ export class AdminDashboardService {
         staleIngestRuns: aging.counts.staleIngestRuns,
         lastAlert: aging.lastAlert,
       },
+      scheduler: this.opsScheduler.status(),
       ingest: {
         queue: this.ingestQueue.status(),
         sources: this.ingestStore.listSources().map((s) => ({
@@ -81,6 +84,7 @@ export class AdminDashboardService {
         briefPreview: '/api/ops/brief/preview',
         alertPreview: '/api/ops/alerts/preview',
         aging: '/api/ops/aging',
+        scheduler: '/api/ops/scheduler',
         digestPreview: '/api/digest/preview',
         meetingsIcs: '/api/meetings.ics',
         ready: '/api/ready',

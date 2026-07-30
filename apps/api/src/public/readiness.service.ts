@@ -42,7 +42,7 @@ export class ReadinessService {
 
     return {
       ready: checks.api,
-      phase: 28,
+      phase: 29,
       checks,
       noticeMethod: geo.noticeMethod,
       mail,

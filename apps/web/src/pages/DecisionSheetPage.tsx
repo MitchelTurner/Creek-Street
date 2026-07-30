@@ -200,7 +200,13 @@ export function DecisionSheetPage() {
                     />
                     <figcaption className="mt-3 text-sm leading-relaxed text-ink/70">
                       <span className="text-xs uppercase tracking-[0.14em] text-ink/45">
-                        {p.side.replace(/_/g, ' ')} · {p.criterion.replace(/_/g, ' ')}
+                        {p.side.replace(/_/g, ' ')} ·{' '}
+                        <Link
+                          to={`/guidance/criteria/${p.criterion}`}
+                          className="font-semibold text-creek underline underline-offset-4"
+                        >
+                          {p.criterion.replace(/_/g, ' ')}
+                        </Link>
                       </span>
                       <p className="mt-2">{p.caption}</p>
                     </figcaption>

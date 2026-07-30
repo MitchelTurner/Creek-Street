@@ -52,6 +52,7 @@ Phase 3 vars stay blank until MOU/contract.
 - [ ] Agenda: `GET /api/meetings/mtg_2026_08/agenda` links `app_sample_pending`; HELD `mtg_2023_04` includes outcomes; `/meetings/:id` UI; DRAFT never listed
 - [ ] Summary sheet: `GET /api/meetings/mtg_2023_04/summary-sheet` shows reviewed body; `mtg_2024_02` / `mtg_2026_08` → 404; `/meetings/mtg_2023_04/summary` UI
 - [ ] Decision sheet: `GET /api/decisions/dec_sample_1` shows vote + `ex_sign_*` precedents; `/decisions/dec_sample_1` UI; unknown id → 404
+- [ ] Criterion atlas: `GET /api/guidance/criteria/MATERIAL_HONESTY` links `dec_sample_1`; `UNIFORMITY` empty OK; `NOT_A_CRITERION` → 404; `/guidance/criteria/:key` UI
 - [ ] Compliance: `/compliance` checklist visible; staff audit export works after a moderated action
 - [ ] Applicant: export JSON from workspace; delete blocked for demo accounts
 - [ ] Search: `GET /api/search?q=creek` returns hits; `/search` UI works; DRAFT text never appears

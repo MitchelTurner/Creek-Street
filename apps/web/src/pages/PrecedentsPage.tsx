@@ -46,24 +46,40 @@ export function PrecedentsPage() {
       <section className="mb-16">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <h2 className="font-display text-2xl font-semibold">Visual library</h2>
-          <select
-            value={criterion}
-            onChange={(e) => setCriterion(e.target.value)}
-            className="rounded-md border border-ink/15 bg-foam/80 px-3 py-2 text-sm outline-none ring-creek/30 focus:ring-2"
-          >
-            {CRITERIA.map(([value, label]) => (
-              <option key={label} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
+          <div className="flex flex-wrap items-center gap-3">
+            <select
+              value={criterion}
+              onChange={(e) => setCriterion(e.target.value)}
+              className="rounded-md border border-ink/15 bg-foam/80 px-3 py-2 text-sm outline-none ring-creek/30 focus:ring-2"
+            >
+              {CRITERIA.map(([value, label]) => (
+                <option key={label} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+            {criterion ? (
+              <Link
+                to={`/guidance/criteria/${criterion}`}
+                className="text-sm font-semibold text-creek underline underline-offset-4"
+              >
+                Criterion atlas
+              </Link>
+            ) : null}
+          </div>
         </div>
 
         <div className="space-y-10">
           {pairs.map((pair) => (
             <div key={pair.key} className="border-t border-ink/10 pt-8">
               <p className="text-xs uppercase tracking-[0.14em] text-ink/45">
-                {pair.criterion.replace(/_/g, ' ')} · {pair.weight.replace(/_/g, ' ')}
+                <Link
+                  to={`/guidance/criteria/${pair.criterion}`}
+                  className="font-semibold text-creek underline underline-offset-4"
+                >
+                  {pair.criterion.replace(/_/g, ' ')}
+                </Link>{' '}
+                · {pair.weight.replace(/_/g, ' ')}
               </p>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 {pair.items.map((item) => (

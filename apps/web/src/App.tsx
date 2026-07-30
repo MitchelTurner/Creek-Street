@@ -29,6 +29,9 @@ const DraftBuilderPage = lazy(() =>
 const GuidancePage = lazy(() =>
   import('./pages/GuidancePage').then((m) => ({ default: m.GuidancePage })),
 );
+const CriterionPage = lazy(() =>
+  import('./pages/CriterionPage').then((m) => ({ default: m.CriterionPage })),
+);
 const IngestAdminPage = lazy(() =>
   import('./pages/IngestAdminPage').then((m) => ({ default: m.IngestAdminPage })),
 );
@@ -148,6 +151,7 @@ export default function App() {
             <Route path="meetings/:id/summary" element={<MeetingSummaryPage />} />
             <Route path="meetings/:id" element={<MeetingAgendaPage />} />
             <Route path="guidance" element={<GuidancePage />} />
+            <Route path="guidance/criteria/:key" element={<CriterionPage />} />
             <Route path="board" element={<BoardPage />} />
             <Route path="opendata" element={<OpenDataPage />} />
             <Route path="compliance" element={<CompliancePage />} />

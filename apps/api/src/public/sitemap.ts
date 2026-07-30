@@ -1,4 +1,4 @@
-import { applications, decisions, meetings, structures } from '../data/phase0-seed';
+import { applications, criteria, decisions, meetings, structures } from '../data/phase0-seed';
 import { meetingSummaries } from '../data/phase4-seed';
 import { PUBLIC_STATUS_SET } from '../store/public-statuses';
 
@@ -46,6 +46,7 @@ export function publicSitemapPaths() {
       return app != null && PUBLIC_STATUS_SET.has(app.status);
     })
     .map((d) => `/decisions/${d.id}`);
+  const criterionPages = criteria.map((c) => `/guidance/criteria/${c.key}`);
   return [
     ...STATIC_PATHS,
     ...structurePaths,
@@ -55,6 +56,7 @@ export function publicSitemapPaths() {
     ...publishedSummaries,
     ...caseBriefs,
     ...decisionSheets,
+    ...criterionPages,
   ];
 }
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
 import { api, type GuidanceResponse } from '../lib/api';
 
@@ -40,12 +41,31 @@ export function GuidancePage() {
 
       <section className="mt-16">
         <h2 className="font-display text-3xl font-semibold">Review criteria</h2>
+        <p className="mt-3 max-w-2xl text-sm text-ink/60">
+          Open a teaching page for each criterion — plain language beside the code cite, with
+          linked decisions and visual precedents when available.
+        </p>
         <div className="mt-8 space-y-8">
           {data?.criteria.map((c) => (
             <div key={c.key} className="grid gap-4 md:grid-cols-2">
               <div>
-                <h3 className="font-display text-xl font-semibold">{c.label}</h3>
+                <h3 className="font-display text-xl font-semibold">
+                  <Link
+                    to={`/guidance/criteria/${c.key}`}
+                    className="text-ink underline-offset-4 hover:text-creek hover:underline"
+                  >
+                    {c.label}
+                  </Link>
+                </h3>
                 <p className="mt-2 leading-relaxed text-ink/75">{c.plainLanguage}</p>
+                <p className="mt-3 text-sm">
+                  <Link
+                    to={`/guidance/criteria/${c.key}`}
+                    className="font-semibold text-creek underline underline-offset-4"
+                  >
+                    Open criterion atlas
+                  </Link>
+                </p>
               </div>
               <aside className="text-sm text-ink/60">
                 <p className="font-medium text-creek">{c.codeCite}</p>

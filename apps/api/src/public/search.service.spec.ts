@@ -24,6 +24,8 @@ describe('SearchService', () => {
   it('finds guidance / criteria by code cite fragments', () => {
     const res = search.search('uniformity');
     expect(res.hits.some((h) => h.type === 'criterion' || h.type === 'guidance')).toBe(true);
+    const criterion = res.hits.find((h) => h.type === 'criterion' && h.id === 'UNIFORMITY');
+    expect(criterion?.href).toBe('/guidance/criteria/UNIFORMITY');
   });
 
   it('deep-links public applications to case briefs', () => {

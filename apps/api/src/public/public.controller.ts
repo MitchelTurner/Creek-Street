@@ -11,6 +11,7 @@ import {
 import type { Response } from 'express';
 import { PublicStore } from '../store/public.store';
 import { CaseBriefService } from './case-brief.service';
+import { CriterionAtlasService } from './criterion-atlas.service';
 import { DecisionSheetService } from './decision-sheet.service';
 import { MeetingAgendaService } from './meeting-agenda.service';
 import { MeetingSummarySheetService } from './meeting-summary-sheet.service';
@@ -28,13 +29,14 @@ export class PublicController {
     private readonly meetingAgendas: MeetingAgendaService,
     private readonly meetingSummaries: MeetingSummarySheetService,
     private readonly decisionSheets: DecisionSheetService,
+    private readonly criterionAtlas: CriterionAtlasService,
   ) {}
 
   @Get('health')
   health() {
     return {
       ok: true,
-      phase: 28,
+      phase: 29,
       store: this.store.backend(),
       opsDashboard: true,
       staffQueue: true,
@@ -50,6 +52,7 @@ export class PublicController {
       meetingAgenda: true,
       meetingSummarySheet: true,
       decisionSheet: true,
+      criterionAtlas: true,
     };
   }
 
@@ -241,6 +244,33 @@ export class PublicController {
       disclaimer:
         'Plain-language guidance summarizes what the code says. It is not a legal conclusion. The Zoning Administrator decides applicability.',
     };
+  }
+
+  @Get('guidance/criteria')
+  @Header('Cache-Control', 'public, max-age=300, stale-while-revalidate=600')
+  guidanceCriteria() {
+    return this.criterionAtlas.list();
+  }
+
+  @Get('guidance/criteria/:key')
+  @Header('Cache-Control', 'public, max-age=120, stale-while-revalidate=300')
+  guidanceCriterion(@Param('key') key: string) {
+    const row = this.criterionAtlas.atlas(key);
+    if (!row) throw new NotFoundException('Criterion not found');
+    return row;
+  }
+
+  @Get('guidance/criteria/:key/sheet.pdf')
+  @Header('Cache-Control', 'public, max-age=120')
+  async guidanceCriterionPdf(@Param('key') key: string, @Res() res: Response) {
+    const buf = await this.criterionAtlas.buildPdf(key);
+    if (!buf) throw new NotFoundException('Criterion not found');
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="creek-street-criterion-${key}.pdf"`,
+    );
+    res.send(buf);
   }
 
   @Get('board/seats')

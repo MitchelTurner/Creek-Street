@@ -147,7 +147,7 @@ export class SearchService {
           id: c.key,
           title: c.label,
           snippet: truncate(c.plainLanguage),
-          href: `/guidance`,
+          href: `/guidance/criteria/${c.key}`,
           score,
         });
       }

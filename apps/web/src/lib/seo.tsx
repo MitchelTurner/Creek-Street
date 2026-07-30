@@ -161,6 +161,13 @@ function matchRoute(pathname: string) {
         'Mirrored board recommendation, vote, final action, and linked visual precedents.',
     };
   }
+  if (pathname.startsWith('/guidance/criteria/')) {
+    return {
+      title: `Review criterion · ${SITE}`,
+      description:
+        'Plain-language HD review criterion with linked decisions and visual precedents.',
+    };
+  }
   if (pathname.startsWith('/meetings/') && pathname.endsWith('/outcomes')) {
     return {
       title: `Meeting outcomes · ${SITE}`,

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { GeoModule } from '../geo/geo.module';
 import { Phase4Module } from '../phase4/phase4.module';
 import { CaseBriefService } from './case-brief.service';
+import { CriterionAtlasService } from './criterion-atlas.service';
 import { DecisionSheetService } from './decision-sheet.service';
 import { MeetingAgendaService } from './meeting-agenda.service';
 import { MeetingSummarySheetService } from './meeting-summary-sheet.service';
@@ -20,6 +21,7 @@ import { SearchService } from './search.service';
     MeetingAgendaService,
     MeetingSummarySheetService,
     DecisionSheetService,
+    CriterionAtlasService,
   ],
   exports: [
     ReadinessService,
@@ -27,6 +29,7 @@ import { SearchService } from './search.service';
     MeetingAgendaService,
     MeetingSummarySheetService,
     DecisionSheetService,
+    CriterionAtlasService,
   ],
 })
 export class PublicModule {}

@@ -1,5 +1,16 @@
-import { Controller, Get, Header, Headers, NotFoundException, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Header,
+  Headers,
+  NotFoundException,
+  Param,
+  Query,
+  Res,
+} from '@nestjs/common';
+import type { Response } from 'express';
 import { PublicStore } from '../store/public.store';
+import { CaseBriefService } from './case-brief.service';
 import { ReadinessService } from './readiness.service';
 import { SearchService } from './search.service';
 import { publicSitemapPaths, renderSitemapXml } from './sitemap';
@@ -10,13 +21,14 @@ export class PublicController {
     private readonly store: PublicStore,
     private readonly readiness: ReadinessService,
     private readonly searchService: SearchService,
+    private readonly caseBriefs: CaseBriefService,
   ) {}
 
   @Get('health')
   health() {
     return {
       ok: true,
-      phase: 23,
+      phase: 24,
       store: this.store.backend(),
       opsDashboard: true,
       staffQueue: true,
@@ -27,6 +39,7 @@ export class PublicController {
       meetingPrep: true,
       meetingOutcomes: true,
       publicOutcomesDigest: true,
+      caseBrief: true,
     };
   }
 
@@ -104,6 +117,27 @@ export class PublicController {
     const row = await this.store.getApplication(id);
     if (!row) throw new NotFoundException('Application not found');
     return row;
+  }
+
+  @Get('applications/:id/brief')
+  @Header('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
+  applicationBrief(@Param('id') id: string) {
+    const row = this.caseBriefs.brief(id);
+    if (!row) throw new NotFoundException('Application not found');
+    return row;
+  }
+
+  @Get('applications/:id/brief.pdf')
+  @Header('Cache-Control', 'public, max-age=60')
+  async applicationBriefPdf(@Param('id') id: string, @Res() res: Response) {
+    const buf = await this.caseBriefs.buildPdf(id);
+    if (!buf) throw new NotFoundException('Application not found');
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="creek-street-case-brief-${id}.pdf"`,
+    );
+    res.send(buf);
   }
 
   @Get('decisions')

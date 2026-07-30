@@ -79,7 +79,7 @@ export class SearchService {
           id: a.id,
           title: a.caseNumber ?? a.id,
           snippet: truncate(`${a.projectType}: ${a.description}`),
-          href: `/docket`,
+          href: `/docket/${a.id}`,
           score: score + 0.1,
         });
       }
@@ -99,7 +99,7 @@ export class SearchService {
           id: d.id,
           title: app?.caseNumber ? `Decision · ${app.caseNumber}` : `Decision · ${d.id}`,
           snippet: truncate(d.recommendation),
-          href: `/decisions`,
+          href: app ? `/docket/${app.id}` : `/decisions`,
           score,
         });
       }

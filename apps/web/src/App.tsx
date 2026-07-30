@@ -17,6 +17,9 @@ const DecisionsPage = lazy(() =>
   import('./pages/DecisionsPage').then((m) => ({ default: m.DecisionsPage })),
 );
 const DocketPage = lazy(() => import('./pages/DocketPage').then((m) => ({ default: m.DocketPage })));
+const CaseBriefPage = lazy(() =>
+  import('./pages/CaseBriefPage').then((m) => ({ default: m.CaseBriefPage })),
+);
 const DraftBuilderPage = lazy(() =>
   import('./pages/DraftBuilderPage').then((m) => ({ default: m.DraftBuilderPage })),
 );
@@ -128,6 +131,7 @@ export default function App() {
             <Route path="structures" element={<StructuresPage />} />
             <Route path="structures/:slug" element={<StructureDetailPage />} />
             <Route path="docket" element={<DocketPage />} />
+            <Route path="docket/:id" element={<CaseBriefPage />} />
             <Route path="decisions" element={<DecisionsPage />} />
             <Route path="meetings" element={<MeetingsPage />} />
             <Route path="meetings/:id/outcomes" element={<MeetingOutcomesPage />} />

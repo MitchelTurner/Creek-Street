@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
 import { SourceLink } from '../components/SourceLink';
 import { api, formatDate, type Decision } from '../lib/api';
@@ -36,7 +37,13 @@ export function DecisionsPage() {
           >
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p className="text-xs uppercase tracking-[0.14em] text-ink/45">
-                {d.application?.caseNumber ?? d.applicationId} · {formatDate(d.decidedAt)}
+                <Link
+                  to={`/docket/${d.applicationId}`}
+                  className="font-semibold text-creek underline underline-offset-4"
+                >
+                  {d.application?.caseNumber ?? d.applicationId}
+                </Link>{' '}
+                · {formatDate(d.decidedAt)}
               </p>
               {d.voteFor != null && (
                 <p className="text-xs text-ink/50">
@@ -56,7 +63,13 @@ export function DecisionsPage() {
             {d.finalOutcome && (
               <p className="mt-3 text-sm font-medium text-creek">Final action: {d.finalOutcome}</p>
             )}
-            <p className="mt-3">
+            <p className="mt-3 flex flex-wrap gap-3 text-xs">
+              <Link
+                to={`/docket/${d.applicationId}`}
+                className="font-semibold text-creek underline underline-offset-4"
+              >
+                Case brief
+              </Link>
               <SourceLink href={d.sourceDocUrl} />
             </p>
           </li>

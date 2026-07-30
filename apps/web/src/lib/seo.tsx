@@ -148,6 +148,12 @@ function matchRoute(pathname: string) {
       description: 'Private pre-application package builder.',
     };
   }
+  if (pathname.startsWith('/docket/')) {
+    return {
+      title: `Case brief · ${SITE}`,
+      description: 'Mirrored public case facts — site, decisions, and related meetings.',
+    };
+  }
   if (pathname.startsWith('/meetings/') && pathname.endsWith('/outcomes')) {
     return {
       title: `Meeting outcomes · ${SITE}`,

@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0–23 (public outcomes & digest)
+## Current release: Phase 0–24 (public case brief)
 
 See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
@@ -182,6 +182,13 @@ Deliberation does **not** turn on by default. That is intentional.
 - Staff outcomes digest: `GET /api/digest/outcomes/:meetingId/preview` · `POST …/send`
 - Sitemap includes held-meeting outcomes paths; digest never includes DRAFT or AI body
 
+**Phase 24 — public case brief:**
+
+- Case brief: `GET /api/applications/:id/brief` · `…/brief.pdf` (public statuses only; DRAFT → 404)
+- Ties site → decisions → related meetings with outcomes links for `HELD` meetings
+- UI at `/docket/:id`; wired from docket, decisions, structures, search, and meeting outcomes
+- Sitemap includes public case paths; RSS `/docket/:id` links now resolve
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).
@@ -240,6 +247,7 @@ npm run seed
 - Meeting prep: board `GET /api/board/meetings/:id/prep` · `GET /api/board/meetings/:id/prep.pdf`
 - Meeting outcomes: board `GET /api/board/meetings/:id/outcomes` · `GET /api/board/meetings/:id/outcomes.pdf`
 - Public outcomes: `GET /api/meetings/:id/outcomes` · `GET /api/meetings/:id/outcomes.pdf`
+- Case brief: `GET /api/applications/:id/brief` · `GET /api/applications/:id/brief.pdf`
 - Calendar: `GET /api/meetings.ics` · digest `GET /api/digest/preview` · staff `POST /api/digest/send`
 - Outcomes digest: `GET /api/digest/outcomes/:meetingId/preview` · staff `POST /api/digest/outcomes/:meetingId/send`
 - Ops: staff `GET /api/ops/dashboard` · `GET /api/ops/queue` · `GET /api/ops/aging` · brief `GET /api/ops/brief/preview` · `POST /api/ops/brief/send` · alerts `GET /api/ops/alerts/preview` · `POST /api/ops/alerts/send` · scheduler `GET /api/ops/scheduler` · `POST /api/ops/scheduler/{enable,disable,tick}` · claims `POST /api/ops/queue/:kind/:id/{claim,release}`

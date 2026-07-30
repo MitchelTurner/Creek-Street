@@ -25,4 +25,10 @@ describe('SearchService', () => {
     const res = search.search('uniformity');
     expect(res.hits.some((h) => h.type === 'criterion' || h.type === 'guidance')).toBe(true);
   });
+
+  it('deep-links public applications to case briefs', () => {
+    const res = search.search('HDR-SAMPLE-001');
+    const appHit = res.hits.find((h) => h.type === 'application' && h.id === 'app_sample_sign');
+    expect(appHit?.href).toBe('/docket/app_sample_sign');
+  });
 });

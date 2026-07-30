@@ -92,10 +92,23 @@ export function StructureDetailPage() {
           <ul className="mt-4 divide-y divide-ink/10 border-y border-ink/10">
             {row.applications.map((a) => (
               <li key={a.id} className="py-3">
-                <p className="font-medium">{a.caseNumber ?? a.id}</p>
+                <p className="font-medium">
+                  <Link
+                    to={`/docket/${a.id}`}
+                    className="text-ink underline-offset-4 hover:text-creek hover:underline"
+                  >
+                    {a.caseNumber ?? a.id}
+                  </Link>
+                </p>
                 <p className="text-sm text-ink/65">{a.description}</p>
                 <p className="mt-1 text-xs text-ink/45">
-                  {statusLabel(a.status)} · filed {formatDate(a.filedAt)}
+                  {statusLabel(a.status)} · filed {formatDate(a.filedAt)} ·{' '}
+                  <Link
+                    to={`/docket/${a.id}`}
+                    className="font-semibold text-creek underline underline-offset-4"
+                  >
+                    Case brief
+                  </Link>
                 </p>
               </li>
             ))}

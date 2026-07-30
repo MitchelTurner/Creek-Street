@@ -1,4 +1,5 @@
-import { meetings, structures } from '../data/phase0-seed';
+import { applications, meetings, structures } from '../data/phase0-seed';
+import { PUBLIC_STATUS_SET } from '../store/public-statuses';
 
 const STATIC_PATHS = [
   '/',
@@ -31,7 +32,10 @@ export function publicSitemapPaths() {
   const heldOutcomes = meetings
     .filter((m) => m.status === 'HELD')
     .map((m) => `/meetings/${m.id}/outcomes`);
-  return [...STATIC_PATHS, ...structurePaths, ...visitPaths, ...heldOutcomes];
+  const caseBriefs = applications
+    .filter((a) => PUBLIC_STATUS_SET.has(a.status))
+    .map((a) => `/docket/${a.id}`);
+  return [...STATIC_PATHS, ...structurePaths, ...visitPaths, ...heldOutcomes, ...caseBriefs];
 }
 
 export function renderSitemapXml(origin: string) {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
 import { SourceLink } from '../components/SourceLink';
 import { api, formatDate, statusLabel, type Application } from '../lib/api';
@@ -49,14 +50,25 @@ function Section({ title, rows }: { title: string; rows: Application[] }) {
             <li key={a.id} className="grid gap-2 py-4 md:grid-cols-[1fr_auto]">
               <div>
                 <p className="font-medium">
-                  {a.caseNumber ?? 'Unnumbered'}{' '}
+                  <Link
+                    to={`/docket/${a.id}`}
+                    className="text-ink underline-offset-4 hover:text-creek hover:underline"
+                  >
+                    {a.caseNumber ?? 'Unnumbered'}
+                  </Link>{' '}
                   <span className="text-ink/45">· {a.projectType.replace(/_/g, ' ')}</span>
                 </p>
                 <p className="mt-1 text-sm leading-relaxed text-ink/70">{a.description}</p>
                 <p className="mt-2 text-xs text-ink/45">
                   {a.structure?.addressLabel ?? 'Parcel linked'} · filed {formatDate(a.filedAt)}
                 </p>
-                <p className="mt-2">
+                <p className="mt-2 flex flex-wrap gap-3 text-xs">
+                  <Link
+                    to={`/docket/${a.id}`}
+                    className="font-semibold text-creek underline underline-offset-4"
+                  >
+                    Open case brief
+                  </Link>
                   <SourceLink href={a.sourceDocUrl} />
                 </p>
               </div>

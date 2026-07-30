@@ -140,7 +140,7 @@ export function MeetingOutcomesPage() {
                       <p className="mt-2 text-sm text-ink/70">
                         <Link
                           className="font-semibold text-creek underline"
-                          to={`/docket`}
+                          to={`/docket/${item.application.id}`}
                         >
                           {item.application.caseNumber ?? item.application.id}
                         </Link>{' '}

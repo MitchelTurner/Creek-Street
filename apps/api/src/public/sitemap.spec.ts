@@ -6,6 +6,8 @@ describe('public sitemap', () => {
     const paths = publicSitemapPaths();
     expect(paths).toContain('/');
     expect(paths).toContain('/docket');
+    expect(paths).toContain('/docket/app_sample_sign');
+    expect(paths).not.toContain('/docket/app_sample_draft');
     expect(paths).toContain('/visit');
     expect(paths.some((p) => p.startsWith('/structures/'))).toBe(true);
     expect(paths.some((p) => p.startsWith('/workspace'))).toBe(false);

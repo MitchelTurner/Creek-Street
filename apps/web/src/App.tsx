@@ -40,6 +40,9 @@ const OfficialPortalPage = lazy(() =>
 const OpenDataPage = lazy(() =>
   import('./pages/OpenDataPage').then((m) => ({ default: m.OpenDataPage })),
 );
+const OpsDashboardPage = lazy(() =>
+  import('./pages/OpsDashboardPage').then((m) => ({ default: m.OpsDashboardPage })),
+);
 const PermitsPage = lazy(() =>
   import('./pages/PermitsPage').then((m) => ({ default: m.PermitsPage })),
 );
@@ -96,6 +99,7 @@ export default function App() {
             <Route path="official" element={<OfficialPortalPage />} />
             <Route path="official/applications/:id" element={<OfficialApplicationPage />} />
             <Route path="admin/ingest" element={<IngestAdminPage />} />
+            <Route path="admin/ops" element={<OpsDashboardPage />} />
             <Route path="subscriptions" element={<SubscriptionsPage />} />
             <Route path="notice" element={<NoticePage />} />
             <Route path="timelines" element={<TimelinesPage />} />

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AdminModule } from './admin/admin.module';
 import { CalendarModule } from './calendar/calendar.module';
 import { ComplianceModule } from './compliance/compliance.module';
 import { GeoModule } from './geo/geo.module';
@@ -28,6 +29,7 @@ import { StoreModule } from './store/store.module';
     GeoModule,
     PacketsModule,
     CalendarModule,
+    AdminModule,
   ],
 })
 export class AppModule {}

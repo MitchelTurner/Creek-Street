@@ -1,0 +1,43 @@
+import { describe, expect, it } from 'vitest';
+import { AdminDashboardService } from './admin-dashboard.service';
+
+describe('AdminDashboardService', () => {
+  it('assembles a staff snapshot with phase 15 and required sections', async () => {
+    const svc = new AdminDashboardService(
+      {
+        check: async () => ({ ready: true, phase: 15, checks: { api: true } }),
+      } as never,
+      {
+        status: async () => ({
+          noticeMethod: 'centroid-haversine-approx',
+          postgis: false,
+          pgvector: false,
+          prismaEnabled: false,
+        }),
+      } as never,
+      { status: () => ({ mode: 'stub', sent: 0, failed: 0, from: 'x' }) } as never,
+      { lastDigest: () => null } as never,
+      { list: () => [] } as never,
+      {
+        readinessChecklist: () => ({
+          score: { done: 5, total: 10 },
+          deliberationUnlocked: false,
+          items: [{ id: 'x', label: 'Open', done: false, detail: 'todo' }],
+          message: 'dark',
+        }),
+      } as never,
+      { status: () => ({ mode: 'inline', redisConfigured: false, queue: 'creek-ingest' }) } as never,
+      {
+        listSources: () => [],
+        listRuns: () => [],
+      } as never,
+    );
+
+    const snap = await svc.snapshot();
+    expect(snap.phase).toBe(15);
+    expect(snap.ready.ready).toBe(true);
+    expect(snap.compliance.openItems).toHaveLength(1);
+    expect(snap.links.ingest).toBe('/admin/ingest');
+    expect(snap.mail.mode).toBe('stub');
+  });
+});

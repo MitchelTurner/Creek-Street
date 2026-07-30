@@ -9,5 +9,6 @@ import { SearchService } from './search.service';
   imports: [GeoModule],
   controllers: [PublicController, OpenDataController],
   providers: [ReadinessService, SearchService],
+  exports: [ReadinessService],
 })
 export class PublicModule {}

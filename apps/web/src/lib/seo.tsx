@@ -94,6 +94,10 @@ const ROUTES: Record<string, { title: string; description: string }> = {
     title: `Ingest admin · ${SITE}`,
     description: 'Staff ingest console for watermarked source sync.',
   },
+  '/admin/ops': {
+    title: `Ops dashboard · ${SITE}`,
+    description: 'Staff ops snapshot for readiness, digest, ingest, and compliance.',
+  },
   '/compliance': {
     title: `Compliance & readiness · ${SITE}`,
     description:

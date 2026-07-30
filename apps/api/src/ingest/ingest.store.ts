@@ -48,6 +48,24 @@ export class IngestStore {
         notes: SOURCE_META[sourceId].notes,
       });
     }
+
+    // Demo failed run for Phase 16 staff queue (illustrative; not a live scrape)
+    const demoFail: IngestRun = {
+      id: 'run_demo_failed',
+      sourceId: 'clerk_agendas',
+      status: 'failed',
+      startedAt: '2026-07-28T18:00:00.000Z',
+      finishedAt: '2026-07-28T18:00:02.000Z',
+      message: 'Demo failure — robots hard-block / feed unreachable (seed)',
+      diff: { added: 0, updated: 0, removed: 0, unchanged: 0 },
+      fanout: [],
+    };
+    this.runs.unshift(demoFail);
+    const wm = this.watermarks.get('clerk_agendas')!;
+    wm.lastRunAt = demoFail.finishedAt;
+    wm.lastStatus = 'failed';
+    wm.lastMessage = demoFail.message;
+    wm.robotsAllowed = false;
   }
 
   listSources() {

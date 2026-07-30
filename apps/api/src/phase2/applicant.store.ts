@@ -120,6 +120,22 @@ export class ApplicantStore {
         createdAt: now,
       },
     );
+
+    // Demo pending photo for Phase 16 staff queue smoke tests
+    this.photos.push({
+      id: 'photo_pending_demo',
+      structureId: 'struct_dollys',
+      storageKey: 'photos/demo-pending.svg',
+      caption: 'Demo historic boardwalk submission awaiting moderation',
+      credit: 'applicant@example.com',
+      yearApprox: 1918,
+      submittedByUserId: 'user_demo',
+      submitterEmail: 'applicant@example.com',
+      moderationStatus: 'PENDING',
+      createdAt: now,
+      reviewedAt: null,
+      reviewedBy: null,
+    });
   }
 
   async register(email: string, password: string) {

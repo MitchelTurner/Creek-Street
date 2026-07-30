@@ -43,6 +43,9 @@ const OpenDataPage = lazy(() =>
 const OpsDashboardPage = lazy(() =>
   import('./pages/OpsDashboardPage').then((m) => ({ default: m.OpsDashboardPage })),
 );
+const StaffQueuePage = lazy(() =>
+  import('./pages/StaffQueuePage').then((m) => ({ default: m.StaffQueuePage })),
+);
 const PermitsPage = lazy(() =>
   import('./pages/PermitsPage').then((m) => ({ default: m.PermitsPage })),
 );
@@ -100,6 +103,7 @@ export default function App() {
             <Route path="official/applications/:id" element={<OfficialApplicationPage />} />
             <Route path="admin/ingest" element={<IngestAdminPage />} />
             <Route path="admin/ops" element={<OpsDashboardPage />} />
+            <Route path="admin/queue" element={<StaffQueuePage />} />
             <Route path="subscriptions" element={<SubscriptionsPage />} />
             <Route path="notice" element={<NoticePage />} />
             <Route path="timelines" element={<TimelinesPage />} />

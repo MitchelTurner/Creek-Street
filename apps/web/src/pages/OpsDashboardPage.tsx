@@ -111,6 +111,9 @@ export function OpsDashboardPage() {
         >
           {loading ? 'Refreshing…' : 'Refresh'}
         </button>
+        <Link to="/admin/queue" className="rounded-md border border-ink/15 px-4 py-2 font-medium text-ink/80">
+          Work queue
+        </Link>
         <Link to="/admin/ingest" className="rounded-md border border-ink/15 px-4 py-2 font-medium text-ink/80">
           Ingest console
         </Link>

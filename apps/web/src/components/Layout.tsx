@@ -8,6 +8,7 @@ const links = [
   { to: '/workspace', label: 'Workspace' },
   { to: '/official', label: 'Board portal' },
   { to: '/admin/ops', label: 'Ops' },
+  { to: '/admin/queue', label: 'Queue' },
   { to: '/admin/ingest', label: 'Ingest' },
   { to: '/triage', label: 'Triage' },
   { to: '/permits', label: 'Permits' },

@@ -61,6 +61,7 @@ export class AdminDashboardService {
       },
       recentAudit: this.audit.list({ limit: 12 }),
       links: {
+        queue: '/admin/queue',
         ingest: '/admin/ingest',
         compliance: '/compliance',
         digestPreview: '/api/digest/preview',

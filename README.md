@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0–15 (ops dashboard)
+## Current release: Phase 0–16 (staff work queue)
 
 See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
@@ -127,6 +127,12 @@ Deliberation does **not** turn on by default. That is intentional.
 - Consolidates readiness, geo, mail, digest, ingest sources/runs, open compliance items, recent audit
 - Web console at `/admin/ops` (auth-gated; not in sitemap)
 
+**Phase 16 — staff work queue:**
+
+- Unified queue: `GET /api/ops/queue` (STAFF/ADMIN) — pending photos, unreviewed AI summaries, failed ingest runs
+- Staff UI at `/admin/queue` with approve/reject photo and review/publish summary actions
+- Demo pending photo + failed ingest seed for local smoke; public surfaces still never show drafts
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).
@@ -183,7 +189,7 @@ npm run seed
 - Search: `GET /api/search?q=`
 - Packets: `GET /api/meetings/:id/packet.pdf` · board `GET /api/board/meetings/:id/packet.pdf`
 - Calendar: `GET /api/meetings.ics` · digest `GET /api/digest/preview` · staff `POST /api/digest/send`
-- Ops: staff `GET /api/ops/dashboard`
+- Ops: staff `GET /api/ops/dashboard` · `GET /api/ops/queue`
 
 Demo accounts (password `creek-demo` for all):
 

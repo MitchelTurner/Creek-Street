@@ -98,6 +98,10 @@ const ROUTES: Record<string, { title: string; description: string }> = {
     title: `Ops dashboard · ${SITE}`,
     description: 'Staff ops snapshot for readiness, digest, ingest, and compliance.',
   },
+  '/admin/queue': {
+    title: `Staff work queue · ${SITE}`,
+    description: 'Moderate photos, review AI summaries, and triage failed ingest runs.',
+  },
   '/compliance': {
     title: `Compliance & readiness · ${SITE}`,
     description:

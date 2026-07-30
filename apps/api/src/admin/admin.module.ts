@@ -10,6 +10,7 @@ import { AdminController } from './admin.controller';
 import { AdminDashboardService } from './admin-dashboard.service';
 import { OpsAgingService } from './ops-aging.service';
 import { OpsBriefService } from './ops-brief.service';
+import { OpsClaimService } from './ops-claim.service';
 import { OpsQueueService } from './ops-queue.service';
 import { OpsSchedulerService } from './ops-scheduler.service';
 
@@ -27,6 +28,7 @@ import { OpsSchedulerService } from './ops-scheduler.service';
   providers: [
     AdminDashboardService,
     OpsQueueService,
+    OpsClaimService,
     OpsBriefService,
     OpsAgingService,
     OpsSchedulerService,

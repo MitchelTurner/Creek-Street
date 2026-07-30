@@ -3,6 +3,13 @@ import { Link, Navigate } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
 import { useAuth } from '../lib/auth';
 
+type Claim = {
+  by: string;
+  email: string;
+  at: string;
+  expiresAt: string;
+} | null;
+
 type StaffQueue = {
   phase: number;
   at: string;
@@ -16,6 +23,7 @@ type StaffQueue = {
     staleSummaries?: number;
     staleIngestRuns?: number;
     staleTotal?: number;
+    claimed?: number;
   };
   aging?: {
     thresholds: {
@@ -29,6 +37,11 @@ type StaffQueue = {
     staleSummaries: number;
     staleIngestRuns: number;
   };
+  claims?: {
+    claimHours: number;
+    activeCount: number;
+    byKind: { photo: number; summary: number; ingest: number };
+  };
   pendingPhotos: Array<{
     id: string;
     structureId: string;
@@ -39,6 +52,7 @@ type StaffQueue = {
     createdAt: string;
     ageHours?: number;
     stale?: boolean;
+    claim?: Claim;
   }>;
   pendingSummaries: Array<{
     id: string;
@@ -48,6 +62,7 @@ type StaffQueue = {
     generatedAt: string;
     ageHours?: number;
     stale?: boolean;
+    claim?: Claim;
     meeting: { id: string; scheduledAt: string; location: string; status: string } | null;
   }>;
   failedIngestRuns: Array<{
@@ -59,6 +74,7 @@ type StaffQueue = {
     finishedAt: string | null;
     ageHours?: number;
     stale?: boolean;
+    claim?: Claim;
   }>;
   note: string;
 };
@@ -76,6 +92,31 @@ function AgeBadge({ ageHours, stale }: { ageHours?: number; stale?: boolean }) {
   );
 }
 
+function claimBlocked(claim: Claim | undefined, userId: string | undefined) {
+  return Boolean(claim && userId && claim.by !== userId);
+}
+
+function ClaimLine({
+  claim,
+  userId,
+}: {
+  claim?: Claim;
+  userId?: string;
+}) {
+  if (!claim) return <p className="mt-1 text-xs text-ink/45">Unclaimed</p>;
+  const mine = claim.by === userId;
+  const hoursLeft = Math.max(
+    0,
+    Math.round(((new Date(claim.expiresAt).getTime() - Date.now()) / 3600000) * 10) / 10,
+  );
+  return (
+    <p className={`mt-1 text-xs ${mine ? 'text-creek' : 'text-red-800'}`}>
+      Claimed by {claim.email}
+      {mine ? ' (you)' : ''} · {hoursLeft}h left
+    </p>
+  );
+}
+
 export function StaffQueuePage() {
   const { user, ready, authHeaders } = useAuth();
   const [data, setData] = useState<StaffQueue | null>(null);
@@ -84,6 +125,7 @@ export function StaffQueuePage() {
   const [alertNote, setAlertNote] = useState<string | null>(null);
 
   const isStaff = Boolean(user && (user.role === 'STAFF' || user.role === 'ADMIN'));
+  const isAdmin = user?.role === 'ADMIN';
 
   const reload = useCallback(() => {
     if (!isStaff) return;
@@ -135,6 +177,40 @@ export function StaffQueuePage() {
         headers: { ...authHeaders(), 'Content-Type': 'application/json' },
         body: JSON.stringify({ publish }),
       });
+      if (!res.ok) throw new Error(await res.text());
+      reload();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function claim(kind: 'photo' | 'summary' | 'ingest', id: string) {
+    setBusy(`claim:${kind}:${id}`);
+    setError(null);
+    try {
+      const res = await fetch(`/api/ops/queue/${kind}/${id}/claim`, {
+        method: 'POST',
+        headers: authHeaders(),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      reload();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function release(kind: 'photo' | 'summary' | 'ingest', id: string, force = false) {
+    setBusy(`release:${kind}:${id}`);
+    setError(null);
+    try {
+      const res = await fetch(
+        `/api/ops/queue/${kind}/${id}/release${force ? '?force=1' : ''}`,
+        { method: 'POST', headers: authHeaders() },
+      );
       if (!res.ok) throw new Error(await res.text());
       reload();
     } catch (e) {
@@ -196,12 +272,13 @@ export function StaffQueuePage() {
   }
 
   const staleTotal = data?.aging?.staleTotal ?? data?.counts.staleTotal ?? 0;
+  const claimed = data?.claims?.activeCount ?? data?.counts.claimed ?? 0;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 md:px-6">
       <PageHeader
         title="Staff work queue"
-        lede="Moderate photo submissions, review AI meeting summary drafts, and triage failed ingest runs — without exposing drafts to the public mirror."
+        lede="Moderate photo submissions, review AI meeting summary drafts, and triage failed ingest runs — without exposing drafts to the public mirror. Claim an item before acting so two staff do not collide."
       />
 
       <div className="mb-6 flex flex-wrap gap-3 text-sm">
@@ -242,16 +319,14 @@ export function StaffQueuePage() {
       {data ? (
         <div className="space-y-10">
           <p className="text-xs uppercase tracking-[0.14em] text-ink/45">
-            Phase {data.phase} · {data.counts.total} open item
-            {data.counts.total === 1 ? '' : 's'} · {staleTotal} stale ·{' '}
+            Phase {data.phase} · {data.counts.total} open · {staleTotal} stale · {claimed} claimed ·{' '}
             {new Date(data.at).toLocaleString()}
           </p>
           {data.aging ? (
             <p className="border-l-2 border-brass/70 pl-3 text-sm text-ink/70">
               Thresholds: photos ≥ {data.aging.thresholds.photoHours}h · summaries ≥{' '}
               {data.aging.thresholds.summaryHours}h · failed ingest ≥{' '}
-              {data.aging.thresholds.ingestHours}h · alert cooldown{' '}
-              {data.aging.thresholds.alertCooldownHours}h
+              {data.aging.thresholds.ingestHours}h · claims TTL {data.claims?.claimHours ?? 2}h
             </p>
           ) : null}
           <p className="text-sm text-ink/60">{data.note}</p>
@@ -265,45 +340,65 @@ export function StaffQueuePage() {
               <p className="text-sm text-ink/65">No photos awaiting moderation.</p>
             ) : (
               <ul className="space-y-3">
-                {data.pendingPhotos.map((p) => (
-                  <li
-                    key={p.id}
-                    className={`border px-4 py-4 ${
-                      p.stale ? 'border-red-800/30 bg-red-50/40' : 'border-ink/10 bg-foam/50'
-                    }`}
-                  >
-                    <div className="flex flex-wrap items-baseline justify-between gap-2">
-                      <p className="font-semibold text-ink">{p.caption || 'Untitled submission'}</p>
-                      <AgeBadge ageHours={p.ageHours} stale={p.stale} />
-                    </div>
-                    <p className="mt-1 text-sm text-ink/65">
-                      {p.credit} · {p.submitterEmail}
-                      {p.yearApprox != null ? ` · c. ${p.yearApprox}` : ''} · structure{' '}
-                      {p.structureId}
-                    </p>
-                    <time className="mt-1 block text-xs text-ink/45">
-                      {new Date(p.createdAt).toLocaleString()}
-                    </time>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        disabled={busy === `photo:${p.id}:APPROVED`}
-                        onClick={() => void moderatePhoto(p.id, 'APPROVED')}
-                        className="rounded-md bg-creek px-3 py-1.5 text-sm font-semibold text-foam disabled:opacity-50"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        type="button"
-                        disabled={busy === `photo:${p.id}:REJECTED`}
-                        onClick={() => void moderatePhoto(p.id, 'REJECTED')}
-                        className="rounded-md border border-ink/20 px-3 py-1.5 text-sm font-semibold text-ink/80 disabled:opacity-50"
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  </li>
-                ))}
+                {data.pendingPhotos.map((p) => {
+                  const blocked = claimBlocked(p.claim, user.id);
+                  return (
+                    <li
+                      key={p.id}
+                      className={`border px-4 py-4 ${
+                        p.stale ? 'border-red-800/30 bg-red-50/40' : 'border-ink/10 bg-foam/50'
+                      }`}
+                    >
+                      <div className="flex flex-wrap items-baseline justify-between gap-2">
+                        <p className="font-semibold text-ink">{p.caption || 'Untitled submission'}</p>
+                        <AgeBadge ageHours={p.ageHours} stale={p.stale} />
+                      </div>
+                      <ClaimLine claim={p.claim} userId={user.id} />
+                      <p className="mt-1 text-sm text-ink/65">
+                        {p.credit} · {p.submitterEmail}
+                        {p.yearApprox != null ? ` · c. ${p.yearApprox}` : ''} · structure{' '}
+                        {p.structureId}
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {!p.claim ? (
+                          <button
+                            type="button"
+                            disabled={busy === `claim:photo:${p.id}`}
+                            onClick={() => void claim('photo', p.id)}
+                            className="rounded-md border border-ink/20 px-3 py-1.5 text-sm font-semibold text-ink/80 disabled:opacity-50"
+                          >
+                            Claim
+                          </button>
+                        ) : p.claim.by === user.id || isAdmin ? (
+                          <button
+                            type="button"
+                            disabled={busy === `release:photo:${p.id}`}
+                            onClick={() => void release('photo', p.id, isAdmin && p.claim?.by !== user.id)}
+                            className="rounded-md border border-ink/20 px-3 py-1.5 text-sm font-semibold text-ink/80 disabled:opacity-50"
+                          >
+                            {isAdmin && p.claim.by !== user.id ? 'Force release' : 'Release'}
+                          </button>
+                        ) : null}
+                        <button
+                          type="button"
+                          disabled={blocked || busy === `photo:${p.id}:APPROVED`}
+                          onClick={() => void moderatePhoto(p.id, 'APPROVED')}
+                          className="rounded-md bg-creek px-3 py-1.5 text-sm font-semibold text-foam disabled:opacity-50"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          type="button"
+                          disabled={blocked || busy === `photo:${p.id}:REJECTED`}
+                          onClick={() => void moderatePhoto(p.id, 'REJECTED')}
+                          className="rounded-md border border-ink/20 px-3 py-1.5 text-sm font-semibold text-ink/80 disabled:opacity-50"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </section>
@@ -317,43 +412,68 @@ export function StaffQueuePage() {
               <p className="text-sm text-ink/65">No AI drafts awaiting human review.</p>
             ) : (
               <ul className="space-y-3">
-                {data.pendingSummaries.map((s) => (
-                  <li
-                    key={s.id}
-                    className={`border px-4 py-4 ${
-                      s.stale ? 'border-red-800/30 bg-red-50/40' : 'border-ink/10 bg-foam/50'
-                    }`}
-                  >
-                    <div className="flex flex-wrap items-baseline justify-between gap-2">
-                      <p className="font-semibold text-ink">{s.meetingId}</p>
-                      <AgeBadge ageHours={s.ageHours} stale={s.stale} />
-                    </div>
-                    {s.meeting ? (
-                      <p className="mt-1 text-sm text-ink/55">
-                        {new Date(s.meeting.scheduledAt).toLocaleString()} · {s.meeting.location}
-                      </p>
-                    ) : null}
-                    <p className="mt-2 text-sm leading-relaxed text-ink/75">{s.body}</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        disabled={busy === `summary:${s.id}:publish`}
-                        onClick={() => void reviewSummary(s.id, true)}
-                        className="rounded-md bg-creek px-3 py-1.5 text-sm font-semibold text-foam disabled:opacity-50"
-                      >
-                        Review & publish
-                      </button>
-                      <button
-                        type="button"
-                        disabled={busy === `summary:${s.id}:hold`}
-                        onClick={() => void reviewSummary(s.id, false)}
-                        className="rounded-md border border-ink/20 px-3 py-1.5 text-sm font-semibold text-ink/80 disabled:opacity-50"
-                      >
-                        Review, keep private
-                      </button>
-                    </div>
-                  </li>
-                ))}
+                {data.pendingSummaries.map((s) => {
+                  const blocked = claimBlocked(s.claim, user.id);
+                  return (
+                    <li
+                      key={s.id}
+                      className={`border px-4 py-4 ${
+                        s.stale ? 'border-red-800/30 bg-red-50/40' : 'border-ink/10 bg-foam/50'
+                      }`}
+                    >
+                      <div className="flex flex-wrap items-baseline justify-between gap-2">
+                        <p className="font-semibold text-ink">{s.meetingId}</p>
+                        <AgeBadge ageHours={s.ageHours} stale={s.stale} />
+                      </div>
+                      <ClaimLine claim={s.claim} userId={user.id} />
+                      {s.meeting ? (
+                        <p className="mt-1 text-sm text-ink/55">
+                          {new Date(s.meeting.scheduledAt).toLocaleString()} · {s.meeting.location}
+                        </p>
+                      ) : null}
+                      <p className="mt-2 text-sm leading-relaxed text-ink/75">{s.body}</p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {!s.claim ? (
+                          <button
+                            type="button"
+                            disabled={busy === `claim:summary:${s.id}`}
+                            onClick={() => void claim('summary', s.id)}
+                            className="rounded-md border border-ink/20 px-3 py-1.5 text-sm font-semibold text-ink/80 disabled:opacity-50"
+                          >
+                            Claim
+                          </button>
+                        ) : s.claim.by === user.id || isAdmin ? (
+                          <button
+                            type="button"
+                            disabled={busy === `release:summary:${s.id}`}
+                            onClick={() =>
+                              void release('summary', s.id, isAdmin && s.claim?.by !== user.id)
+                            }
+                            className="rounded-md border border-ink/20 px-3 py-1.5 text-sm font-semibold text-ink/80 disabled:opacity-50"
+                          >
+                            {isAdmin && s.claim.by !== user.id ? 'Force release' : 'Release'}
+                          </button>
+                        ) : null}
+                        <button
+                          type="button"
+                          disabled={blocked || busy === `summary:${s.id}:publish`}
+                          onClick={() => void reviewSummary(s.id, true)}
+                          className="rounded-md bg-creek px-3 py-1.5 text-sm font-semibold text-foam disabled:opacity-50"
+                        >
+                          Review & publish
+                        </button>
+                        <button
+                          type="button"
+                          disabled={blocked || busy === `summary:${s.id}:hold`}
+                          onClick={() => void reviewSummary(s.id, false)}
+                          className="rounded-md border border-ink/20 px-3 py-1.5 text-sm font-semibold text-ink/80 disabled:opacity-50"
+                        >
+                          Review, keep private
+                        </button>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </section>
@@ -373,7 +493,31 @@ export function StaffQueuePage() {
                       <span className="font-semibold text-ink">{r.sourceId}</span>
                       <AgeBadge ageHours={r.ageHours} stale={r.stale} />
                     </div>
+                    <ClaimLine claim={r.claim} userId={user.id} />
                     <p className="text-ink/65">{r.message}</p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {!r.claim ? (
+                        <button
+                          type="button"
+                          disabled={busy === `claim:ingest:${r.id}`}
+                          onClick={() => void claim('ingest', r.id)}
+                          className="rounded-md border border-ink/20 px-3 py-1 text-xs font-semibold text-ink/80 disabled:opacity-50"
+                        >
+                          Claim
+                        </button>
+                      ) : r.claim.by === user.id || isAdmin ? (
+                        <button
+                          type="button"
+                          disabled={busy === `release:ingest:${r.id}`}
+                          onClick={() =>
+                            void release('ingest', r.id, isAdmin && r.claim?.by !== user.id)
+                          }
+                          className="rounded-md border border-ink/20 px-3 py-1 text-xs font-semibold text-ink/80 disabled:opacity-50"
+                        >
+                          {isAdmin && r.claim.by !== user.id ? 'Force release' : 'Release'}
+                        </button>
+                      ) : null}
+                    </div>
                   </li>
                 ))}
               </ul>

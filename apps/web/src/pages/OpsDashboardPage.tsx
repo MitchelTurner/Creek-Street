@@ -67,6 +67,11 @@ type OpsDashboard = {
       alert: { sent: boolean; reason: string; recipients: number; staleTotal: number } | null;
     } | null;
   };
+  claims: {
+    claimHours: number;
+    activeCount: number;
+    byKind: { photo: number; summary: number; ingest: number };
+  };
   ingest: {
     queue: { mode: string; redisConfigured: boolean; queue: string };
     sources: Array<{
@@ -306,12 +311,18 @@ export function OpsDashboardPage() {
               Stale totals use env thresholds (defaults 48h photos / 24h summaries / 12h failed
               ingest). Alerts skip when nothing is stale or cooldown is active.
             </p>
-            <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
               <Stat label="Stale total" value={String(data.aging.staleTotal)} />
               <Stat label="Stale photos" value={String(data.aging.stalePhotos)} />
               <Stat label="Stale summaries" value={String(data.aging.staleSummaries)} />
               <Stat label="Stale ingest" value={String(data.aging.staleIngestRuns)} />
+              <Stat label="Claimed" value={String(data.claims.activeCount)} />
             </dl>
+            <p className="text-sm text-ink/55">
+              Active claims: photos {data.claims.byKind.photo} · summaries{' '}
+              {data.claims.byKind.summary} · ingest {data.claims.byKind.ingest} (TTL{' '}
+              {data.claims.claimHours}h)
+            </p>
             <p className="text-sm text-ink/55">
               Thresholds: {data.aging.thresholds.photoHours}h / {data.aging.thresholds.summaryHours}h
               / {data.aging.thresholds.ingestHours}h · cooldown{' '}

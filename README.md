@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0–19 (alert scheduler)
+## Current release: Phase 0–20 (queue claim/lock)
 
 See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
@@ -154,6 +154,13 @@ Deliberation does **not** turn on by default. That is intentional.
 - Auto ticks call `sendAlert({ force: false })` — inherits NO_STALE + cooldown; audited as `ops.alert.scheduler.tick`
 - Scheduler card on `/admin/ops`
 
+**Phase 20 — queue claim/lock:**
+
+- Soft claims on queue items: `POST /api/ops/queue/:kind/:id/claim|release` (`kind`: photo|summary|ingest)
+- TTL via `OPS_CLAIM_HOURS` (default 2); conflict `409 QUEUE_ITEM_CLAIMED`; ADMIN force-release
+- Queue payload includes `claim` metadata; `/admin/queue` Claim/Release + action gating
+- Audited as `ops.queue.claim` / `ops.queue.release`
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).
@@ -210,7 +217,7 @@ npm run seed
 - Search: `GET /api/search?q=`
 - Packets: `GET /api/meetings/:id/packet.pdf` · board `GET /api/board/meetings/:id/packet.pdf`
 - Calendar: `GET /api/meetings.ics` · digest `GET /api/digest/preview` · staff `POST /api/digest/send`
-- Ops: staff `GET /api/ops/dashboard` · `GET /api/ops/queue` · `GET /api/ops/aging` · brief `GET /api/ops/brief/preview` · `POST /api/ops/brief/send` · alerts `GET /api/ops/alerts/preview` · `POST /api/ops/alerts/send` · scheduler `GET /api/ops/scheduler` · `POST /api/ops/scheduler/{enable,disable,tick}`
+- Ops: staff `GET /api/ops/dashboard` · `GET /api/ops/queue` · `GET /api/ops/aging` · brief `GET /api/ops/brief/preview` · `POST /api/ops/brief/send` · alerts `GET /api/ops/alerts/preview` · `POST /api/ops/alerts/send` · scheduler `GET /api/ops/scheduler` · `POST /api/ops/scheduler/{enable,disable,tick}` · claims `POST /api/ops/queue/:kind/:id/{claim,release}`
 
 Demo accounts (password `creek-demo` for all):
 

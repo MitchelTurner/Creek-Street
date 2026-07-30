@@ -59,6 +59,13 @@ describe('AdminDashboardService', () => {
           nextTickAt: null,
         }),
       } as never,
+      {
+        summary: () => ({
+          claimHours: 2,
+          activeCount: 1,
+          byKind: { photo: 1, summary: 0, ingest: 0 },
+        }),
+      } as never,
     );
 
     const snap = await svc.snapshot();
@@ -74,5 +81,6 @@ describe('AdminDashboardService', () => {
     expect(snap.opsBrief).toBeNull();
     expect(snap.aging.staleTotal).toBe(2);
     expect(snap.scheduler.enabled).toBe(false);
+    expect(snap.claims.activeCount).toBe(1);
   });
 });

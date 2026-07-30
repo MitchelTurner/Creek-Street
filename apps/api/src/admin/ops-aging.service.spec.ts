@@ -59,6 +59,10 @@ describe('OpsAgingService', () => {
           accepted: overrides?.sendAccepted !== false,
         }),
       } as never,
+      {
+        summary: () => ({ claimHours: 2, activeCount: 0, byKind: { photo: 0, summary: 0, ingest: 0 } }),
+        enrichQueueItems: (_k: string, items: unknown[]) => items,
+      } as never,
     );
   }
 
@@ -117,6 +121,10 @@ describe('OpsAgingService', () => {
       } as never,
       { listStaffEmails: () => ['staff@example.com'] } as never,
       { send: async () => ({ mode: 'stub', accepted: true }) } as never,
+      {
+        summary: () => ({ claimHours: 2, activeCount: 0, byKind: { photo: 0, summary: 0, ingest: 0 } }),
+        enrichQueueItems: (_k: string, items: unknown[]) => items,
+      } as never,
     );
     const result = await svc.sendAlert({ nowMs: now });
     expect(result.sent).toBe(false);

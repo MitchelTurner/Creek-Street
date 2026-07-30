@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { MailService } from '../ops/mail.service';
 import { ApplicantStore } from '../phase2/applicant.store';
+import { OpsClaimService } from './ops-claim.service';
 import { OpsQueueService } from './ops-queue.service';
 
 export type OpsAlertResult = {
@@ -40,6 +41,7 @@ export class OpsAgingService {
     private readonly queue: OpsQueueService,
     private readonly applicants: ApplicantStore,
     private readonly mail: MailService,
+    private readonly claims: OpsClaimService,
   ) {}
 
   thresholds() {
@@ -123,17 +125,29 @@ export class OpsAgingService {
     };
   }
 
-  /** Enrich the Phase 16 queue payload with age/stale flags. */
+  /** Enrich the Phase 16 queue payload with age/stale flags + claims. */
   enrichedQueue(nowMs = Date.now()) {
     const aging = this.snapshot(nowMs);
     const base = this.queue.snapshot();
+    const claimSummary = this.claims.summary(nowMs);
     return {
       ...base,
-      phase: 18,
-      counts: aging.counts,
-      pendingPhotos: aging.pendingPhotos,
-      pendingSummaries: aging.pendingSummaries,
-      failedIngestRuns: aging.failedIngestRuns,
+      phase: 20,
+      counts: {
+        ...aging.counts,
+        claimed: claimSummary.activeCount,
+      },
+      pendingPhotos: this.claims.enrichQueueItems('photo', aging.pendingPhotos, nowMs),
+      pendingSummaries: this.claims.enrichQueueItems(
+        'summary',
+        aging.pendingSummaries,
+        nowMs,
+      ),
+      failedIngestRuns: this.claims.enrichQueueItems(
+        'ingest',
+        aging.failedIngestRuns,
+        nowMs,
+      ),
       aging: {
         thresholds: aging.thresholds,
         staleTotal: aging.counts.staleTotal,
@@ -141,6 +155,7 @@ export class OpsAgingService {
         staleSummaries: aging.counts.staleSummaries,
         staleIngestRuns: aging.counts.staleIngestRuns,
       },
+      claims: claimSummary,
       lastAlert: this.lastAlert,
     };
   }

@@ -9,6 +9,7 @@ import { MailService } from '../ops/mail.service';
 import { ReadinessService } from '../public/readiness.service';
 import { OpsAgingService } from './ops-aging.service';
 import { OpsBriefService } from './ops-brief.service';
+import { OpsClaimService } from './ops-claim.service';
 import { OpsSchedulerService } from './ops-scheduler.service';
 
 /**
@@ -28,6 +29,7 @@ export class AdminDashboardService {
     private readonly opsBrief: OpsBriefService,
     private readonly opsAging: OpsAgingService,
     private readonly opsScheduler: OpsSchedulerService,
+    private readonly opsClaims: OpsClaimService,
   ) {}
 
   async snapshot() {
@@ -58,6 +60,7 @@ export class AdminDashboardService {
         staleIngestRuns: aging.counts.staleIngestRuns,
         lastAlert: aging.lastAlert,
       },
+      claims: this.opsClaims.summary(),
       scheduler: this.opsScheduler.status(),
       ingest: {
         queue: this.ingestQueue.status(),

@@ -3,6 +3,7 @@ import {
   Get,
   Header,
   Headers,
+  Param,
   Post,
   Query,
   UseGuards,
@@ -13,6 +14,7 @@ import { Roles, RolesGuard } from '../phase2/roles.guard';
 import { AdminDashboardService } from './admin-dashboard.service';
 import { OpsAgingService } from './ops-aging.service';
 import { OpsBriefService } from './ops-brief.service';
+import { OpsClaimService, parseClaimKind } from './ops-claim.service';
 import { OpsSchedulerService } from './ops-scheduler.service';
 
 @Controller('ops')
@@ -24,6 +26,7 @@ export class AdminController {
     private readonly opsBrief: OpsBriefService,
     private readonly opsAging: OpsAgingService,
     private readonly opsScheduler: OpsSchedulerService,
+    private readonly opsClaims: OpsClaimService,
     private readonly audit: AuditStore,
   ) {}
 
@@ -180,5 +183,48 @@ export class AdminController {
       origin,
       actor: user,
     });
+  }
+
+  @Post('queue/:kind/:id/claim')
+  @Header('Cache-Control', 'no-store')
+  claimItem(
+    @CurrentUser() user: { id: string; email: string; role: string },
+    @Param('kind') kindRaw: string,
+    @Param('id') id: string,
+  ) {
+    const kind = parseClaimKind(kindRaw);
+    const claim = this.opsClaims.claim(kind, id, user);
+    this.audit.record({
+      action: 'ops.queue.claim',
+      actor: user,
+      resourceType: `queue_${kind}`,
+      resourceId: id,
+      summary: `${kind} ${id} claimed by ${user.email}`,
+      meta: { expiresAt: claim?.expiresAt },
+    });
+    return { claim };
+  }
+
+  @Post('queue/:kind/:id/release')
+  @Header('Cache-Control', 'no-store')
+  releaseItem(
+    @CurrentUser() user: { id: string; email: string; role: string },
+    @Param('kind') kindRaw: string,
+    @Param('id') id: string,
+    @Query('force') force?: string,
+  ) {
+    const kind = parseClaimKind(kindRaw);
+    const result = this.opsClaims.release(kind, id, user, {
+      force: force === '1' || force === 'true',
+    });
+    this.audit.record({
+      action: 'ops.queue.release',
+      actor: user,
+      resourceType: `queue_${kind}`,
+      resourceId: id,
+      summary: `${kind} ${id} released by ${user.email}${result.released ? '' : ' (no claim)'}`,
+      meta: { force: force === '1' || force === 'true', released: result.released },
+    });
+    return result;
   }
 }

@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0–13 (meeting packets)
+## Current release: Phase 0–14 (calendar & digests)
 
 See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
@@ -114,6 +114,13 @@ Deliberation does **not** turn on by default. That is intentional.
 - Never includes MemberNotes, DRAFT apps, or unreviewed AI summaries
 - React error boundary + catch-all 404 page
 
+**Phase 14 — calendar & digests:**
+
+- Public iCal feed: `GET /api/meetings.ics`
+- Weekly digest preview + staff send: `GET /api/digest/preview` · `POST /api/digest/send`
+- Digest lists public docket + upcoming meetings only (never DRAFT text)
+- Calendar link on `/meetings` and `/subscriptions`; send control on ingest admin
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).
@@ -169,6 +176,7 @@ npm run seed
 - Applicant: `GET /api/applicant/export` · `DELETE /api/applicant/account`
 - Search: `GET /api/search?q=`
 - Packets: `GET /api/meetings/:id/packet.pdf` · board `GET /api/board/meetings/:id/packet.pdf`
+- Calendar: `GET /api/meetings.ics` · digest `GET /api/digest/preview` · staff `POST /api/digest/send`
 
 Demo accounts (password `creek-demo` for all):
 

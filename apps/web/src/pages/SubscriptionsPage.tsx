@@ -47,6 +47,14 @@ export function SubscriptionsPage() {
       />
       <DisclaimerBanner />
 
+      <p className="mt-4 text-sm text-ink/60">
+        Meeting calendar feed (iCal):{' '}
+        <a href="/api/meetings.ics" className="font-semibold text-creek underline underline-offset-4">
+          /api/meetings.ics
+        </a>
+        . Email subscribers also receive on-demand weekly digests when staff send them.
+      </p>
+
       <form onSubmit={onSubmit} className="mt-8 space-y-4">
         <label className="block text-sm">
           Email

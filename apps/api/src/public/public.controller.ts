@@ -16,7 +16,7 @@ export class PublicController {
   health() {
     return {
       ok: true,
-      phase: 13,
+      phase: 14,
       store: this.store.backend(),
     };
   }

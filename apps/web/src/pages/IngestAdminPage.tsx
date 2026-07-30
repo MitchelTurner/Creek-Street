@@ -84,12 +84,53 @@ export function IngestAdminPage() {
     }
   }
 
+  async function sendDigest() {
+    setBusy('digest');
+    setError(null);
+    try {
+      const res = await fetch('/api/digest/send', { method: 'POST', headers: authHeaders() });
+      if (!res.ok) throw new Error(await res.text());
+      const result = await res.json();
+      setError(null);
+      window.alert(`Digest sent to ${result.recipients} recipient(s) (${result.mode}).`);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 md:px-6">
       <PageHeader
         title="Ingest & workers"
         lede="Watermarked source sync with robots.txt respect. Docket diffs fan out to subscriptions. Redis/BullMQ when REDIS_URL is set; otherwise inline."
       />
+
+      <div className="mb-6 flex flex-wrap gap-3 text-sm">
+        <button
+          type="button"
+          disabled={busy === 'digest'}
+          onClick={() => void sendDigest()}
+          className="rounded-md bg-creek px-4 py-2 font-semibold text-foam disabled:opacity-50"
+        >
+          {busy === 'digest' ? 'Sending digest…' : 'Send weekly digest'}
+        </button>
+        <a
+          href="/api/digest/preview"
+          className="rounded-md border border-ink/15 px-4 py-2 font-semibold text-ink"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Preview digest
+        </a>
+        <a
+          href="/api/meetings.ics"
+          className="rounded-md border border-ink/15 px-4 py-2 font-semibold text-ink"
+        >
+          meetings.ics
+        </a>
+      </div>
 
       {data && (
         <div className="mb-8 rounded-md border border-ink/10 bg-foam/70 px-4 py-3 text-sm">

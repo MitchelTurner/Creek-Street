@@ -170,14 +170,41 @@ export function OfficialPortalPage() {
 
       <section className="mt-12">
         <h2 className="font-display text-2xl font-semibold">Upcoming meetings</h2>
-        <ul className="mt-4 space-y-2 text-sm">
+        <ul className="mt-4 space-y-3 text-sm">
           {dash?.upcomingMeetings.map((m) => (
-            <li key={m.id}>
-              {new Date(m.scheduledAt).toLocaleString('en-US', { timeZone: 'America/Juneau' })} ·{' '}
-              {m.status}
+            <li key={m.id} className="flex flex-wrap items-baseline justify-between gap-3">
+              <span>
+                {new Date(m.scheduledAt).toLocaleString('en-US', { timeZone: 'America/Juneau' })} ·{' '}
+                {m.status}
+              </span>
+              <button
+                type="button"
+                className="font-semibold text-creek underline underline-offset-4"
+                onClick={() => {
+                  fetch(`/api/board/meetings/${m.id}/packet.pdf`, { headers: authHeaders() })
+                    .then(async (r) => {
+                      if (!r.ok) throw new Error(await r.text());
+                      return r.blob();
+                    })
+                    .then((blob) => {
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `creek-street-board-packet-${m.id}.pdf`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    })
+                    .catch((err: Error) => setError(err.message));
+                }}
+              >
+                Packet PDF
+              </button>
             </li>
           ))}
         </ul>
+        <p className="mt-2 text-xs text-ink/45">
+          Packets are mirrored public facts only — private MemberNotes are never attached.
+        </p>
       </section>
 
       <p className="mt-10">

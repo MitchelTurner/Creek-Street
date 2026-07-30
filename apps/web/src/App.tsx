@@ -1,7 +1,9 @@
 import { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
 import { HomePage } from './pages/HomePage';
+import { NotFoundPage } from './pages/NotFoundPage';
 
 const AuthPage = lazy(() => import('./pages/AuthPage').then((m) => ({ default: m.AuthPage })));
 const BoardPage = lazy(() => import('./pages/BoardPage').then((m) => ({ default: m.BoardPage })));
@@ -79,39 +81,42 @@ function RouteFallback() {
 
 export default function App() {
   return (
-    <Suspense fallback={<RouteFallback />}>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route index element={<HomePage />} />
-          <Route path="search" element={<SearchPage />} />
-          <Route path="visit" element={<VisitIndexPage />} />
-          <Route path="visit/:slug" element={<VisitStructurePage />} />
-          <Route path="construction" element={<ConstructionPage />} />
-          <Route path="auth" element={<AuthPage />} />
-          <Route path="workspace" element={<WorkspacePage />} />
-          <Route path="workspace/:id" element={<DraftBuilderPage />} />
-          <Route path="official" element={<OfficialPortalPage />} />
-          <Route path="official/applications/:id" element={<OfficialApplicationPage />} />
-          <Route path="admin/ingest" element={<IngestAdminPage />} />
-          <Route path="subscriptions" element={<SubscriptionsPage />} />
-          <Route path="notice" element={<NoticePage />} />
-          <Route path="timelines" element={<TimelinesPage />} />
-          <Route path="photos" element={<PhotosPage />} />
-          <Route path="triage" element={<TriagePage />} />
-          <Route path="permits" element={<PermitsPage />} />
-          <Route path="precedents" element={<PrecedentsPage />} />
-          <Route path="map" element={<MapPage />} />
-          <Route path="structures" element={<StructuresPage />} />
-          <Route path="structures/:slug" element={<StructureDetailPage />} />
-          <Route path="docket" element={<DocketPage />} />
-          <Route path="decisions" element={<DecisionsPage />} />
-          <Route path="meetings" element={<MeetingsPage />} />
-          <Route path="guidance" element={<GuidancePage />} />
-          <Route path="board" element={<BoardPage />} />
-          <Route path="opendata" element={<OpenDataPage />} />
-          <Route path="compliance" element={<CompliancePage />} />
-        </Route>
-      </Routes>
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense fallback={<RouteFallback />}>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route index element={<HomePage />} />
+            <Route path="search" element={<SearchPage />} />
+            <Route path="visit" element={<VisitIndexPage />} />
+            <Route path="visit/:slug" element={<VisitStructurePage />} />
+            <Route path="construction" element={<ConstructionPage />} />
+            <Route path="auth" element={<AuthPage />} />
+            <Route path="workspace" element={<WorkspacePage />} />
+            <Route path="workspace/:id" element={<DraftBuilderPage />} />
+            <Route path="official" element={<OfficialPortalPage />} />
+            <Route path="official/applications/:id" element={<OfficialApplicationPage />} />
+            <Route path="admin/ingest" element={<IngestAdminPage />} />
+            <Route path="subscriptions" element={<SubscriptionsPage />} />
+            <Route path="notice" element={<NoticePage />} />
+            <Route path="timelines" element={<TimelinesPage />} />
+            <Route path="photos" element={<PhotosPage />} />
+            <Route path="triage" element={<TriagePage />} />
+            <Route path="permits" element={<PermitsPage />} />
+            <Route path="precedents" element={<PrecedentsPage />} />
+            <Route path="map" element={<MapPage />} />
+            <Route path="structures" element={<StructuresPage />} />
+            <Route path="structures/:slug" element={<StructureDetailPage />} />
+            <Route path="docket" element={<DocketPage />} />
+            <Route path="decisions" element={<DecisionsPage />} />
+            <Route path="meetings" element={<MeetingsPage />} />
+            <Route path="guidance" element={<GuidancePage />} />
+            <Route path="board" element={<BoardPage />} />
+            <Route path="opendata" element={<OpenDataPage />} />
+            <Route path="compliance" element={<CompliancePage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   );
 }

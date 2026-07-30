@@ -3,6 +3,7 @@ import { ComplianceModule } from './compliance/compliance.module';
 import { GeoModule } from './geo/geo.module';
 import { IngestModule } from './ingest/ingest.module';
 import { OpsModule } from './ops/ops.module';
+import { PacketsModule } from './packets/packets.module';
 import { Phase1Module } from './phase1/phase1.module';
 import { Phase2Module } from './phase2/phase2.module';
 import { Phase3Module } from './phase3/phase3.module';
@@ -24,6 +25,7 @@ import { StoreModule } from './store/store.module';
     Phase4Module,
     IngestModule,
     GeoModule,
+    PacketsModule,
   ],
 })
 export class AppModule {}

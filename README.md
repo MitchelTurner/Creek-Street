@@ -4,7 +4,7 @@ Independent public hub for the Creek Street Historic District Architectural Desi
 
 **Owned and operated by Mitchel Turner Dev, LLC — not a borough property.**
 
-## Current release: Phase 0–12 (Prisma public store)
+## Current release: Phase 0–13 (meeting packets)
 
 See [LAUNCH.md](./LAUNCH.md) for the production go-live checklist.
 
@@ -107,6 +107,13 @@ Deliberation does **not** turn on by default. That is intentional.
 - Automatic memory fallback if a Prisma query fails
 - Health/ready report `store` / `publicBackend`: `prisma` | `memory`
 
+**Phase 13 — meeting packets & web resilience:**
+
+- Mirrored meeting packet PDFs (`GET /api/meetings/:id/packet.pdf`) — public facts only
+- Board/staff download with audit (`GET /api/board/meetings/:id/packet.pdf`)
+- Never includes MemberNotes, DRAFT apps, or unreviewed AI summaries
+- React error boundary + catch-all 404 page
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).
@@ -161,6 +168,7 @@ npm run seed
 - Compliance: `GET /api/compliance/readiness` · `GET /api/compliance/retention` · staff `GET /api/compliance/audit`
 - Applicant: `GET /api/applicant/export` · `DELETE /api/applicant/account`
 - Search: `GET /api/search?q=`
+- Packets: `GET /api/meetings/:id/packet.pdf` · board `GET /api/board/meetings/:id/packet.pdf`
 
 Demo accounts (password `creek-demo` for all):
 

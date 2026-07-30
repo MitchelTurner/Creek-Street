@@ -37,11 +37,17 @@ export function MeetingsPage() {
                 ))}
               </ul>
               <div className="mt-3 flex flex-wrap gap-4 text-xs">
+                <a
+                  href={`/api/meetings/${m.id}/packet.pdf`}
+                  className="font-semibold text-creek underline underline-offset-4"
+                >
+                  Download mirror packet (PDF)
+                </a>
                 {m.agendaUrl && <SourceLink href={m.agendaUrl} label="Agenda" />}
                 {m.minutesUrl && <SourceLink href={m.minutesUrl} label="Minutes" />}
                 {m.videoUrl && <SourceLink href={m.videoUrl} label="Video" />}
                 {!m.agendaUrl && !m.minutesUrl && (
-                  <span className="text-ink/40">Packet links pending Clerk / CivicPlus feed</span>
+                  <span className="text-ink/40">Clerk / CivicPlus primary links pending</span>
                 )}
               </div>
               {m.summary && (

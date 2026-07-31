@@ -18,15 +18,15 @@ export function MeetingsPage() {
         lede="Noticed meetings, agendas, minutes, and video links when available. Quorum failures are recorded as neutral facts."
       />
 
-      <p className="mb-8 text-sm text-ink/60">
-        Subscribe in your calendar app:{' '}
-        <a
-          href="/api/meetings.ics"
-          className="font-semibold text-creek underline underline-offset-4"
-        >
-          /api/meetings.ics
+      <div className="mb-8 flex flex-wrap items-center gap-3">
+        <a href="/api/board/packet.pdf" className="btn-primary">
+          Download next board packet
         </a>
-      </p>
+        <a href="/api/meetings.ics" className="btn-secondary">
+          Subscribe (.ics)
+        </a>
+        <p className="text-sm text-ink/55">Mirrored public facts only — not an official Borough packet.</p>
+      </div>
 
       <ul className="divide-y divide-ink/10 border-y border-ink/10">
         {rows.map((m) => (

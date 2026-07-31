@@ -49,6 +49,12 @@ const MeetingSummaryPage = lazy(() =>
   import('./pages/MeetingSummaryPage').then((m) => ({ default: m.MeetingSummaryPage })),
 );
 const NoticePage = lazy(() => import('./pages/NoticePage').then((m) => ({ default: m.NoticePage })));
+const NoticePacketPage = lazy(() =>
+  import('./pages/NoticePacketPage').then((m) => ({ default: m.NoticePacketPage })),
+);
+const PrecedentComparePage = lazy(() =>
+  import('./pages/PrecedentComparePage').then((m) => ({ default: m.PrecedentComparePage })),
+);
 const OfficialApplicationPage = lazy(() =>
   import('./pages/OfficialApplicationPage').then((m) => ({ default: m.OfficialApplicationPage })),
 );
@@ -137,12 +143,14 @@ export default function App() {
             <Route path="admin/queue" element={<StaffQueuePage />} />
             <Route path="subscriptions" element={<SubscriptionsPage />} />
             <Route path="notice" element={<NoticePage />} />
+            <Route path="notice/packet" element={<NoticePacketPage />} />
             <Route path="timelines" element={<TimelinesPage />} />
             <Route path="photos" element={<PhotosPage />} />
             <Route path="triage" element={<TriagePage />} />
             <Route path="filing" element={<FilingPage />} />
             <Route path="permits" element={<PermitsPage />} />
             <Route path="precedents" element={<PrecedentsPage />} />
+            <Route path="precedents/compare" element={<PrecedentComparePage />} />
             <Route path="map" element={<MapPage />} />
             <Route path="structures" element={<StructuresPage />} />
             <Route path="structures/:slug" element={<StructureDetailPage />} />

@@ -13,12 +13,15 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { PublicStore } from '../store/public.store';
+import { BoardPacketService } from './board-packet.service';
 import { CaseBriefService } from './case-brief.service';
 import { CriterionAtlasService } from './criterion-atlas.service';
 import { DecisionSheetService } from './decision-sheet.service';
 import { FilingPlanService, type FilingPlanInput } from './filing-plan.service';
 import { MeetingAgendaService } from './meeting-agenda.service';
 import { MeetingSummarySheetService } from './meeting-summary-sheet.service';
+import { NoticePacketService } from './notice-packet.service';
+import { PrecedentCompareService } from './precedent-compare.service';
 import { ReadinessService } from './readiness.service';
 import { SearchService } from './search.service';
 import { StructureSheetService } from './structure-sheet.service';
@@ -37,13 +40,16 @@ export class PublicController {
     private readonly criterionAtlas: CriterionAtlasService,
     private readonly structureSheets: StructureSheetService,
     private readonly filingPlans: FilingPlanService,
+    private readonly noticePackets: NoticePacketService,
+    private readonly precedentCompare: PrecedentCompareService,
+    private readonly boardPackets: BoardPacketService,
   ) {}
 
   @Get('health')
   health() {
     return {
       ok: true,
-      phase: 31,
+      phase: 32,
       store: this.store.backend(),
       opsDashboard: true,
       staffQueue: true,
@@ -62,6 +68,9 @@ export class PublicController {
       criterionAtlas: true,
       structureSheet: true,
       filingPathway: true,
+      noticePacket: true,
+      precedentCompare: true,
+      publicBoardPacket: true,
     };
   }
 
@@ -214,6 +223,28 @@ export class PublicController {
   @Header('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
   meetings() {
     return this.store.listMeetings();
+  }
+
+  /** Next upcoming (or most recent) public board packet — must stay above meetings/:id. */
+  @Get('board/packet')
+  @Header('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
+  boardPacketMeta() {
+    return {
+      ...this.boardPackets.resolvePublicMeeting(),
+      note: 'Mirrored public facts only. MemberNotes and DRAFT applications are never included.',
+    };
+  }
+
+  @Get('board/packet.pdf')
+  @Header('Cache-Control', 'public, max-age=60')
+  async boardPacketPdf(@Res() res: Response) {
+    const { buffer, meetingId } = await this.boardPackets.buildNextPdf();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="creek-street-board-packet-${meetingId}.pdf"`,
+    );
+    res.send(buffer);
   }
 
   @Get('meetings/:id')
@@ -372,6 +403,25 @@ export class PublicController {
     });
     if (!plan) throw new NotFoundException('No published triage flow for this project type');
     return plan;
+  }
+
+  @Get('notice/packet.pdf')
+  @Header('Cache-Control', 'public, max-age=60')
+  async noticePacketPdf(@Query('address') address: string | undefined, @Res() res: Response) {
+    const buf = await this.noticePackets.buildPdf(address ?? '');
+    const slug = (address ?? 'notice').toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="creek-street-notice-packet-${slug || 'address'}.pdf"`,
+    );
+    res.send(buf);
+  }
+
+  @Get('precedents/compare')
+  @Header('Cache-Control', 'public, max-age=120, stale-while-revalidate=300')
+  precedentsCompare(@Query('left') left?: string, @Query('right') right?: string) {
+    return this.precedentCompare.compare(left || 'ex_sign_proposed', right || 'ex_sign_after');
   }
 
   @Get('filing/plan.pdf')

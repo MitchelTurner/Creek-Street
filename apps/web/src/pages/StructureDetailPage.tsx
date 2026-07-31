@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
+import { RelatedNext } from '../components/RelatedNext';
 import { SourceLink } from '../components/SourceLink';
 import { formatDate, statusLabel } from '../lib/api';
 
@@ -337,6 +338,31 @@ export function StructureDetailPage() {
           </ul>
         </section>
       ) : null}
+
+      <RelatedNext
+        links={[
+          {
+            to: `/visit/${row.publicSlug}`,
+            label: 'Open visit / QR story',
+            hint: 'Mobile-first narrative for boardwalk visitors.',
+          },
+          {
+            to: '/triage',
+            label: 'Triage a project here',
+            hint: 'Check whether exterior work on this structure needs review.',
+          },
+          {
+            to: '/filing',
+            label: 'Build a filing pathway',
+            hint: 'Carry this structure into permits, notice, and file-by planning.',
+          },
+          {
+            to: '/map',
+            label: 'See it on the district map',
+            hint: 'Pin-level context for the HD zone.',
+          },
+        ]}
+      />
 
       <p className="mt-12 text-xs text-ink/45">
         QR target slug: <code className="rounded bg-mist/60 px-1.5 py-0.5">{row.publicSlug}</code>

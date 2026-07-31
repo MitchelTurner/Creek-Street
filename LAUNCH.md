@@ -32,7 +32,7 @@ Phase 3 vars stay blank until MOU/contract.
 - [ ] Confirm public domain is attached to the API service and deploy of `main` is **Active** (not the Railway “train station” page)
 - [ ] `GET /` serves the SPA; `GET /api/health` returns JSON; same origin so no `VITE_*` split required
 - [ ] CDN / edge: public GET routes send `Cache-Control` + `stale-while-revalidate` (see interceptor)
-- [ ] Health: `GET /api/health` → `{ ok: true, phase: 31, store: "memory"|"prisma" }`
+- [ ] Health: `GET /api/health` → `{ ok: true, phase: 32, store: "memory"|"prisma" }`
 - [ ] Readiness: `GET /api/ready` → `ready: true` (prisma/redis/postgis/mail optional); `checks.publicBackend` matches health
 - [ ] Persistence path: `USE_MEMORY_STORE=false`, migrate + seed, confirm health `store: "prisma"` and docket still has no DRAFT
 - [ ] Packet: `GET /api/meetings/mtg_2026_08/packet.pdf` returns `%PDF`; board download logs `meeting.packet_download`
@@ -56,6 +56,9 @@ Phase 3 vars stay blank until MOU/contract.
 - [ ] Criterion atlas: `GET /api/guidance/criteria/MATERIAL_HONESTY` links `dec_sample_1`; `UNIFORMITY` empty OK; `NOT_A_CRITERION` → 404; `/guidance/criteria/:key` UI
 - [ ] Structure dossier: `GET /api/structures/20-creek-street/sheet` shows `dec_sample_1` + precedents; `star-house` has no DRAFT; `/structures/:slug` PDF works
 - [ ] Filing pathway: `GET /api/filing/plan?projectType=SIGNAGE&answers=%7B%22sign_start%22%3A%22yes%22%2C%22sign_new%22%3A%22change%22%7D&structureSlug=20-creek-street&address=24%20Creek%20Street&buildMonth=10&buildYear=2026` shows file-by + ZA step; PDF works; no DRAFT; `/filing` UI
+- [ ] Notice packet: `GET /api/notice/packet.pdf?address=24%20Creek%20Street` returns PDF; `/notice/packet` UI
+- [ ] Precedent compare: `GET /api/precedents/compare?left=ex_sign_proposed&right=ex_sign_after` returns teaching analysis; `/precedents/compare` UI
+- [ ] Public board packet: `GET /api/board/packet` resolves upcoming/recent meeting; PDF downloads; Meetings CTA works
 - [ ] Compliance: `/compliance` checklist visible; staff audit export works after a moderated action
 - [ ] Applicant: export JSON from workspace; delete blocked for demo accounts
 - [ ] Search: `GET /api/search?q=creek` returns hits; `/search` UI works; DRAFT text never appears

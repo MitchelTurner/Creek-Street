@@ -238,6 +238,14 @@ Deliberation does **not** turn on by default. That is intentional.
 - UI at `/filing`; triage completion CTAs into the plan; handoff to `/workspace` for private drafts
 - Always ends with Zoning Administrator language; never DRAFT / MemberNotes / AI body
 
+**Phase 32 — notice packet, precedent compare, public board packet, visit mode:**
+
+- Neighbor notice PDF: `GET /api/notice/packet.pdf?address=…` · UI `/notice/packet`
+- Precedent compare: `GET /api/precedents/compare?left=&right=` · UI `/precedents/compare`
+- Next public board packet: `GET /api/board/packet` · `GET /api/board/packet.pdf` (Meetings CTA)
+- Visit mode sticky CTAs + larger type on `/visit/:slug`
+- Hub chrome: journey rail, trust strip, map dossier drawer, teaching-loop related-next, skeletons/empty states
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).

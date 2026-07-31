@@ -58,6 +58,12 @@ export function PrecedentsPage() {
                 </option>
               ))}
             </select>
+            <Link
+              to="/precedents/compare"
+              className="text-sm font-semibold text-creek underline underline-offset-4"
+            >
+              Compare side-by-side
+            </Link>
             {criterion ? (
               <Link
                 to={`/guidance/criteria/${criterion}`}

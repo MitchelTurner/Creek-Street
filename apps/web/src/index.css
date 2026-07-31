@@ -153,6 +153,58 @@
     transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease;
   }
 
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(7, 19, 18, 0.14);
+    background: rgba(238, 246, 244, 0.72);
+    color: var(--color-creek);
+    padding: 0.85rem 1.35rem;
+    font-size: 0.925rem;
+    font-weight: 600;
+    transition: border-color 180ms ease, background-color 180ms ease;
+  }
+
+  .btn-secondary:hover {
+    border-color: rgba(15, 79, 77, 0.4);
+    background: rgba(201, 221, 216, 0.55);
+  }
+
+  .field {
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(7, 19, 18, 0.14);
+    background: rgba(238, 246, 244, 0.85);
+    padding: 0.7rem 0.85rem;
+    font-size: 0.925rem;
+    outline: none;
+    transition: box-shadow 160ms ease, border-color 160ms ease;
+  }
+
+  .field:focus {
+    border-color: rgba(26, 138, 132, 0.55);
+    box-shadow: 0 0 0 3px rgba(26, 138, 132, 0.18);
+  }
+
+  .choice {
+    border-radius: 0.5rem;
+    border: 1px solid rgba(7, 19, 18, 0.12);
+    background: rgba(238, 246, 244, 0.7);
+    padding: 0.85rem 1rem;
+    text-align: left;
+    font-size: 0.925rem;
+    font-weight: 550;
+    transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+  }
+
+  .choice:hover {
+    border-color: rgba(15, 79, 77, 0.45);
+    background: rgba(201, 221, 216, 0.4);
+  }
+
   .btn-ink:hover {
     border-color: rgba(15, 79, 77, 0.35);
     background: rgba(238, 246, 244, 0.9);

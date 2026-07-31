@@ -140,7 +140,7 @@ export function FilingPage() {
           <select
             value={projectType}
             onChange={(e) => setProjectType(e.target.value)}
-            className="mt-1 w-full rounded-md border border-ink/15 bg-foam/80 px-3 py-2"
+            className="field mt-1"
           >
             {PROJECT_TYPES.map((t) => (
               <option key={t} value={t}>
@@ -155,7 +155,7 @@ export function FilingPage() {
             value={structureSlug}
             onChange={(e) => setStructureSlug(e.target.value)}
             placeholder="20-creek-street"
-            className="mt-1 w-full rounded-md border border-ink/15 bg-foam/80 px-3 py-2"
+            className="field mt-1"
           />
         </label>
         <label className="text-sm sm:col-span-2">
@@ -164,7 +164,7 @@ export function FilingPage() {
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             placeholder="24 Creek Street"
-            className="mt-1 w-full rounded-md border border-ink/15 bg-foam/80 px-3 py-2"
+            className="field mt-1"
           />
         </label>
         <label className="text-sm">
@@ -172,7 +172,7 @@ export function FilingPage() {
           <select
             value={buildMonth}
             onChange={(e) => setBuildMonth(Number(e.target.value))}
-            className="mt-1 w-full rounded-md border border-ink/15 bg-foam/80 px-3 py-2"
+            className="field mt-1"
           >
             {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
               <option key={m} value={m}>
@@ -186,7 +186,7 @@ export function FilingPage() {
           <select
             value={buildYear}
             onChange={(e) => setBuildYear(Number(e.target.value))}
-            className="mt-1 w-full rounded-md border border-ink/15 bg-foam/80 px-3 py-2"
+            className="field mt-1"
           >
             {[2026, 2027, 2028].map((y) => (
               <option key={y} value={y}>
@@ -208,18 +208,18 @@ export function FilingPage() {
         </p>
       )}
 
-      <div className="mt-6 flex flex-wrap gap-4 text-sm">
+      <div className="mt-6 flex flex-wrap gap-3">
         {data && (
-          <a
-            href={data.links.pdf}
-            className="font-semibold text-creek underline underline-offset-4"
-          >
+          <a href={data.links.pdf} className="btn-primary">
             Download PDF
           </a>
         )}
+        <Link to={`/notice/packet?address=${encodeURIComponent(address)}`} className="btn-secondary">
+          Notice packet
+        </Link>
         <button
           type="button"
-          className="font-semibold text-ink/70 underline underline-offset-4"
+          className="btn-ink"
           onClick={() => window.print()}
         >
           Print

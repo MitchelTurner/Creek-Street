@@ -5,9 +5,34 @@ import { DEFAULT_DESC, JsonLd, SITE } from '../lib/seo';
 
 export function HomePage() {
   const [meta, setMeta] = useState<Meta | null>(null);
+  const [updatedLabel, setUpdatedLabel] = useState('Checking mirror sync…');
 
   useEffect(() => {
     api.meta().then(setMeta).catch(() => setMeta(null));
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/ingest/status')
+      .then((r) => r.json())
+      .then((d) => {
+        const runs = (d.recentRuns ?? d.runs ?? []) as Array<{ finishedAt?: string; startedAt?: string }>;
+        const stamp =
+          runs.map((x) => x.finishedAt || x.startedAt).find(Boolean) ||
+          d.lastRunAt ||
+          d.updatedAt ||
+          null;
+        if (stamp) {
+          const when = new Date(stamp).toLocaleString('en-US', {
+            timeZone: 'America/Juneau',
+            dateStyle: 'medium',
+            timeStyle: 'short',
+          });
+          setUpdatedLabel(`Last mirrored sync ${when} (Alaska)`);
+        } else {
+          setUpdatedLabel('Seeded public mirror · live ingest when feeds are configured');
+        }
+      })
+      .catch(() => setUpdatedLabel('Public mirror online · confirm freshness with primary sources'));
   }, []);
 
   const jsonLd = useMemo(
@@ -125,11 +150,21 @@ export function HomePage() {
           ))}
         </div>
 
-        {meta && (
-          <p className="mt-16 text-xs tracking-wide text-ink/40">
-            Operator {meta.operator} · NRHP {meta.nrhpReference} · Not a borough property
-          </p>
-        )}
+        <div className="mt-16 flex flex-wrap items-end justify-between gap-4 border-t border-ink/10 pt-8">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink/40">
+              Mirror freshness
+            </p>
+            <p className="mt-1 text-sm text-ink/65" id="mirror-updated">
+              {updatedLabel}
+            </p>
+          </div>
+          {meta && (
+            <p className="text-xs tracking-wide text-ink/40">
+              Operator {meta.operator} · NRHP {meta.nrhpReference} · Not a borough property
+            </p>
+          )}
+        </div>
       </section>
     </div>
   );

@@ -58,7 +58,7 @@ export function TriagePage() {
       <select
         value={projectType}
         onChange={(e) => setProjectType(e.target.value)}
-        className="mt-2 w-full max-w-md rounded-md border border-ink/15 bg-foam/80 px-3 py-2 text-sm outline-none ring-creek/30 focus:ring-2"
+        className="field mt-2 max-w-md"
       >
         <option value="">Select a project type…</option>
         {PROJECT_TYPES.map(([value, label]) => (
@@ -87,7 +87,7 @@ export function TriagePage() {
                 key={opt.id}
                 type="button"
                 onClick={() => setAnswers((a) => ({ ...a, [result.current.id]: opt.id }))}
-                className="rounded-md border border-ink/15 bg-foam/70 px-4 py-3 text-left text-sm font-medium transition hover:border-creek hover:bg-mist/40"
+                className="choice"
               >
                 {opt.label}
               </button>
@@ -166,14 +166,14 @@ export function TriagePage() {
             </a>
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-4 text-sm">
+          <div className="mt-6 flex flex-wrap gap-3">
             <Link
               to={`/filing?projectType=${encodeURIComponent(projectType)}&answers=${encodeURIComponent(JSON.stringify(answers))}`}
-              className="font-semibold text-creek underline underline-offset-4"
+              className="btn-primary"
             >
               Build filing pathway
             </Link>
-            <Link to="/permits" className="font-semibold text-creek underline underline-offset-4">
+            <Link to="/permits" className="btn-secondary">
               Check multi-agency permits
             </Link>
             <button

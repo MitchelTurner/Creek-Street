@@ -67,9 +67,17 @@ const ROUTES: Record<string, { title: string; description: string }> = {
     title: `Precedents · ${SITE}`,
     description: 'Visual precedent library and similarity search over public design-review decisions.',
   },
+  '/precedents/compare': {
+    title: `Compare precedents · ${SITE}`,
+    description: 'Side-by-side teaching compare for published Creek Street precedent exemplars.',
+  },
   '/notice': {
     title: `Notice lookup · ${SITE}`,
     description: 'Notice set helper citing KGBC 18.90.060 (600 ft) and 18.90.020 (HD district-wide).',
+  },
+  '/notice/packet': {
+    title: `Neighbor notice packet · ${SITE}`,
+    description: 'Printable neighbor notice helper with radius, parcels, and draft language for HD-zone filings.',
   },
   '/timelines': {
     title: `Timelines · ${SITE}`,

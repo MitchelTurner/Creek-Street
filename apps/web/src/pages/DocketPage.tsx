@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { EmptyState } from '../components/EmptyState';
 import { PageHeader } from '../components/PageHeader';
 import { SourceLink } from '../components/SourceLink';
 import { api, formatDate, statusLabel, type Application } from '../lib/api';
@@ -29,7 +30,7 @@ export function DocketPage() {
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search case number or description"
-        className="mb-8 w-full max-w-md rounded-md border border-ink/15 bg-foam/80 px-3 py-2 text-sm outline-none ring-creek/30 focus:ring-2"
+        className="field mb-8 max-w-md"
       />
 
       <Section title="Before the board" rows={live} />
@@ -43,7 +44,11 @@ function Section({ title, rows }: { title: string; rows: Application[] }) {
     <section className="mb-12">
       <h2 className="font-display text-2xl font-semibold">{title}</h2>
       {rows.length === 0 ? (
-        <p className="mt-3 text-sm text-ink/50">None in this view.</p>
+        <EmptyState
+          title="None in this view"
+          body="Try another search, or open the filing pathway to plan a new application."
+          action={{ to: '/filing', label: 'Filing pathway' }}
+        />
       ) : (
         <ul className="mt-4 divide-y divide-ink/10 border-y border-ink/10">
           {rows.map((a) => (

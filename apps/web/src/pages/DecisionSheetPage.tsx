@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
+import { RelatedNext } from '../components/RelatedNext';
 import { SourceLink } from '../components/SourceLink';
 import { formatDate, statusLabel } from '../lib/api';
 
@@ -224,6 +225,31 @@ export function DecisionSheetPage() {
               </Link>
             </p>
           </section>
+
+          <RelatedNext
+            links={[
+              {
+                to: '/precedents/compare',
+                label: 'Compare this decision’s visuals',
+                hint: 'Stack proposed and approved pairs against other Creek Street cases.',
+              },
+              {
+                to: '/guidance',
+                label: 'Read the HD criteria',
+                hint: 'Plain-language teaching pages for each review factor.',
+              },
+              {
+                to: '/filing',
+                label: 'Plan a similar filing',
+                hint: 'Build a printable pathway if your project resembles this case.',
+              },
+              {
+                to: '/docket',
+                label: 'Browse the live docket',
+                hint: 'See what is filed or scheduled now.',
+              },
+            ]}
+          />
         </div>
       ) : null}
     </div>

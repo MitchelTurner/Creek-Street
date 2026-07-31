@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
+import { RelatedNext } from '../components/RelatedNext';
 import { SourceLink } from '../components/SourceLink';
 import { formatDate, statusLabel } from '../lib/api';
 
@@ -223,6 +224,31 @@ export function CaseBriefPage() {
               </ul>
             )}
           </section>
+
+          <RelatedNext
+            links={[
+              {
+                to: '/filing',
+                label: 'Plan a filing like this',
+                hint: 'Printable pathway for a similar project type.',
+              },
+              {
+                to: '/precedents/compare',
+                label: 'Compare visual precedents',
+                hint: 'See how similar work was documented for the board.',
+              },
+              {
+                to: '/guidance',
+                label: 'Review HD criteria',
+                hint: 'Teaching pages for the factors this case may raise.',
+              },
+              {
+                to: '/meetings',
+                label: 'Upcoming meetings',
+                hint: 'Grab the public board packet for the next hearing.',
+              },
+            ]}
+          />
         </div>
       ) : null}
     </div>

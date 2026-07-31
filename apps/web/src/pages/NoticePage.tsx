@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { DisclaimerBanner } from '../components/DisclaimerBanner';
 import { PageHeader } from '../components/PageHeader';
 import { SourceLink } from '../components/SourceLink';
@@ -65,9 +66,21 @@ export function NoticePage() {
       <input
         value={address}
         onChange={(e) => setAddress(e.target.value)}
-        className="mt-8 w-full rounded-md border border-ink/15 bg-foam/80 px-3 py-2 text-sm outline-none ring-creek/30 focus:ring-2"
+        className="field mt-8"
         placeholder="Address in the HD zone"
       />
+      <p className="mt-3 text-sm">
+        <a
+          href={`/api/notice/packet.pdf?address=${encodeURIComponent(address)}`}
+          className="font-semibold text-creek underline underline-offset-4"
+        >
+          Download notice packet (PDF)
+        </a>
+        {' · '}
+        <Link to={`/notice/packet?address=${encodeURIComponent(address)}`} className="underline underline-offset-4">
+          Packet page
+        </Link>
+      </p>
 
       {data && !data.found && <p className="mt-6 text-sm text-cedar-deep">{data.message}</p>}
 

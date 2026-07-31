@@ -8,10 +8,20 @@ type Props = {
   structures?: StructureSummary[];
   interactive?: boolean;
   className?: string;
+  /** When set, pin click opens drawer instead of navigating away. */
+  onSelectSlug?: (slug: string) => void;
+  selectedSlug?: string | null;
 };
 
-export function DistrictMap({ geojson, interactive = true, className }: Props) {
+export function DistrictMap({
+  geojson,
+  interactive = true,
+  className,
+  onSelectSlug,
+  selectedSlug,
+}: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,6 +52,7 @@ export function DistrictMap({ geojson, interactive = true, className }: Props) {
       interactive,
       attributionControl: {},
     });
+    mapRef.current = map;
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
 
@@ -54,8 +65,8 @@ export function DistrictMap({ geojson, interactive = true, className }: Props) {
         source: 'district',
         filter: ['==', ['geometry-type'], 'Polygon'],
         paint: {
-          'fill-color': '#145c5a',
-          'fill-opacity': 0.18,
+          'fill-color': '#0f4f4d',
+          'fill-opacity': 0.16,
         },
       });
 
@@ -65,7 +76,7 @@ export function DistrictMap({ geojson, interactive = true, className }: Props) {
         source: 'district',
         filter: ['==', ['geometry-type'], 'Polygon'],
         paint: {
-          'line-color': '#145c5a',
+          'line-color': '#1a8a84',
           'line-width': 2,
         },
       });
@@ -76,15 +87,20 @@ export function DistrictMap({ geojson, interactive = true, className }: Props) {
         source: 'district',
         filter: ['==', ['geometry-type'], 'Point'],
         paint: {
-          'circle-radius': 7,
+          'circle-radius': [
+            'case',
+            ['==', ['get', 'publicSlug'], selectedSlug ?? ''],
+            11,
+            7,
+          ],
           'circle-color': [
             'case',
             ['==', ['get', 'nrhpContributing'], true],
-            '#8a5a3a',
+            '#9a6240',
             '#5a7a78',
           ],
           'circle-stroke-width': 2,
-          'circle-stroke-color': '#e7f1ef',
+          'circle-stroke-color': '#eef6f4',
         },
       });
 
@@ -98,15 +114,29 @@ export function DistrictMap({ geojson, interactive = true, className }: Props) {
         map.on('click', 'structures', (e) => {
           const f = e.features?.[0];
           const slug = f?.properties?.publicSlug;
-          if (typeof slug === 'string') navigate(`/structures/${slug}`);
+          if (typeof slug !== 'string') return;
+          if (onSelectSlug) onSelectSlug(slug);
+          else navigate(`/structures/${slug}`);
         });
       }
     });
 
     return () => {
+      mapRef.current = null;
       map.remove();
     };
-  }, [geojson, interactive, navigate]);
+  }, [geojson, interactive, navigate, onSelectSlug]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map?.getLayer('structures')) return;
+    map.setPaintProperty('structures', 'circle-radius', [
+      'case',
+      ['==', ['get', 'publicSlug'], selectedSlug ?? ''],
+      11,
+      7,
+    ]);
+  }, [selectedSlug]);
 
   return <div ref={containerRef} className={className ?? 'h-[420px] w-full'} />;
 }

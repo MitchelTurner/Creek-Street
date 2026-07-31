@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
+import { RelatedNext } from '../components/RelatedNext';
 import { SourceLink } from '../components/SourceLink';
 import { formatDate, statusLabel } from '../lib/api';
 
@@ -193,6 +194,31 @@ export function CriterionPage() {
               </div>
             )}
           </section>
+
+          <RelatedNext
+            links={[
+              {
+                to: '/precedents/compare',
+                label: 'Compare visual precedents',
+                hint: 'Side-by-side proposed vs approved pairs for this criterion.',
+              },
+              {
+                to: '/triage',
+                label: 'Run project triage',
+                hint: 'See whether this criterion path typically means review is required.',
+              },
+              {
+                to: '/filing',
+                label: 'Build a filing pathway',
+                hint: 'Stitch triage, permits, notice, and file-by into one plan.',
+              },
+              {
+                to: '/structures',
+                label: 'Browse structure dossiers',
+                hint: 'See where this criterion showed up on Creek Street buildings.',
+              },
+            ]}
+          />
         </div>
       ) : null}
     </div>

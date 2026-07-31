@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { DisclaimerBanner } from '../components/DisclaimerBanner';
+import { EmptyState } from '../components/EmptyState';
 import { PageHeader } from '../components/PageHeader';
 import { useAuth } from '../lib/auth';
 
@@ -125,7 +126,7 @@ export function WorkspacePage() {
           <select
             value={projectType}
             onChange={(e) => setProjectType(e.target.value)}
-            className="mt-1 block rounded-md border border-ink/15 bg-foam/80 px-3 py-2 text-sm"
+            className="field mt-1"
           >
             {PROJECT_TYPES.map((t) => (
               <option key={t} value={t}>
@@ -134,43 +135,51 @@ export function WorkspacePage() {
             ))}
           </select>
         </label>
-        <button type="submit" className="rounded-md bg-creek px-4 py-2.5 text-sm font-semibold text-foam">
+        <button type="submit" className="btn-primary">
           Start draft
         </button>
       </form>
       {error && <p className="mt-3 text-sm text-cedar-deep">{error}</p>}
 
       <h2 className="mt-12 font-display text-2xl font-semibold">Your drafts</h2>
-      <ul className="mt-4 divide-y divide-ink/10 border-y border-ink/10">
-        {drafts.map((d) => (
-          <li key={d.id}>
-            <Link to={`/workspace/${d.id}`} className="flex justify-between gap-4 py-3 hover:bg-mist/30">
-              <div>
-                <p className="font-medium">{d.projectType.replace(/_/g, ' ')}</p>
-                <p className="text-sm text-ink/55 line-clamp-1">{d.description || 'No description yet'}</p>
-              </div>
-              <div className="text-right text-xs text-ink/45">
-                <p>{d.completeness.complete ? 'Package ready' : `${d.completeness.missingKinds.length} exhibits missing`}</p>
-                <p>{d.status}</p>
-              </div>
-            </Link>
-          </li>
-        ))}
-      </ul>
-      {drafts.length === 0 && <p className="mt-4 text-sm text-ink/50">No drafts yet.</p>}
+      {drafts.length === 0 ? (
+        <EmptyState
+          title="No drafts yet"
+          body="Start a private preparation package, or build a public filing pathway first."
+          action={{ to: '/filing', label: 'Filing pathway' }}
+        />
+      ) : (
+        <ul className="mt-4 divide-y divide-ink/10 border-y border-ink/10">
+          {drafts.map((d) => (
+            <li key={d.id}>
+              <Link to={`/workspace/${d.id}`} className="flex justify-between gap-4 py-3 hover:bg-mist/30">
+                <div>
+                  <p className="font-medium">{d.projectType.replace(/_/g, ' ')}</p>
+                  <p className="line-clamp-1 text-sm text-ink/55">{d.description || 'No description yet'}</p>
+                </div>
+                <div className="text-right text-xs text-ink/45">
+                  <p>
+                    {d.completeness.complete
+                      ? 'Package ready'
+                      : `${d.completeness.missingKinds.length} exhibits missing`}
+                  </p>
+                  <p>{d.status}</p>
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
 
-      <div className="mt-10 flex flex-wrap gap-4 text-sm">
-        <Link to="/subscriptions" className="font-semibold text-creek underline underline-offset-4">
-          Alerts & subscriptions
+      <div className="mt-10 flex flex-wrap gap-3">
+        <Link to="/filing" className="btn-secondary">
+          Filing pathway
         </Link>
-        <Link to="/notice" className="font-semibold text-creek underline underline-offset-4">
-          Notice radius lookup
+        <Link to="/notice/packet" className="btn-ink">
+          Notice packet
         </Link>
-        <Link to="/timelines" className="font-semibold text-creek underline underline-offset-4">
-          Timeline expectations
-        </Link>
-        <Link to="/photos" className="font-semibold text-creek underline underline-offset-4">
-          Historic photo submit
+        <Link to="/subscriptions" className="self-center text-sm font-semibold text-creek underline underline-offset-4">
+          Alerts
         </Link>
       </div>
     </div>

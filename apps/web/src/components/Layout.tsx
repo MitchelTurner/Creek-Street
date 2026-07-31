@@ -1,5 +1,7 @@
 import { useEffect, useId, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { JourneyRail } from './JourneyRail';
+import { TrustStrip } from './TrustStrip';
 import { RouteSeo } from '../lib/seo';
 
 const primary = [
@@ -17,6 +19,7 @@ const explore = [
   { to: '/meetings', label: 'Meetings' },
   { to: '/guidance', label: 'Rules' },
   { to: '/precedents', label: 'Precedents' },
+  { to: '/precedents/compare', label: 'Compare precedents' },
   { to: '/photos', label: 'Photos' },
   { to: '/board', label: 'Board' },
 ];
@@ -24,6 +27,7 @@ const explore = [
 const tools = [
   { to: '/permits', label: 'Permits' },
   { to: '/notice', label: 'Notice' },
+  { to: '/notice/packet', label: 'Notice packet' },
   { to: '/construction', label: 'Build window' },
   { to: '/timelines', label: 'Timelines' },
   { to: '/workspace', label: 'Workspace' },
@@ -185,6 +189,9 @@ export function Layout() {
           </div>
         )}
       </header>
+
+      <JourneyRail />
+      {!isHome && <TrustStrip />}
 
       <main id="main-content" className="flex-1" tabIndex={-1}>
         <Outlet />

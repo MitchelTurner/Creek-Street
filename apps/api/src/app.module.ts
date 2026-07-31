@@ -13,6 +13,7 @@ import { Phase4Module } from './phase4/phase4.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PublicModule } from './public/public.module';
 import { StoreModule } from './store/store.module';
+import { HealthController } from './common/health.controller';
 
 @Module({
   imports: [
@@ -31,5 +32,7 @@ import { StoreModule } from './store/store.module';
     CalendarModule,
     AdminModule,
   ],
+  controllers: [HealthController],
 })
 export class AppModule {}
+

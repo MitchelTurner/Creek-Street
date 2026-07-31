@@ -70,7 +70,7 @@ export function SearchPage() {
         lede="Structures, docket, decisions, meetings, and HD guidance. Private drafts and unreviewed AI summaries are never indexed."
       />
 
-      <form onSubmit={onSubmit} className="mt-6 flex flex-wrap gap-2" role="search">
+      <form onSubmit={onSubmit} className="mt-2 flex flex-wrap gap-2" role="search">
         <label className="sr-only" htmlFor="site-search">
           Search
         </label>
@@ -79,10 +79,10 @@ export function SearchPage() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="e.g. awning, Dolly’s, uniformity"
-          className="min-w-[16rem] flex-1 rounded-md border border-ink/15 bg-foam/80 px-3 py-2.5 text-sm"
+          className="field min-w-[16rem] flex-1"
           autoFocus
         />
-        <button type="submit" className="rounded-md bg-creek px-4 py-2.5 text-sm font-semibold text-foam">
+        <button type="submit" className="btn-primary">
           Search
         </button>
       </form>
@@ -96,15 +96,17 @@ export function SearchPage() {
       </p>
       {error && <p className="mt-2 text-sm text-cedar-deep">{error}</p>}
 
-      <ul className="mt-8 divide-y divide-ink/10 border-y border-ink/10">
+      <ul className="mt-8 divide-y divide-ink/10 border-y border-ink/8">
         {hits.map((h) => (
           <li key={`${h.type}-${h.id}`}>
-            <Link to={h.href} className="block py-4 hover:bg-mist/30">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-ink/45">
+            <Link to={h.href} className="group block py-5 transition-colors hover:bg-mist/25">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink/40">
                 {TYPE_LABEL[h.type] ?? h.type}
               </p>
-              <p className="mt-1 font-display text-xl font-semibold text-ink">{h.title}</p>
-              <p className="mt-1 text-sm leading-relaxed text-ink/65">{h.snippet}</p>
+              <p className="mt-1.5 font-display text-xl font-semibold tracking-tight text-ink transition-colors group-hover:text-creek">
+                {h.title}
+              </p>
+              <p className="mt-1.5 text-sm leading-relaxed text-ink/60">{h.snippet}</p>
             </Link>
           </li>
         ))}

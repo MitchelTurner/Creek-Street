@@ -34,88 +34,100 @@ export function HomePage() {
   return (
     <div>
       <JsonLd data={jsonLd} />
-      <section className="relative min-h-[92vh] overflow-hidden border-b border-ink/10" aria-label="Hero">
+
+      <section className="relative min-h-[100svh] overflow-hidden" aria-label="Hero">
+        <img
+          src="/hero-creek.jpg"
+          alt=""
+          className="hero-kenburns absolute inset-0 h-full w-full object-cover"
+          fetchPriority="high"
+        />
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: `
-              linear-gradient(105deg, rgba(14,28,28,0.78) 0%, rgba(14,28,28,0.45) 42%, rgba(20,92,90,0.25) 100%),
-              linear-gradient(180deg, rgba(14,28,28,0.2), rgba(14,28,28,0.55)),
-              url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900' viewBox='0 0 1600 900'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%23145c5a'/%3E%3Cstop offset='.55' stop-color='%230e1c1c'/%3E%3Cstop offset='1' stop-color='%235c3a24'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1600' height='900' fill='url(%23g)'/%3E%3Cpath d='M0 620 C 220 540, 380 700, 620 640 S 1040 520, 1280 600 S 1500 680, 1600 640 L1600 900 L0 900 Z' fill='%231a2f2e' opacity='.55'/%3E%3Cpath d='M0 700 C 260 640, 480 760, 760 700 S 1180 620, 1600 720 L1600 900 L0 900 Z' fill='%238a5a3a' opacity='.28'/%3E%3C/svg%3E")
-            `,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            background:
+              'linear-gradient(105deg, rgba(7,19,18,0.82) 0%, rgba(7,19,18,0.55) 46%, rgba(10,46,44,0.28) 100%), linear-gradient(180deg, rgba(7,19,18,0.2) 0%, rgba(7,19,18,0.62) 100%)',
           }}
         />
-        <div className="hero-fog pointer-events-none absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-foam/25 to-transparent" />
+        <div className="hero-fog pointer-events-none absolute inset-x-0 top-0 h-56 bg-gradient-to-b from-foam/20 to-transparent" />
+        <div className="tide-sheen pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-creek-bright/25 to-transparent" />
 
-        <div className="relative mx-auto flex min-h-[92vh] max-w-6xl flex-col justify-end px-4 pb-16 pt-28 md:px-6 md:pb-24">
-          <p className="animate-rise font-display text-5xl font-semibold leading-[0.95] tracking-tight text-foam md:text-7xl lg:text-8xl">
+        <div className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-end px-4 pb-16 pt-32 md:px-6 md:pb-24">
+          <p className="animate-rise font-display text-[clamp(3.4rem,10vw,7.5rem)] font-semibold leading-[0.9] tracking-tight text-foam">
             Creek Street
-            <span className="mt-2 block text-3xl font-medium text-board md:text-5xl">
-              Design Review Hub
-            </span>
           </p>
-          <p className="animate-rise-delay mt-6 max-w-xl text-base leading-relaxed text-foam/85 md:text-lg">
-            Public mirror of the Historic District Architectural Design Review Board —
-            structures, docket, decisions, and the rules made legible.
+          <p className="animate-rise-delay mt-3 font-display text-[clamp(1.4rem,3.6vw,2.6rem)] font-medium leading-tight text-board">
+            Design Review Hub
           </p>
-          <div className="animate-rise-delay-2 mt-8 flex flex-wrap gap-3">
-            <Link
-              to="/search"
-              className="rounded-md bg-board px-5 py-3 text-sm font-semibold text-ink transition hover:bg-foam"
-            >
-              Search the mirror
-            </Link>
+          <p className="animate-rise-delay mt-6 max-w-lg text-base leading-relaxed text-foam/85 md:text-lg">
+            The Historic District boardwalk, made legible — structures, docket, and the rules that
+            shape what gets built.
+          </p>
+          <div className="animate-rise-delay-2 mt-9 flex flex-wrap gap-3">
             <Link
               to="/triage"
-              className="rounded-md border border-foam/40 px-5 py-3 text-sm font-semibold text-foam transition hover:bg-foam/10"
+              className="inline-flex items-center justify-center rounded-lg bg-board px-5 py-3.5 text-sm font-semibold text-ink transition hover:bg-foam"
             >
               Do I need review?
+            </Link>
+            <Link to="/map" className="btn-ghost">
+              Open the district map
             </Link>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16 md:px-6">
+      <section className="mx-auto max-w-6xl px-4 py-20 md:px-6 md:py-28">
         <div className="max-w-2xl">
-          <h2 className="font-display text-3xl font-semibold text-ink">Built as infrastructure</h2>
-          <p className="mt-3 text-ink/70 leading-relaxed">
-            Independent of the borough. Public mirror plus decision-support tools — no board
-            deliberation, no private records custody. Every mirrored fact links to its source.
+          <h2 className="font-display text-4xl font-semibold tracking-tight text-ink md:text-5xl text-balance">
+            From question to filing plan
+          </h2>
+          <p className="mt-4 text-lg leading-relaxed text-ink/65 text-pretty">
+            Independent of the borough. Public mirror plus decision-support — no deliberation, no
+            private records custody.
           </p>
         </div>
 
-        <div className="mt-10 grid gap-8 md:grid-cols-3">
+        <div className="mt-14 grid gap-10 md:grid-cols-3">
           {[
             {
-              title: 'Triage wizard',
-              body: 'Branching questions that cite KGBC 18.40.010(b)(13) and 18.90.020 — review required, not required, or confirm with ZA.',
+              title: 'Triage',
+              body: 'Branching questions that cite the code and always end at the Zoning Administrator.',
               to: '/triage',
             },
             {
               title: 'Filing pathway',
-              body: 'One printable plan stitching triage, permits, HD notice, and file-by date — always ending at the Zoning Administrator.',
+              body: 'One printable plan: triage, permits, HD notice, and a build-season file-by date.',
               to: '/filing',
             },
             {
-              title: 'Permit trigger map',
-              body: 'Multi-agency jurisdiction as data. Verified rows only by default; unverified research leads stay gated.',
-              to: '/permits',
+              title: 'Structure dossiers',
+              body: 'NRHP inventory threaded to public cases, decisions, criteria, and meetings.',
+              to: '/structures',
             },
-          ].map((item) => (
-            <Link key={item.to} to={item.to} className="group block border-t border-ink/15 pt-5">
-              <h3 className="font-display text-xl font-semibold group-hover:text-creek transition-colors">
+          ].map((item, i) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={[
+                'group surface-panel block',
+                i === 0 ? 'animate-rise' : i === 1 ? 'animate-rise-delay' : 'animate-rise-delay-2',
+              ].join(' ')}
+            >
+              <h3 className="font-display text-2xl font-semibold tracking-tight transition-colors group-hover:text-creek">
                 {item.title}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed text-ink/65">{item.body}</p>
+              <p className="mt-3 text-sm leading-relaxed text-ink/60">{item.body}</p>
+              <span className="mt-5 inline-block text-sm font-semibold text-creek transition-transform group-hover:translate-x-0.5">
+                Continue →
+              </span>
             </Link>
           ))}
         </div>
 
         {meta && (
-          <p className="mt-12 text-xs text-ink/50">
-            Operator: {meta.operator}. NRHP ref. {meta.nrhpReference}. Not a borough property.
+          <p className="mt-16 text-xs tracking-wide text-ink/40">
+            Operator {meta.operator} · NRHP {meta.nrhpReference} · Not a borough property
           </p>
         )}
       </section>

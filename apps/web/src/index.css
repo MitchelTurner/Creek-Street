@@ -2,19 +2,21 @@
 @import "maplibre-gl/dist/maplibre-gl.css";
 
 @theme {
-  --font-display: "Fraunces", Georgia, serif;
-  --font-sans: "Manrope", ui-sans-serif, sans-serif;
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", serif;
+  --font-sans: "Manrope", "Avenir Next", ui-sans-serif, sans-serif;
 
-  --color-ink: #0e1c1c;
-  --color-ink-soft: #1a2f2e;
-  --color-creek: #145c5a;
-  --color-creek-bright: #1f7a76;
-  --color-foam: #e7f1ef;
-  --color-mist: #c5d8d4;
-  --color-cedar: #8a5a3a;
-  --color-cedar-deep: #5c3a24;
-  --color-brass: #b08a4a;
-  --color-board: #d8c4a8;
+  --color-ink: #071312;
+  --color-ink-soft: #122422;
+  --color-creek: #0f4f4d;
+  --color-creek-bright: #1a8a84;
+  --color-foam: #eef6f4;
+  --color-mist: #c9ddd8;
+  --color-cedar: #9a6240;
+  --color-cedar-deep: #5a3420;
+  --color-brass: #c4a15c;
+  --color-board: #e2d0b4;
+  --color-tide: #0a2e2c;
+  --color-spray: #f7fbfa;
 }
 
 @layer base {
@@ -26,16 +28,40 @@
     margin: 0;
     font-family: var(--font-sans);
     color: var(--color-ink);
-    background:
-      radial-gradient(1200px 600px at 10% -10%, rgba(31, 122, 118, 0.18), transparent 55%),
-      radial-gradient(900px 500px at 90% 0%, rgba(138, 90, 58, 0.12), transparent 50%),
-      linear-gradient(180deg, #f3f7f6 0%, #e7f1ef 40%, #f7f5f1 100%);
+    background-color: var(--color-spray);
+    background-image:
+      radial-gradient(ellipse 900px 480px at 0% -5%, rgba(26, 138, 132, 0.14), transparent 55%),
+      radial-gradient(ellipse 700px 420px at 100% 0%, rgba(154, 98, 64, 0.1), transparent 50%),
+      linear-gradient(180deg, #f4faf8 0%, #eef6f4 38%, #f8f5f0 100%);
+    background-attachment: fixed;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body::before {
+    content: "";
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  #root {
+    position: relative;
+    z-index: 1;
   }
 
   a {
     color: inherit;
     text-decoration: none;
+  }
+
+  ::selection {
+    background: rgba(26, 138, 132, 0.22);
+    color: var(--color-ink);
   }
 
   :focus-visible {
@@ -45,6 +71,13 @@
 
   :focus:not(:focus-visible) {
     outline: none;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -62,6 +95,93 @@
   }
 }
 
+@layer components {
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.5rem;
+    background: var(--color-creek);
+    color: var(--color-foam);
+    padding: 0.85rem 1.35rem;
+    font-size: 0.925rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    transition: background-color 180ms ease, transform 180ms ease;
+  }
+
+  .btn-primary:hover {
+    background: var(--color-creek-bright);
+  }
+
+  .btn-primary:active {
+    transform: translateY(1px);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(238, 246, 244, 0.35);
+    background: transparent;
+    color: var(--color-foam);
+    padding: 0.85rem 1.35rem;
+    font-size: 0.925rem;
+    font-weight: 600;
+    transition: background-color 180ms ease, border-color 180ms ease;
+  }
+
+  .btn-ghost:hover {
+    background: rgba(238, 246, 244, 0.1);
+    border-color: rgba(238, 246, 244, 0.55);
+  }
+
+  .btn-ink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(7, 19, 18, 0.12);
+    background: rgba(255, 255, 255, 0.55);
+    color: var(--color-ink);
+    padding: 0.7rem 1.1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease;
+  }
+
+  .btn-ink:hover {
+    border-color: rgba(15, 79, 77, 0.35);
+    background: rgba(238, 246, 244, 0.9);
+    color: var(--color-creek);
+  }
+
+  .field {
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(7, 19, 18, 0.12);
+    background: rgba(255, 255, 255, 0.72);
+    padding: 0.7rem 0.9rem;
+    font-size: 0.925rem;
+    color: var(--color-ink);
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+  }
+
+  .field:focus {
+    border-color: rgba(26, 138, 132, 0.55);
+    box-shadow: 0 0 0 3px rgba(26, 138, 132, 0.15);
+    outline: none;
+  }
+
+  .surface-panel {
+    border-top: 1px solid rgba(7, 19, 18, 0.1);
+    padding-top: 1.25rem;
+  }
+}
+
 @layer utilities {
   .font-display {
     font-family: var(--font-display);
@@ -70,12 +190,16 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
 }
 
 @keyframes rise-in {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(18px);
   }
   to {
     opacity: 1;
@@ -85,10 +209,19 @@
 
 @keyframes fog-drift {
   from {
-    transform: translateX(-2%);
+    transform: translate3d(-1.5%, 0, 0) scale(1.02);
   }
   to {
-    transform: translateX(2%);
+    transform: translate3d(1.5%, 0, 0) scale(1.05);
+  }
+}
+
+@keyframes kenburns {
+  from {
+    transform: scale(1.05) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.12) translate3d(-1.5%, -1%, 0);
   }
 }
 
@@ -101,26 +234,48 @@
   }
 }
 
+@keyframes tide-sheen {
+  0% {
+    opacity: 0.25;
+    transform: translateX(-8%);
+  }
+  50% {
+    opacity: 0.45;
+  }
+  100% {
+    opacity: 0.3;
+    transform: translateX(8%);
+  }
+}
+
 .animate-rise {
-  animation: rise-in 0.8s ease-out both;
+  animation: rise-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .animate-rise-delay {
-  animation: rise-in 0.9s ease-out 0.15s both;
+  animation: rise-in 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
 }
 
 .animate-rise-delay-2 {
-  animation: rise-in 0.9s ease-out 0.3s both;
+  animation: rise-in 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.24s both;
 }
 
 .hero-fog {
-  animation: fog-drift 12s ease-in-out infinite alternate;
+  animation: fog-drift 14s ease-in-out infinite alternate;
+}
+
+.hero-kenburns {
+  animation: kenburns 22s ease-out both;
+}
+
+.tide-sheen {
+  animation: tide-sheen 10s ease-in-out infinite alternate;
 }
 
 .accent-line {
   background: linear-gradient(90deg, var(--color-creek), var(--color-brass), var(--color-cedar));
   background-size: 200% 100%;
-  animation: shimmer-line 8s linear infinite;
+  animation: shimmer-line 9s linear infinite;
 }
 
 .skip-link {
@@ -128,7 +283,7 @@
   left: 1rem;
   top: -100px;
   z-index: 100;
-  border-radius: 0.375rem;
+  border-radius: 0.5rem;
   background: var(--color-ink);
   color: var(--color-foam);
   padding: 0.5rem 1rem;
@@ -151,6 +306,10 @@
   body {
     background: white;
     color: black;
+  }
+
+  body::before {
+    display: none;
   }
 
   main {

@@ -229,6 +229,9 @@ export function Layout() {
                 Compliance
               </NavLink>
             </p>
+            <p className="pt-2 text-[11px] uppercase tracking-[0.16em] text-foam/35">
+              UI boardwalk-hero-v1
+            </p>
           </div>
         </div>
       </footer>

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { existsSync } from 'fs';
-import { join } from 'path';
+import { join, sep } from 'path';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import type { NextFunction, Request, Response } from 'express';
@@ -32,12 +32,27 @@ async function bootstrap() {
   const webDist = resolveWebDist();
   const indexHtml = join(webDist, 'index.html');
   if (existsSync(indexHtml)) {
-    app.useStaticAssets(webDist, { index: false });
+    app.useStaticAssets(webDist, {
+      index: false,
+      setHeaders(res, filePath) {
+        if (filePath.endsWith(`${sep}index.html`) || filePath.endsWith('.html')) {
+          res.setHeader('Cache-Control', 'no-store');
+          return;
+        }
+        if (filePath.includes(`${sep}assets${sep}`)) {
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+          return;
+        }
+        // hero image and other public root files
+        res.setHeader('Cache-Control', 'public, max-age=300, must-revalidate');
+      },
+    });
     app.use((req: Request, res: Response, next: NextFunction) => {
       if (req.method !== 'GET' && req.method !== 'HEAD') return next();
       if (req.path.startsWith('/api')) return next();
       // Missing fingerprinted assets should 404, not return the SPA shell.
       if (/\.[a-zA-Z0-9]+$/.test(req.path)) return next();
+      res.setHeader('Cache-Control', 'no-store');
       return res.sendFile(indexHtml);
     });
     // eslint-disable-next-line no-console
@@ -48,9 +63,14 @@ async function bootstrap() {
   }
 
   const port = Number(process.env.PORT ?? 3001);
+  const build =
+    process.env.BUILD_SHA ||
+    process.env.RAILWAY_GIT_COMMIT_SHA ||
+    process.env.GITHUB_SHA ||
+    'local';
   await app.listen(port, '0.0.0.0');
   // eslint-disable-next-line no-console
-  console.log(`Creek Street listening on http://0.0.0.0:${port} (API /api)`);
+  console.log(`Creek Street listening on http://0.0.0.0:${port} (API /api) build=${build}`);
 }
 
 bootstrap();

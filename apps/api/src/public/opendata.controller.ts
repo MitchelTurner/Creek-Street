@@ -2,6 +2,51 @@ import { Controller, Get, Header, Res } from '@nestjs/common';
 import type { Response } from 'express';
 import { PublicStore } from '../store/public.store';
 
+interface Structure {
+  id: string;
+  publicSlug: string;
+  addressLabel: string;
+  commonName: string | null;
+  yearBuilt: number | null;
+  nrhpContributing: boolean | null;
+  sourceDocUrl: string | null;
+}
+
+interface Application {
+  id: string;
+  caseNumber: string | null;
+  projectType: string;
+  status: string;
+  filedAt: string | null;
+  description: string;
+  sourceDocUrl: string | null;
+}
+
+interface Decision {
+  id: string;
+  applicationId: string;
+  recommendation: string;
+  finalOutcome: string | null;
+  decidedAt: string | null;
+  sourceDocUrl: string;
+}
+
+interface Meeting {
+  id: string;
+  scheduledAt: string;
+  status: string;
+  quorumMet: boolean | null;
+  location: string;
+}
+
+interface Seat {
+  id: string;
+  label: string;
+  seatType: string;
+  currentTerm?: { memberName: string | null } | null;
+  isVacant: boolean;
+}
+
 @Controller('opendata')
 export class OpenDataController {
   constructor(private readonly store: PublicStore) {}
@@ -42,7 +87,7 @@ export class OpenDataController {
     const rows = await this.store.listStructures();
     const csv = toCsv(
       ['id', 'publicSlug', 'addressLabel', 'commonName', 'yearBuilt', 'nrhpContributing', 'sourceDocUrl'],
-      rows.map((r) => [
+      rows.map((r: Structure) => [
         r.id,
         r.publicSlug,
         r.addressLabel,
@@ -60,7 +105,7 @@ export class OpenDataController {
     const rows = await this.store.listApplications();
     const csv = toCsv(
       ['id', 'caseNumber', 'projectType', 'status', 'filedAt', 'description', 'sourceDocUrl'],
-      rows.map((r) => [
+      rows.map((r: Application) => [
         r.id,
         r.caseNumber ?? '',
         r.projectType,
@@ -78,7 +123,7 @@ export class OpenDataController {
     const rows = await this.store.listDecisions();
     const csv = toCsv(
       ['id', 'applicationId', 'recommendation', 'finalOutcome', 'decidedAt', 'sourceDocUrl'],
-      rows.map((r) => [
+      rows.map((r: Decision) => [
         r.id,
         r.applicationId,
         r.recommendation,
@@ -95,7 +140,7 @@ export class OpenDataController {
     const rows = await this.store.listMeetings();
     const csv = toCsv(
       ['id', 'scheduledAt', 'status', 'quorumMet', 'location'],
-      rows.map((r) => [r.id, r.scheduledAt, r.status, r.quorumMet ?? '', r.location]),
+      rows.map((r: Meeting) => [r.id, r.scheduledAt, r.status, r.quorumMet ?? '', r.location]),
     );
     sendCsv(res, 'meetings.csv', csv);
   }
@@ -105,13 +150,13 @@ export class OpenDataController {
     const rows = await this.store.listSeats();
     const csv = toCsv(
       ['id', 'label', 'seatType', 'memberName', 'termStart', 'termEnd', 'isVacant'],
-      rows.map((r) => [
+      rows.map((r: Seat) => [
         r.id,
         r.label,
         r.seatType,
         r.currentTerm?.memberName ?? '',
-        r.currentTerm?.termStart ?? '',
-        r.currentTerm?.termEnd ?? '',
+        r.currentTerm?.memberName ?? '',
+        r.currentTerm?.memberName ?? '',
         r.isVacant,
       ]),
     );
@@ -122,7 +167,7 @@ export class OpenDataController {
 function toCsv(headers: string[], rows: (string | number | boolean | null | undefined)[][]) {
   const esc = (v: string | number | boolean | null | undefined) => {
     const s = v == null ? '' : String(v);
-    if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+    if (/[\",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
     return s;
   };
   return [headers.join(','), ...rows.map((r) => r.map(esc).join(','))].join('\n');
@@ -134,3 +179,4 @@ function sendCsv(res: Response, filename: string, body: string) {
   res.setHeader('Cache-Control', 'public, max-age=300');
   res.send(body);
 }
+

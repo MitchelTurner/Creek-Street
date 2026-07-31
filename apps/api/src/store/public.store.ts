@@ -52,7 +52,7 @@ export class PublicStore {
             : { nrhpContributing: opts.contributing },
         orderBy: { addressLabel: 'asc' },
       });
-      return rows.map((s) => ({
+      return rows.map((s: any) => ({
         id: s.id,
         commonName: s.commonName,
         addressLabel: s.addressLabel,
@@ -105,8 +105,8 @@ export class PublicStore {
               address: s.parcel.address,
             }
           : null,
-        applications: s.applications.map((a) => this.serializeApp(a)),
-        decisions: s.applications.flatMap((a) => a.decisions.map((d) => this.serializeDecision(d))),
+        applications: s.applications.map((a: any) => this.serializeApp(a)),
+        decisions: s.applications.flatMap((a: any) => a.decisions.map((d: any) => this.serializeDecision(d))),
         photos: s.photos,
       };
     } catch (e) {
@@ -145,12 +145,12 @@ export class PublicStore {
         orderBy: { filedAt: 'desc' },
       });
       return rows
-        .filter((a) => PUBLIC_STATUS_SET.has(a.status))
-        .map((a) => ({
+        .filter((a: any) => PUBLIC_STATUS_SET.has(a.status))
+        .map((a: any) => ({
           ...this.serializeApp(a),
           structure: a.structure,
           parcel: a.parcel,
-          decisions: a.decisions.map((d) => this.serializeDecision(d)),
+          decisions: a.decisions.map((d: any) => this.serializeDecision(d)),
         }));
     } catch (e) {
       this.log.warn(`Prisma listApplications failed; memory fallback. ${(e as Error).message}`);
@@ -177,7 +177,7 @@ export class PublicStore {
         ...this.serializeApp(a),
         structure: a.structure,
         parcel: a.parcel,
-        decisions: a.decisions.map((d) => this.serializeDecision(d)),
+        decisions: a.decisions.map((d: any) => this.serializeDecision(d)),
         documents: [],
       };
     } catch (e) {
@@ -194,19 +194,19 @@ export class PublicStore {
         orderBy: { decidedAt: 'desc' },
       });
       let out = rows.filter(
-        (d) => d.application && PUBLIC_STATUS_SET.has(d.application.status),
+        (d: any) => d.application && PUBLIC_STATUS_SET.has(d.application.status),
       );
       if (opts?.q) {
         const q = opts.q.toLowerCase();
         out = out.filter(
-          (d) =>
+          (d: any) =>
             d.recommendation.toLowerCase().includes(q) ||
             (d.finalOutcome ?? '').toLowerCase().includes(q) ||
             (d.application?.description ?? '').toLowerCase().includes(q) ||
             (d.application?.caseNumber ?? '').toLowerCase().includes(q),
         );
       }
-      return out.map((d) => ({
+      return out.map((d: any) => ({
         ...this.serializeDecision(d),
         application: d.application ? this.serializeApp(d.application) : null,
       }));
@@ -226,7 +226,7 @@ export class PublicStore {
         },
         orderBy: { scheduledAt: 'desc' },
       });
-      return rows.map((m) => ({
+      return rows.map((m: any) => ({
         id: m.id,
         scheduledAt: m.scheduledAt.toISOString(),
         location: m.location,
@@ -281,9 +281,9 @@ export class PublicStore {
     try {
       const rows = await this.prisma.seat.findMany({ include: { terms: true } });
       const now = Date.now();
-      return rows.map((seat) => {
+      return rows.map((seat: any) => {
         const current =
-          seat.terms.find((t) => {
+          seat.terms.find((t: any) => {
             const start = t.termStart.getTime();
             const end = t.termEnd.getTime();
             return start <= now && now <= end && !t.vacatedAt;
@@ -294,7 +294,7 @@ export class PublicStore {
           id: seat.id,
           label: seat.label,
           seatType: seat.seatType,
-          terms: seat.terms.map((t) => ({
+          terms: seat.terms.map((t: any) => ({
             id: t.id,
             memberName: t.memberName,
             termStart: t.termStart.toISOString(),
@@ -423,3 +423,4 @@ export class PublicStore {
     };
   }
 }
+

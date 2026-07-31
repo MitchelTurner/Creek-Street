@@ -40,6 +40,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
   async rawQuery<T = unknown>(sql: string, params: unknown[] = []): Promise<T[]> {
     if (!this.ready) return [];
-    return this.$queryRawUnsafe<T[]>(sql, ...params);
+    return this.$queryRawUnsafe<T[]>(sql as string, ...params);
   }
 }
+

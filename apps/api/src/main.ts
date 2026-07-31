@@ -1,11 +1,26 @@
 import 'reflect-metadata';
+import { existsSync } from 'fs';
+import { join } from 'path';
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
+import type { NextFunction, Request, Response } from 'express';
 import { AppModule } from './app.module';
 import { CacheHeadersInterceptor } from './common/cache-headers.interceptor';
 import { securityAndRequestLog } from './ops/security.middleware';
 
+function resolveWebDist(): string {
+  if (process.env.WEB_DIST?.trim()) return process.env.WEB_DIST.trim();
+  // npm -w start uses package cwd (apps/api); Docker WORKDIR may be monorepo root.
+  const candidates = [
+    join(process.cwd(), '..', 'web', 'dist'),
+    join(process.cwd(), 'apps', 'web', 'dist'),
+    join(__dirname, '..', '..', '..', 'web', 'dist'),
+  ];
+  return candidates.find((p) => existsSync(join(p, 'index.html'))) ?? candidates[0]!;
+}
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors({
     origin: true,
     credentials: true,
@@ -13,11 +28,29 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.use(securityAndRequestLog);
   app.useGlobalInterceptors(new CacheHeadersInterceptor());
-  // Multipart uploads via FileInterceptor; default JSON body parser is fine.
+
+  const webDist = resolveWebDist();
+  const indexHtml = join(webDist, 'index.html');
+  if (existsSync(indexHtml)) {
+    app.useStaticAssets(webDist, { index: false });
+    app.use((req: Request, res: Response, next: NextFunction) => {
+      if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+      if (req.path.startsWith('/api')) return next();
+      // Missing fingerprinted assets should 404, not return the SPA shell.
+      if (/\.[a-zA-Z0-9]+$/.test(req.path)) return next();
+      return res.sendFile(indexHtml);
+    });
+    // eslint-disable-next-line no-console
+    console.log(`Serving web UI from ${webDist}`);
+  } else {
+    // eslint-disable-next-line no-console
+    console.warn(`Web dist not found at ${webDist} — API-only mode`);
+  }
+
   const port = Number(process.env.PORT ?? 3001);
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
   // eslint-disable-next-line no-console
-  console.log(`Creek Street API listening on http://localhost:${port}/api`);
+  console.log(`Creek Street listening on http://0.0.0.0:${port} (API /api)`);
 }
 
 bootstrap();

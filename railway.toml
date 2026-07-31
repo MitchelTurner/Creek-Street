@@ -5,10 +5,9 @@ dockerfilePath = "Dockerfile"
 [deploy]
 startCommand = "npm run start -w @creek-street/api"
 healthcheckPath = "/api/health"
-healthcheckTimeout = 30
+healthcheckTimeout = 60
 restartPolicyType = "ON_FAILURE"
 
-# Expected Railway services:
-# - Postgres (enable postgis + vector extensions)
-# - Redis (BullMQ ingest workers)
-# - Web static or separate Vite build served via CDN / nginx
+# Single service serves Nest API (/api/*) + Vite SPA (/*).
+# Railway sets PORT; the container listens on 0.0.0.0:$PORT.
+# Optional: Postgres (PostGIS) + Redis when leaving memory-store mode.

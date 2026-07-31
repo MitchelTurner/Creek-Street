@@ -28,8 +28,9 @@ Phase 3 vars stay blank until MOU/contract.
 ## Deploy (Railway / Docker)
 
 - [ ] `docker compose up -d` locally smoke-tests Postgres + Redis
-- [ ] Railway: set env from `apps/api/.env.example`; deploy monorepo (`railway.toml`)
-- [ ] Web origin proxies `/api` or sets `VITE_*` if split hosts
+- [ ] Railway: set env from `apps/api/.env.example`; deploy monorepo (`railway.toml` → Dockerfile)
+- [ ] Confirm public domain is attached to the API service and deploy of `main` is **Active** (not the Railway “train station” page)
+- [ ] `GET /` serves the SPA; `GET /api/health` returns JSON; same origin so no `VITE_*` split required
 - [ ] CDN / edge: public GET routes send `Cache-Control` + `stale-while-revalidate` (see interceptor)
 - [ ] Health: `GET /api/health` → `{ ok: true, phase: 31, store: "memory"|"prisma" }`
 - [ ] Readiness: `GET /api/ready` → `ready: true` (prisma/redis/postgis/mail optional); `checks.publicBackend` matches health

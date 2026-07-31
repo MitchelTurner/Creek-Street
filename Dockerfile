@@ -1,4 +1,4 @@
-# API image for Railway / containers
+# Unified API + web image for Railway / containers
 FROM node:22-bookworm-slim AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -11,15 +11,19 @@ COPY . .
 # Prisma client must exist before nest/tsc — otherwise $queryRawUnsafe and
 # store findMany results are untyped and the Docker build fails.
 RUN npm run prisma:generate -w @creek-street/api \
-  && npm run build -w @creek-street/api
+  && npm run build -w @creek-street/api \
+  && npm run build -w @creek-street/web
 
 FROM node:22-bookworm-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+ENV PORT=3001
+ENV WEB_DIST=/app/apps/web/dist
 COPY --from=build /app/package.json /app/package-lock.json ./
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/apps/api ./apps/api
-# Fail the image build if Nest did not emit the production entrypoint.
-RUN test -f apps/api/dist/main.js
+COPY --from=build /app/apps/web/dist ./apps/web/dist
+# Fail the image build if Nest / Vite did not emit production assets.
+RUN test -f apps/api/dist/main.js && test -f apps/web/dist/index.html
 EXPOSE 3001
 CMD ["npm", "run", "start", "-w", "@creek-street/api"]

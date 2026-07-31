@@ -36,7 +36,24 @@ export class ErrorBoundary extends Component<Props, State> {
           <Link to="/" className="rounded-md border border-ink/15 px-4 py-2 font-semibold text-ink">
             Home
           </Link>
+          <Link
+            to="/structures"
+            className="rounded-md border border-ink/15 px-4 py-2 font-semibold text-ink"
+          >
+            Structures
+          </Link>
+          <Link
+            to="/map"
+            className="rounded-md border border-ink/15 px-4 py-2 font-semibold text-ink"
+          >
+            Map
+          </Link>
         </div>
+        {this.state.error?.message ? (
+          <p className="mt-6 text-xs text-ink/40 break-words">
+            Technical detail: {this.state.error.message.slice(0, 240)}
+          </p>
+        ) : null}
       </div>
     );
   }

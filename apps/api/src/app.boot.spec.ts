@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { afterAll, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { AppModule } from './app.module';
 
 describe('AppModule boot', () => {

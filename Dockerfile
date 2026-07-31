@@ -19,5 +19,7 @@ ENV NODE_ENV=production
 COPY --from=build /app/package.json /app/package-lock.json ./
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/apps/api ./apps/api
+# Fail the image build if Nest did not emit the production entrypoint.
+RUN test -f apps/api/dist/main.js
 EXPOSE 3001
 CMD ["npm", "run", "start", "-w", "@creek-street/api"]

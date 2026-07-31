@@ -114,10 +114,10 @@ export class OpsClaimService {
     kind: QueueClaimKind,
     id: string,
     user: { id: string; email: string; role: string },
-    opts?: { force?: boolean },
+    opts?: { force?: boolean; nowMs?: number },
   ) {
     this.assertKnown(kind, id);
-    this.purgeExpired();
+    this.purgeExpired(opts?.nowMs);
     const key = claimKey(kind, id);
     const existing = this.claims.get(key);
     if (!existing) return { released: false, claim: null };

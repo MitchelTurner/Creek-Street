@@ -29,8 +29,10 @@ describe('OpsClaimService', () => {
     const enriched = svc.enrichQueueItems('photo', [{ id: 'photo_1', caption: 'x' }], now);
     expect(enriched[0]?.claim?.email).toBe('a@example.com');
 
-    expect(() => svc.release('photo', 'photo_1', staffB)).toThrow(ConflictException);
-    expect(svc.release('photo', 'photo_1', staffA).released).toBe(true);
+    expect(() => svc.release('photo', 'photo_1', staffB, { nowMs: now })).toThrow(
+      ConflictException,
+    );
+    expect(svc.release('photo', 'photo_1', staffA, { nowMs: now }).released).toBe(true);
     const again = svc.claim('photo', 'photo_1', staffB, now);
     expect(again?.email).toBe('b@example.com');
   });
@@ -39,7 +41,9 @@ describe('OpsClaimService', () => {
     const svc = makeSvc();
     const now = Date.parse('2026-07-30T12:00:00.000Z');
     svc.claim('summary', 'sum_1', staffA, now);
-    expect(svc.release('summary', 'sum_1', admin, { force: true }).released).toBe(true);
+    expect(svc.release('summary', 'sum_1', admin, { force: true, nowMs: now }).released).toBe(
+      true,
+    );
 
     svc.claim('ingest', 'run_1', staffA, now);
     const expired = svc.get('ingest', 'run_1', now + 3 * 3600000);

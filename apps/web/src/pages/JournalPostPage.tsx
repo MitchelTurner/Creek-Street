@@ -11,38 +11,25 @@ function EmbedBlock({
   large?: boolean;
 }) {
   const [broken, setBroken] = useState(false);
-  const showPhoto = embed.kind === 'photo' && embed.imageUrl && !broken;
+  if (!embed.imageUrl || broken) return null;
 
   return (
     <figure className={large ? 'my-10' : 'my-6'}>
-      {showPhoto ? (
-        <a
-          href={embed.sourceUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block overflow-hidden"
-        >
-          <img
-            src={embed.imageUrl}
-            alt=""
-            className={large ? 'max-h-[32rem] w-full object-cover' : 'max-h-[22rem] w-full object-cover'}
-            loading="lazy"
-            referrerPolicy="no-referrer"
-            onError={() => setBroken(true)}
-          />
-        </a>
-      ) : (
-        <a
-          href={embed.sourceUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block border border-ink/10 bg-gradient-to-br from-foam to-mist/50 px-5 py-6 transition hover:border-creek/40"
-        >
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/40">Source article</p>
-          <p className="mt-2 font-display text-xl font-semibold text-creek">{embed.sourceTitle}</p>
-          <p className="mt-2 text-sm text-ink/60">{embed.caption}</p>
-        </a>
-      )}
+      <a
+        href={embed.sourceUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block overflow-hidden"
+      >
+        <img
+          src={embed.imageUrl}
+          alt=""
+          className={large ? 'max-h-[32rem] w-full object-cover' : 'max-h-[22rem] w-full object-cover'}
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onError={() => setBroken(true)}
+        />
+      </a>
       <figcaption className="mt-3 text-xs leading-relaxed text-ink/50">
         {embed.caption}
         {' · '}
@@ -57,10 +44,12 @@ function EmbedBlock({
 }
 
 function PhotoStrip({ photos }: { photos: JournalPostDetail['embeds'] }) {
-  if (photos.length < 2) return null;
+  const [broken, setBroken] = useState<Record<string, boolean>>({});
+  const visible = photos.filter((p) => p.imageUrl && !broken[p.imageUrl!]);
+  if (visible.length < 2) return null;
   return (
     <div className="my-10 grid gap-3 sm:grid-cols-2">
-      {photos.slice(0, 4).map((embed) => (
+      {visible.slice(0, 4).map((embed) => (
         <a
           key={embed.imageUrl + embed.caption}
           href={embed.sourceUrl}
@@ -68,15 +57,16 @@ function PhotoStrip({ photos }: { photos: JournalPostDetail['embeds'] }) {
           rel="noopener noreferrer"
           className="group relative aspect-[4/3] overflow-hidden bg-mist/40"
         >
-          {embed.imageUrl ? (
-            <img
-              src={embed.imageUrl}
-              alt=""
-              className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-              loading="lazy"
-              referrerPolicy="no-referrer"
-            />
-          ) : null}
+          <img
+            src={embed.imageUrl}
+            alt=""
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            onError={() =>
+              setBroken((b) => ({ ...b, [embed.imageUrl!]: true }))
+            }
+          />
           <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/70 to-transparent px-3 pb-2 pt-8 text-[11px] leading-snug text-foam">
             {embed.caption}
           </span>
@@ -118,8 +108,7 @@ export function JournalPostPage() {
     );
   }
 
-  const photos = post.embeds.filter((e) => e.kind === 'photo');
-  const articles = post.embeds.filter((e) => e.kind === 'article');
+  const photos = post.embeds.filter((e) => e.kind === 'photo' && e.imageUrl);
   const mid = Math.ceil(post.body.length / 2);
   const firstHalf = post.body.slice(0, mid);
   const secondHalf = post.body.slice(mid);
@@ -189,26 +178,11 @@ export function JournalPostPage() {
         <section className="mt-12 border-t border-ink/10 pt-10">
           <h2 className="font-display text-xl font-semibold">More from the sources</h2>
           <p className="mt-2 text-sm text-ink/55">
-            Additional embeds from the linked articles — click any image to open the original.
+            Additional photo embeds — click any image to open the original article.
           </p>
           <div className="mt-6 space-y-2">
             {photos.slice(3).map((embed) => (
               <EmbedBlock key={embed.imageUrl + embed.caption} embed={embed} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {articles.length > 0 && (
-        <section className="mt-12 border-t border-ink/10 pt-10">
-          <h2 className="font-display text-xl font-semibold">Source articles</h2>
-          <p className="mt-2 text-sm text-ink/55">
-            Deeper reading — open the originals. We embed media from these pages; we do not host the
-            photos.
-          </p>
-          <div className="mt-6 space-y-4">
-            {articles.map((embed) => (
-              <EmbedBlock key={embed.sourceUrl} embed={embed} />
             ))}
           </div>
         </section>

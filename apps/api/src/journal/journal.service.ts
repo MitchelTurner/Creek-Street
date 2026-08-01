@@ -114,7 +114,11 @@ export class JournalService implements OnModuleInit {
   getBySlug(slug: string) {
     const post = this.posts.find((p) => p.slug === slug);
     if (!post) throw new NotFoundException('Journal post not found');
-    return { ...post, disclaimer: JOURNAL_DISCLAIMER };
+    return {
+      ...post,
+      embeds: photoEmbedsOnly(post.embeds),
+      disclaimer: JOURNAL_DISCLAIMER,
+    };
   }
 
   topics() {
@@ -230,7 +234,8 @@ export class JournalService implements OnModuleInit {
   }
 
   private card(post: JournalPost) {
-    const hero = post.embeds.find((e) => e.kind === 'photo' && e.imageUrl) || post.embeds[0];
+    const photos = photoEmbedsOnly(post.embeds);
+    const hero = photos[0];
     return {
       id: post.id,
       slug: post.slug,
@@ -250,10 +255,10 @@ export class JournalService implements OnModuleInit {
             sourceUrl: hero.sourceUrl,
             sourceTitle: hero.sourceTitle,
             credit: hero.credit,
-            kind: hero.kind,
+            kind: 'photo' as const,
           }
         : null,
-      embedCount: post.embeds.length,
+      embedCount: photos.length,
       href: `/journal/${post.slug}`,
     };
   }
@@ -290,7 +295,7 @@ export class JournalService implements OnModuleInit {
       pillars: topic.pillars,
       tags: topic.tags,
       takeaways: topic.takeaways,
-      embeds: topic.embeds,
+      embeds: photoEmbedsOnly(topic.embeds),
       topicId: topic.id,
       publishedAt: alaskaNoonIso(alaskaDate),
       publishDateAlaska: alaskaDate,
@@ -387,8 +392,8 @@ export class JournalService implements OnModuleInit {
       creekStreetHook: String(parsed.creekStreetHook || base.creekStreetHook).slice(0, 320),
       source: 'claude',
       model,
-      // Always keep curated embeds — never invent remote media URLs.
-      embeds: topic.embeds,
+      // Photo embeds only — never invent remote media URLs or text-only cards.
+      embeds: photoEmbedsOnly(topic.embeds),
       seedVersion: JOURNAL_SEED_VERSION,
     };
   }
@@ -491,6 +496,10 @@ export class JournalService implements OnModuleInit {
       this.log.warn(`Journal store persist failed: ${(e as Error).message}`);
     }
   }
+}
+
+function photoEmbedsOnly(embeds: JournalEmbed[]): JournalEmbed[] {
+  return embeds.filter((e) => e.kind === 'photo' && Boolean(e.imageUrl?.trim()));
 }
 
 function alaskaDateKey(d: Date) {

@@ -32,7 +32,7 @@ export type JournalTopic = {
 };
 
 /** Bump when seed voice/embeds change so the store re-bootstraps. */
-export const JOURNAL_SEED_VERSION = 2;
+export const JOURNAL_SEED_VERSION = 3;
 
 export const JOURNAL_DISCLAIMER =
   'Creek Street Journal — independent case-study teaching by Mitchel Turner Dev, LLC. Not City of Ketchikan or Ketchikan Gateway Borough policy. Photos are embedded from source articles with attribution; we do not host or claim ownership of remote media.';

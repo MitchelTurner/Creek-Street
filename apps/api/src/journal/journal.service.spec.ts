@@ -34,7 +34,8 @@ describe('JournalService', () => {
     expect(list.count).toBeGreaterThanOrEqual(7);
     expect(list.posts[0]?.heroEmbed?.sourceUrl).toMatch(/^https?:\/\//);
     const detail = journal.getBySlug(list.posts[0]!.slug);
-    expect(detail.embeds.filter((e) => e.kind === 'photo').length).toBeGreaterThanOrEqual(3);
+    expect(detail.embeds.every((e) => e.kind === 'photo' && e.imageUrl)).toBe(true);
+    expect(detail.embeds.length).toBeGreaterThanOrEqual(3);
     expect(detail.lede.length).toBeGreaterThan(20);
     expect(detail.body[0]).toBeTruthy();
   });

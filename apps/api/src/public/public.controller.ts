@@ -15,6 +15,7 @@ import type { Response } from 'express';
 import { PublicStore } from '../store/public.store';
 import { BoardPacketService } from './board-packet.service';
 import { CaseBriefService } from './case-brief.service';
+import { CivicIdeasService } from './civic-ideas.service';
 import { CriterionAtlasService } from './criterion-atlas.service';
 import { DecisionSheetService } from './decision-sheet.service';
 import { FilingPlanService, type FilingPlanInput } from './filing-plan.service';
@@ -43,13 +44,14 @@ export class PublicController {
     private readonly noticePackets: NoticePacketService,
     private readonly precedentCompare: PrecedentCompareService,
     private readonly boardPackets: BoardPacketService,
+    private readonly civicIdeas: CivicIdeasService,
   ) {}
 
   @Get('health')
   health() {
     return {
       ok: true,
-      phase: 32,
+      phase: 33,
       store: this.store.backend(),
       opsDashboard: true,
       staffQueue: true,
@@ -72,7 +74,28 @@ export class PublicController {
       precedentCompare: true,
       publicBoardPacket: true,
       mapPinEdit: true,
+      civicIdeas: true,
     };
+  }
+
+  @Get('ideas')
+  @Header('Cache-Control', 'public, max-age=120, stale-while-revalidate=300')
+  ideasCatalog() {
+    return this.civicIdeas.catalog();
+  }
+
+  @Get('ideas/generate')
+  @Header('Cache-Control', 'no-store')
+  ideasGenerate(
+    @Query('seed') seed?: string,
+    @Query('focus') focus?: string,
+    @Query('count') count?: string,
+  ) {
+    return this.civicIdeas.generate({
+      seed,
+      focus,
+      count: count ? Number(count) : undefined,
+    });
   }
 
   @Get('search')

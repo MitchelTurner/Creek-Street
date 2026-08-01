@@ -25,6 +25,7 @@ const explore = [
 ];
 
 const tools = [
+  { to: '/ideas', label: 'Civic ideas' },
   { to: '/permits', label: 'Permits' },
   { to: '/notice', label: 'Notice' },
   { to: '/notice/packet', label: 'Notice packet' },

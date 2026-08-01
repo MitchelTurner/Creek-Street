@@ -219,6 +219,41 @@ export type SimilarResult = {
   }>;
 };
 
+export type IdeaPillar = 'CULTURE' | 'BUSINESS' | 'REVENUE';
+
+export type CivicIdea = {
+  id: string;
+  pillar: IdeaPillar;
+  title: string;
+  summary: string;
+  whyItFits: string;
+  nextStep: string;
+  tags: string[];
+  links?: Array<{ label: string; href: string }>;
+};
+
+export type IdeasCatalog = {
+  phase: number;
+  pillars: Array<{ key: IdeaPillar; label: string; blurb: string }>;
+  ideas: CivicIdea[];
+  count: number;
+  disclaimer: string;
+};
+
+export type IdeasBrief = {
+  phase: number;
+  seed: string;
+  focus: IdeaPillar | 'ALL';
+  generatedAt: string;
+  headline: string;
+  lede: string;
+  pillars: Record<IdeaPillar, CivicIdea[]>;
+  spotlight: CivicIdea[];
+  playbook: string[];
+  links: Record<string, string>;
+  disclaimer: string;
+};
+
 export const api = {
   meta: () => get<Meta>('/meta'),
   map: () => get<GeoJSON.FeatureCollection>('/map'),
@@ -248,6 +283,15 @@ export const api = {
   precedents: (criterion?: string) =>
     get<PrecedentRow[]>(`/precedents${criterion ? `?criterion=${criterion}` : ''}`),
   similar: (q: string) => get<SimilarResult>(`/precedents/similar?q=${encodeURIComponent(q)}`),
+  ideasCatalog: () => get<IdeasCatalog>('/ideas'),
+  ideasGenerate: (params?: { seed?: string; focus?: string; count?: number }) => {
+    const qs = new URLSearchParams();
+    if (params?.seed) qs.set('seed', params.seed);
+    if (params?.focus) qs.set('focus', params.focus);
+    if (params?.count != null) qs.set('count', String(params.count));
+    const q = qs.toString();
+    return get<IdeasBrief>(`/ideas/generate${q ? `?${q}` : ''}`);
+  },
 };
 
 declare namespace GeoJSON {

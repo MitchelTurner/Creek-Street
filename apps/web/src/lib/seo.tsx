@@ -59,6 +59,11 @@ const ROUTES: Record<string, { title: string; description: string }> = {
     description:
       'Printable applicant filing plan — triage, permits, HD notice, and file-by date. Always ends at the Zoning Administrator.',
   },
+  '/ideas': {
+    title: `Civic ideas · ${SITE}`,
+    description:
+      'Generate Creek Street ideas to preserve culture, build local business, and drive City and Borough revenue. Independent brainstorming — not borough policy.',
+  },
   '/permits': {
     title: `Permit triggers · ${SITE}`,
     description: 'Multi-agency permit trigger map with verifiedAt gating for unverified rows.',

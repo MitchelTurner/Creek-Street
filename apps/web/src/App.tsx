@@ -92,6 +92,9 @@ const StructureDetailPage = lazy(() =>
 const FilingPage = lazy(() =>
   import('./pages/FilingPage').then((m) => ({ default: m.FilingPage })),
 );
+const IdeasPage = lazy(() =>
+  import('./pages/IdeasPage').then((m) => ({ default: m.IdeasPage })),
+);
 const StructuresPage = lazy(() =>
   import('./pages/StructuresPage').then((m) => ({ default: m.StructuresPage })),
 );
@@ -148,6 +151,7 @@ export default function App() {
             <Route path="photos" element={<PhotosPage />} />
             <Route path="triage" element={<TriagePage />} />
             <Route path="filing" element={<FilingPage />} />
+            <Route path="ideas" element={<IdeasPage />} />
             <Route path="permits" element={<PermitsPage />} />
             <Route path="precedents" element={<PrecedentsPage />} />
             <Route path="precedents/compare" element={<PrecedentComparePage />} />

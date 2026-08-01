@@ -113,7 +113,7 @@ export function HomePage() {
           </p>
         </div>
 
-        <div className="mt-14 grid gap-10 md:grid-cols-3">
+        <div className="mt-14 grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           {[
             {
               title: 'Triage',
@@ -124,6 +124,11 @@ export function HomePage() {
               title: 'Filing pathway',
               body: 'One printable plan: triage, permits, HD notice, and a build-season file-by date.',
               to: '/filing',
+            },
+            {
+              title: 'Civic ideas',
+              body: 'Generate strategies that preserve culture, grow business, and fund City & Borough capacity.',
+              to: '/ideas',
             },
             {
               title: 'Structure dossiers',

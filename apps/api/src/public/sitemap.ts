@@ -16,6 +16,7 @@ const STATIC_PATHS = [
   '/opendata',
   '/triage',
   '/filing',
+  '/ideas',
   '/permits',
   '/precedents',
   '/precedents/compare',

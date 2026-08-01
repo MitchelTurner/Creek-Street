@@ -6,6 +6,7 @@ import { Phase2Module } from '../phase2/phase2.module';
 import { Phase4Module } from '../phase4/phase4.module';
 import { BoardPacketService } from './board-packet.service';
 import { CaseBriefService } from './case-brief.service';
+import { CivicIdeasService } from './civic-ideas.service';
 import { CriterionAtlasService } from './criterion-atlas.service';
 import { DecisionSheetService } from './decision-sheet.service';
 import { FilingPlanService } from './filing-plan.service';
@@ -35,6 +36,7 @@ import { StructureSheetService } from './structure-sheet.service';
     NoticePacketService,
     PrecedentCompareService,
     BoardPacketService,
+    CivicIdeasService,
   ],
   exports: [
     ReadinessService,
@@ -48,6 +50,7 @@ import { StructureSheetService } from './structure-sheet.service';
     NoticePacketService,
     PrecedentCompareService,
     BoardPacketService,
+    CivicIdeasService,
   ],
 })
 export class PublicModule {}

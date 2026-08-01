@@ -12,6 +12,8 @@
   <url><loc>/board</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>/opendata</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>/triage</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>/filing</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>/ideas</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>/permits</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
   <url><loc>/precedents</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>/notice</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>

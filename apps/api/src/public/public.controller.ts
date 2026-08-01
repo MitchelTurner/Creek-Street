@@ -56,7 +56,7 @@ export class PublicController {
     const ai = this.aiIdeas.status();
     return {
       ok: true,
-      phase: 34,
+      phase: 35,
       store: this.store.backend(),
       opsDashboard: true,
       staffQueue: true,
@@ -82,6 +82,7 @@ export class PublicController {
       civicIdeas: true,
       claudeIdeas: ai.configured,
       mailMode: ai.mail.mode,
+      districtJournal: true,
     };
   }
 

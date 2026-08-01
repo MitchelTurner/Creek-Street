@@ -95,6 +95,12 @@ const FilingPage = lazy(() =>
 const IdeasPage = lazy(() =>
   import('./pages/IdeasPage').then((m) => ({ default: m.IdeasPage })),
 );
+const JournalPage = lazy(() =>
+  import('./pages/JournalPage').then((m) => ({ default: m.JournalPage })),
+);
+const JournalPostPage = lazy(() =>
+  import('./pages/JournalPostPage').then((m) => ({ default: m.JournalPostPage })),
+);
 const StructuresPage = lazy(() =>
   import('./pages/StructuresPage').then((m) => ({ default: m.StructuresPage })),
 );
@@ -152,6 +158,8 @@ export default function App() {
             <Route path="triage" element={<TriagePage />} />
             <Route path="filing" element={<FilingPage />} />
             <Route path="ideas" element={<IdeasPage />} />
+            <Route path="journal" element={<JournalPage />} />
+            <Route path="journal/:slug" element={<JournalPostPage />} />
             <Route path="permits" element={<PermitsPage />} />
             <Route path="precedents" element={<PrecedentsPage />} />
             <Route path="precedents/compare" element={<PrecedentComparePage />} />

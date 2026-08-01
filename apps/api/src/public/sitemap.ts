@@ -17,6 +17,7 @@ const STATIC_PATHS = [
   '/triage',
   '/filing',
   '/ideas',
+  '/journal',
   '/permits',
   '/precedents',
   '/precedents/compare',

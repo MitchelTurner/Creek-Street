@@ -126,14 +126,14 @@ export function HomePage() {
               to: '/filing',
             },
             {
+              title: 'Journal',
+              body: 'Daily case studies from other historic districts — culture, business, and revenue ideas with photo embeds.',
+              to: '/journal',
+            },
+            {
               title: 'Civic ideas',
               body: 'Generate strategies that preserve culture, grow business, and fund City & Borough capacity.',
               to: '/ideas',
-            },
-            {
-              title: 'Structure dossiers',
-              body: 'NRHP inventory threaded to public cases, decisions, criteria, and meetings.',
-              to: '/structures',
             },
           ].map((item, i) => (
             <Link

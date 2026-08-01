@@ -5,6 +5,7 @@ import { HealthController } from './common/health.controller';
 import { ComplianceModule } from './compliance/compliance.module';
 import { GeoModule } from './geo/geo.module';
 import { IngestModule } from './ingest/ingest.module';
+import { JournalModule } from './journal/journal.module';
 import { OpsModule } from './ops/ops.module';
 import { PacketsModule } from './packets/packets.module';
 import { AuthModule } from './phase2/auth.module';
@@ -32,6 +33,7 @@ import { StoreModule } from './store/store.module';
     GeoModule,
     PacketsModule,
     CalendarModule,
+    JournalModule,
     AdminModule,
   ],
   controllers: [HealthController],

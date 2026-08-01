@@ -65,6 +65,7 @@ Phase 3 vars stay blank until MOU/contract.
 - [ ] Search: `GET /api/search?q=creek` returns hits; `/search` UI works; DRAFT text never appears
 - [ ] Mail: set `RESEND_API_KEY` + `RESEND_FROM` (preferred) or `SMTP_URL` + `SMTP_FROM`; confirm readiness mail mode is `resend` or `smtp`
 - [ ] Claude ideas: set `ANTHROPIC_API_KEY` + `IDEA_NOTIFY_EMAILS`; smoke `POST /api/ideas/ai` with `{ "notify": true }` and confirm inbox delivery
+- [ ] Journal: `/journal` shows daily posts with photo embeds; set `JOURNAL_NOTIFY_EMAILS`; staff `POST /api/journal/digest/weekly?force=true` emails highlights; `JOURNAL_SCHEDULER_ENABLED=true` for daily auto-publish
 - [ ] Rate limits: burst `POST /api/auth/login` → expect `429 RATE_LIMITED` (or set `RATE_LIMIT_DISABLED=true` only in trusted local demos)
 - [ ] Persistence: when using Postgres, `USE_MEMORY_STORE=false`, run migrations + seed, confirm `GET /api/geo/status` shows `postgis: true` after helpers apply
 - [ ] SEO: `/robots.txt` and `/sitemap.xml` reachable; private paths (`/workspace`, `/official`, `/admin`) not listed

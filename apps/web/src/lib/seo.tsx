@@ -64,6 +64,11 @@ const ROUTES: Record<string, { title: string; description: string }> = {
     description:
       'Generate Creek Street ideas to preserve culture, build local business, and drive City and Borough revenue. Independent brainstorming — not borough policy.',
   },
+  '/journal': {
+    title: `Journal · ${SITE}`,
+    description:
+      'Daily case studies from other historic districts — culture, business, and revenue ideas for Creek Street. Photos embedded from source articles.',
+  },
   '/permits': {
     title: `Permit triggers · ${SITE}`,
     description: 'Multi-agency permit trigger map with verifiedAt gating for unverified rows.',
@@ -198,6 +203,13 @@ function matchRoute(pathname: string) {
       title: `Meeting summary · ${SITE}`,
       description:
         'Human-reviewed AI meeting summary for Creek Street design review — verify against minutes.',
+    };
+  }
+  if (pathname.startsWith('/journal/')) {
+    return {
+      title: `Journal case study · ${SITE}`,
+      description:
+        'Peer historic-district case study for Creek Street — photos embedded from source articles.',
     };
   }
   if (pathname.startsWith('/meetings/')) {

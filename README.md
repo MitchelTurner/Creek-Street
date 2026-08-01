@@ -258,6 +258,14 @@ Deliberation does **not** turn on by default. That is intentional.
 - Status: `GET /api/ideas/ai/status` · recent posts `GET /api/ideas/posts`
 - Mail preference: `RESEND_API_KEY` → `SMTP_URL` → stub
 
+**Phase 35 — District Journal (daily blog + weekly email):**
+
+- Peer historic-district case studies: `GET /api/journal` · `GET /api/journal/posts/:slug` · UI `/journal`
+- Photos are **embeds from source articles** (Wikimedia/NPS/encyclopedia links) — not hosted locally
+- Daily publish scheduler (`JOURNAL_SCHEDULER_ENABLED`) — Claude when keyed, curated fallback otherwise
+- Weekly highlights email Mondays → `JOURNAL_NOTIFY_EMAILS` / `IDEA_NOTIFY_EMAILS` via Resend
+- Staff: `POST /api/journal/publish` · `POST /api/journal/digest/weekly` · `POST /api/journal/scheduler/tick`
+
 ### Hard legal constraints (schema + API)
 
 - Board deliberation never happens in this app (Open Meetings Act).

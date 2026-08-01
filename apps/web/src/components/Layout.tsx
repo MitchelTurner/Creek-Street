@@ -15,6 +15,8 @@ const primary = [
 
 const explore = [
   { to: '/visit', label: 'Visit' },
+  { to: '/journal', label: 'Journal' },
+  { to: '/ideas', label: 'Civic ideas' },
   { to: '/decisions', label: 'Decisions' },
   { to: '/meetings', label: 'Meetings' },
   { to: '/guidance', label: 'Rules' },
@@ -25,7 +27,6 @@ const explore = [
 ];
 
 const tools = [
-  { to: '/ideas', label: 'Civic ideas' },
   { to: '/permits', label: 'Permits' },
   { to: '/notice', label: 'Notice' },
   { to: '/notice/packet', label: 'Notice packet' },

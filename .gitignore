@@ -9,3 +9,4 @@ coverage/
 .vite/
 apps/api/prisma/*.db
 apps/api/prisma/*.db-journal
+apps/api/data/journal-posts.json

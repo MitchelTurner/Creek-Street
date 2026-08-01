@@ -312,6 +312,60 @@ export type IdeasAiPost = {
   } | null;
 };
 
+export type JournalEmbed = {
+  kind: 'photo' | 'article';
+  sourceUrl: string;
+  sourceTitle: string;
+  imageUrl?: string;
+  caption: string;
+  credit: string;
+};
+
+export type JournalPostCard = {
+  id: string;
+  slug: string;
+  title: string;
+  lede: string;
+  place: string;
+  region: string;
+  pillars: IdeaPillar[];
+  tags: string[];
+  publishedAt: string;
+  publishDateAlaska: string;
+  source: 'curated' | 'claude';
+  heroEmbed: {
+    imageUrl?: string;
+    caption: string;
+    sourceUrl: string;
+    sourceTitle: string;
+    credit: string;
+    kind: 'photo' | 'article';
+  } | null;
+  embedCount: number;
+  href: string;
+};
+
+export type JournalPostDetail = {
+  id: string;
+  slug: string;
+  title: string;
+  lede: string;
+  body: string[];
+  place: string;
+  region: string;
+  pillars: IdeaPillar[];
+  tags: string[];
+  takeaways: string[];
+  embeds: JournalEmbed[];
+  topicId: string;
+  publishedAt: string;
+  publishDateAlaska: string;
+  source: 'curated' | 'claude';
+  model: string | null;
+  creekStreetHook: string;
+  disclaimer: string;
+};
+
 export const api = {
   meta: () => get<Meta>('/meta'),
   map: () => get<GeoJSON.FeatureCollection>('/map'),
@@ -365,6 +419,12 @@ export const api = {
       accepted: number;
       failed: number;
     }>(`/ideas/posts/${encodeURIComponent(id)}/notify`, {}),
+  journalList: (limit = 30) =>
+    get<{ count: number; posts: JournalPostCard[]; disclaimer: string }>(
+      `/journal?limit=${limit}`,
+    ),
+  journalPost: (slug: string) => get<JournalPostDetail>(`/journal/posts/${encodeURIComponent(slug)}`),
+  journalStatus: () => get<Record<string, unknown>>('/journal/status'),
 };
 
 declare namespace GeoJSON {

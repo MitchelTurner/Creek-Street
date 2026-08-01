@@ -1,9 +1,13 @@
 import {
+  BadRequestException,
+  Body,
   Controller,
   Get,
   Header,
   Headers,
+  NotFoundException,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -11,6 +15,7 @@ import {
 import { AuditStore } from '../compliance/audit.store';
 import { AuthGuard, CurrentUser } from '../phase2/auth.guard';
 import { Roles, RolesGuard } from '../phase2/roles.guard';
+import { PublicStore } from '../store/public.store';
 import { AdminDashboardService } from './admin-dashboard.service';
 import { OpsAgingService } from './ops-aging.service';
 import { OpsBriefService } from './ops-brief.service';
@@ -28,6 +33,7 @@ export class AdminController {
     private readonly opsScheduler: OpsSchedulerService,
     private readonly opsClaims: OpsClaimService,
     private readonly audit: AuditStore,
+    private readonly publicStore: PublicStore,
   ) {}
 
   @Get('dashboard')
@@ -226,5 +232,35 @@ export class AdminController {
       meta: { force: force === '1' || force === 'true', released: result.released },
     });
     return result;
+  }
+
+  /** Staff map pin nudge — updates Structure.centroid (and a small parcel footprint). */
+  @Patch('structures/:slug/centroid')
+  @Header('Cache-Control', 'no-store')
+  async updateStructureCentroid(
+    @CurrentUser() user: { id: string; email: string; role: string },
+    @Param('slug') slug: string,
+    @Body() body: { lng?: number; lat?: number },
+  ) {
+    const lng = Number(body?.lng);
+    const lat = Number(body?.lat);
+    if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
+      throw new BadRequestException('lng and lat are required numbers');
+    }
+    const row = await this.publicStore.updateStructureCentroid(slug, lng, lat);
+    if (!row) throw new NotFoundException('Structure not found or coordinates out of range');
+    this.audit.record({
+      action: 'map.structure_centroid_update',
+      actor: user,
+      resourceType: 'structure',
+      resourceId: row.id,
+      summary: `${user.email} moved pin for ${row.publicSlug} to ${lng.toFixed(5)}, ${lat.toFixed(5)}`,
+      meta: { slug: row.publicSlug, lng, lat, previous: row.previous },
+    });
+    return {
+      ...row,
+      mapApi: '/api/map',
+      note: 'Pin location updated on the public district map. Confirm against borough GIS when available.',
+    };
   }
 }

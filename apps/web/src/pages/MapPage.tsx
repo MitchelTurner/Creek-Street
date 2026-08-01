@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { DistrictMap } from '../components/DistrictMap';
 import { EmptyState } from '../components/EmptyState';
 import { PageHeader } from '../components/PageHeader';
 import { Skeleton } from '../components/Skeleton';
 import { api } from '../lib/api';
+import { useAuth } from '../lib/auth';
 
 type SheetPreview = {
   structure: {
@@ -20,14 +21,40 @@ type SheetPreview = {
   links: { ui: string; visit: string; pdf: string };
 };
 
+function updatePinInGeojson(
+  geojson: GeoJSON.FeatureCollection,
+  slug: string,
+  lng: number,
+  lat: number,
+): GeoJSON.FeatureCollection {
+  return {
+    ...geojson,
+    features: geojson.features.map((f) => {
+      if (f.geometry?.type !== 'Point') return f;
+      if (f.properties?.publicSlug !== slug) return f;
+      return {
+        ...f,
+        geometry: { type: 'Point', coordinates: [lng, lat] },
+      };
+    }),
+  };
+}
+
 export function MapPage() {
+  const { user, authHeaders } = useAuth();
+  const canEdit = user?.role === 'STAFF' || user?.role === 'ADMIN';
   const [geojson, setGeojson] = useState<GeoJSON.FeatureCollection | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [slug, setSlug] = useState<string | null>(null);
   const [sheet, setSheet] = useState<SheetPreview | null>(null);
   const [sheetError, setSheetError] = useState<string | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [saveNote, setSaveNote] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [lngInput, setLngInput] = useState('');
+  const [latInput, setLatInput] = useState('');
 
-  useEffect(() => {
+  const reloadMap = useCallback(() => {
     api
       .map()
       .then(setGeojson)
@@ -35,8 +62,14 @@ export function MapPage() {
   }, []);
 
   useEffect(() => {
+    reloadMap();
+  }, [reloadMap]);
+
+  useEffect(() => {
     if (!slug) {
       setSheet(null);
+      setLngInput('');
+      setLatInput('');
       return;
     }
     setSheetError(null);
@@ -47,7 +80,42 @@ export function MapPage() {
       })
       .then(setSheet)
       .catch((e: Error) => setSheetError(e.message));
-  }, [slug]);
+
+    if (geojson) {
+      const pin = geojson.features.find(
+        (f) => f.geometry?.type === 'Point' && f.properties?.publicSlug === slug,
+      );
+      const coords = (pin?.geometry as { coordinates?: number[] } | undefined)?.coordinates;
+      if (coords) {
+        setLngInput(String(coords[0]));
+        setLatInput(String(coords[1]));
+      }
+    }
+  }, [slug, geojson]);
+
+  async function saveCentroid(targetSlug: string, lng: number, lat: number) {
+    setSaveError(null);
+    setSaveNote('Saving…');
+    setGeojson((prev) => (prev ? updatePinInGeojson(prev, targetSlug, lng, lat) : prev));
+    try {
+      const res = await fetch(`/api/ops/structures/${encodeURIComponent(targetSlug)}/centroid`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...authHeaders(),
+        },
+        body: JSON.stringify({ lng, lat }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      setSaveNote(`Saved ${targetSlug} → ${lng.toFixed(5)}, ${lat.toFixed(5)}`);
+      setLngInput(String(lng));
+      setLatInput(String(lat));
+    } catch (e) {
+      setSaveNote(null);
+      setSaveError(e instanceof Error ? e.message : 'Save failed');
+      reloadMap();
+    }
+  }
 
   return (
     <div className="relative">
@@ -56,6 +124,34 @@ export function MapPage() {
           title="District map"
           lede="Full-bleed HD zone. Click a structure for its civic dossier — cases, decisions, visit story — without leaving the map."
         />
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          {canEdit ? (
+            <>
+              <button
+                type="button"
+                className={editMode ? 'btn-primary py-2' : 'btn-secondary py-2'}
+                onClick={() => setEditMode((v) => !v)}
+              >
+                {editMode ? 'Done editing pins' : 'Edit pins'}
+              </button>
+              {editMode && (
+                <p className="text-sm text-ink/60">
+                  Drag markers to nudge locations. Changes save for staff immediately.
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="text-sm text-ink/50">
+              Staff can nudge pin locations after{' '}
+              <Link to="/auth" className="font-semibold text-creek underline underline-offset-4">
+                signing in
+              </Link>
+              .
+            </p>
+          )}
+          {saveNote && <p className="text-sm text-creek">{saveNote}</p>}
+          {saveError && <p className="text-sm text-cedar-deep">{saveError}</p>}
+        </div>
       </div>
 
       <div className="relative border-y border-ink/10 bg-ink">
@@ -67,6 +163,8 @@ export function MapPage() {
             geojson={geojson}
             selectedSlug={slug}
             onSelectSlug={setSlug}
+            editMode={editMode}
+            onPinMoved={saveCentroid}
             className="h-[min(78vh,820px)] min-h-[480px] w-full"
           />
         ) : (
@@ -115,6 +213,43 @@ export function MapPage() {
                     {sheet.applications.length === 1 ? '' : 's'} · {sheet.decisions.length} decision
                     {sheet.decisions.length === 1 ? '' : 's'}
                   </p>
+
+                  {editMode && canEdit && (
+                    <form
+                      className="mt-4 grid grid-cols-2 gap-2"
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        const lng = Number(lngInput);
+                        const lat = Number(latInput);
+                        if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
+                          setSaveError('Enter valid lng/lat numbers');
+                          return;
+                        }
+                        void saveCentroid(slug, lng, lat);
+                      }}
+                    >
+                      <label className="text-xs text-ink/55">
+                        Longitude
+                        <input
+                          className="field mt-1 py-1.5 text-sm"
+                          value={lngInput}
+                          onChange={(e) => setLngInput(e.target.value)}
+                        />
+                      </label>
+                      <label className="text-xs text-ink/55">
+                        Latitude
+                        <input
+                          className="field mt-1 py-1.5 text-sm"
+                          value={latInput}
+                          onChange={(e) => setLatInput(e.target.value)}
+                        />
+                      </label>
+                      <button type="submit" className="btn-primary col-span-2 py-2">
+                        Save coordinates
+                      </button>
+                    </form>
+                  )}
+
                   <div className="mt-4 flex flex-wrap gap-3 text-sm">
                     <Link to={sheet.links.ui} className="btn-primary py-2">
                       Full dossier

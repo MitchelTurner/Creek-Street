@@ -38,8 +38,140 @@ export class PublicStore {
   }
 
   districtMap() {
-    // GeoJSON assembly stays seed-backed until parcel geom sync is complete.
+    // Prefer live Structure.centroid from Prisma when connected so staff pin edits stick.
+    // Falls back to (possibly mutated) memory seed for local / USE_MEMORY_STORE.
+    if (!this.prisma.enabled) return this.memory.districtMap();
+    // Sync path is async — callers that need Prisma should use districtMapAsync.
+    // Keep sync signature for existing PublicController; fire-and-forget not possible.
     return this.memory.districtMap();
+  }
+
+  async districtMapAsync() {
+    if (!this.prisma.enabled) return this.memory.districtMap();
+    try {
+      const [structureRows, parcelRows, boundary] = await Promise.all([
+        this.prisma.structure.findMany({ orderBy: { addressLabel: 'asc' } }),
+        this.prisma.parcel.findMany(),
+        this.prisma.districtFeature.findFirst({
+          where: { kind: 'HD_BOUNDARY' },
+          orderBy: { createdAt: 'desc' },
+        }),
+      ]);
+
+      const seedBoundary = this.memory.districtMap().features.find(
+        (f) =>
+          f.geometry?.type === 'Polygon' &&
+          f.properties &&
+          (f.properties as { name?: string }).name === 'Creek Street Historic District',
+      );
+
+      const boundaryFeature = boundary
+        ? {
+            type: 'Feature' as const,
+            properties: {
+              name: boundary.name,
+              sourceDocUrl: boundary.sourceDocUrl,
+              ...((boundary.properties as Record<string, unknown> | null) ?? {}),
+            },
+            geometry: boundary.geometry as { type: 'Polygon'; coordinates: number[][][] },
+          }
+        : seedBoundary;
+
+      const features = [
+        ...(boundaryFeature ? [boundaryFeature] : []),
+        ...structureRows
+          .filter((s) => s.centroid)
+          .map((s) => ({
+            type: 'Feature' as const,
+            properties: {
+              id: s.id,
+              publicSlug: s.publicSlug,
+              commonName: s.commonName,
+              addressLabel: s.addressLabel,
+              yearBuilt: s.yearBuilt,
+              nrhpContributing: s.nrhpContributing,
+              sourceDocUrl: s.sourceDocUrl,
+            },
+            geometry: s.centroid as { type: 'Point'; coordinates: [number, number] },
+          })),
+        ...parcelRows
+          .filter((p) => p.geometry)
+          .map((p) => ({
+            type: 'Feature' as const,
+            properties: {
+              id: p.id,
+              parcelNumber: p.parcelNumber,
+              address: p.address,
+              inHdZone: p.inHdZone,
+              kind: 'parcel',
+            },
+            geometry: p.geometry as { type: 'Polygon'; coordinates: number[][][] },
+          })),
+      ];
+      return { type: 'FeatureCollection' as const, features };
+    } catch (e) {
+      this.log.warn(`Prisma districtMap failed; memory fallback. ${(e as Error).message}`);
+      return this.memory.districtMap();
+    }
+  }
+
+  async updateStructureCentroid(slug: string, lng: number, lat: number) {
+    if (!Number.isFinite(lng) || !Number.isFinite(lat)) return null;
+    if (lng < -180 || lng > 180 || lat < -90 || lat > 90) return null;
+
+    if (!this.prisma.enabled) {
+      return this.memory.updateStructureCentroid(slug, lng, lat);
+    }
+
+    try {
+      const existing = await this.prisma.structure.findFirst({
+        where: { OR: [{ publicSlug: slug }, { id: slug }] },
+      });
+      if (!existing) return null;
+      const prev = existing.centroid as { type: 'Point'; coordinates: [number, number] } | null;
+      const centroid = { type: 'Point' as const, coordinates: [lng, lat] as [number, number] };
+      const updated = await this.prisma.structure.update({
+        where: { id: existing.id },
+        data: { centroid },
+      });
+
+      // Nudge matching parcel footprint so notice lookup stays roughly aligned.
+      if (existing.parcelId) {
+        const d = 0.00012;
+        await this.prisma.parcel.update({
+          where: { id: existing.parcelId },
+          data: {
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [lng - d, lat - d],
+                  [lng + d, lat - d],
+                  [lng + d, lat + d],
+                  [lng - d, lat + d],
+                  [lng - d, lat - d],
+                ],
+              ],
+            },
+          },
+        });
+      }
+
+      // Keep memory seed in sync for dual-read/fallback.
+      this.memory.updateStructureCentroid(updated.publicSlug, lng, lat);
+
+      return {
+        id: updated.id,
+        publicSlug: updated.publicSlug,
+        addressLabel: updated.addressLabel,
+        commonName: updated.commonName,
+        centroid,
+        previous: prev,
+      };
+    } catch (e) {
+      this.log.warn(`Prisma updateStructureCentroid failed; memory fallback. ${(e as Error).message}`);
+      return this.memory.updateStructureCentroid(slug, lng, lat);
+    }
   }
 
   async listStructures(opts?: { contributing?: boolean }) {

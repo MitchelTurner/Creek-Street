@@ -59,6 +59,7 @@ Phase 3 vars stay blank until MOU/contract.
 - [ ] Notice packet: `GET /api/notice/packet.pdf?address=24%20Creek%20Street` returns PDF; `/notice/packet` UI
 - [ ] Precedent compare: `GET /api/precedents/compare?left=ex_sign_proposed&right=ex_sign_after` returns teaching analysis; `/precedents/compare` UI
 - [ ] Public board packet: `GET /api/board/packet` resolves upcoming/recent meeting; PDF downloads; Meetings CTA works
+- [ ] Map pin edit: sign in as `staff@example.com` / `creek-demo`; `/map` → Edit pins; drag or save lng/lat; `GET /api/map` reflects move
 - [ ] Compliance: `/compliance` checklist visible; staff audit export works after a moderated action
 - [ ] Applicant: export JSON from workspace; delete blocked for demo accounts
 - [ ] Search: `GET /api/search?q=creek` returns hits; `/search` UI works; DRAFT text never appears

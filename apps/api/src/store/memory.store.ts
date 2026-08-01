@@ -84,6 +84,47 @@ export class MemoryStore {
     return { type: 'FeatureCollection' as const, features };
   }
 
+  /**
+   * Staff map pin nudge — mutates in-memory seed structures (and matching parcel
+   * centroid-ish ring) so GET /api/map reflects the move without Postgres.
+   */
+  updateStructureCentroid(slug: string, lng: number, lat: number) {
+    const s = structures.find((x) => x.publicSlug === slug || x.id === slug);
+    if (!s) return null;
+    if (!Number.isFinite(lng) || !Number.isFinite(lat)) return null;
+    if (lng < -180 || lng > 180 || lat < -90 || lat > 90) return null;
+
+    const prev = s.centroid.coordinates;
+    s.centroid = { type: 'Point', coordinates: [lng, lat] };
+
+    const parcel = parcels.find((p) => p.id === s.parcelId);
+    if (parcel) {
+      // Keep a small parcel footprint centered on the new pin for notice math.
+      const d = 0.00012;
+      parcel.geometry = {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [lng - d, lat - d],
+            [lng + d, lat - d],
+            [lng + d, lat + d],
+            [lng - d, lat + d],
+            [lng - d, lat - d],
+          ],
+        ],
+      };
+    }
+
+    return {
+      id: s.id,
+      publicSlug: s.publicSlug,
+      addressLabel: s.addressLabel,
+      commonName: s.commonName,
+      centroid: s.centroid,
+      previous: { type: 'Point' as const, coordinates: prev },
+    };
+  }
+
   listApplications(opts?: { status?: string; q?: string }) {
     let rows = applications.filter((a) => PUBLIC_STATUSES.has(a.status));
     if (opts?.status) rows = rows.filter((a) => a.status === opts.status);

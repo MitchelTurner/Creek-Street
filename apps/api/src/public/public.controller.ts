@@ -71,6 +71,7 @@ export class PublicController {
       noticePacket: true,
       precedentCompare: true,
       publicBoardPacket: true,
+      mapPinEdit: true,
     };
   }
 
@@ -115,9 +116,9 @@ export class PublicController {
   }
 
   @Get('map')
-  @Header('Cache-Control', 'public, max-age=300, stale-while-revalidate=600')
-  map() {
-    return this.store.districtMap();
+  @Header('Cache-Control', 'public, max-age=30, stale-while-revalidate=60')
+  async map() {
+    return this.store.districtMapAsync();
   }
 
   @Get('structures')

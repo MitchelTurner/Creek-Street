@@ -245,6 +245,7 @@ Deliberation does **not** turn on by default. That is intentional.
 - Next public board packet: `GET /api/board/packet` · `GET /api/board/packet.pdf` (Meetings CTA)
 - Visit mode sticky CTAs + larger type on `/visit/:slug`
 - Hub chrome: journey rail, trust strip, map dossier drawer, teaching-loop related-next, skeletons/empty states
+- Staff map pin edit: `PATCH /api/ops/structures/:slug/centroid` `{ lng, lat }` (STAFF/ADMIN) · `/map` → Edit pins
 
 ### Hard legal constraints (schema + API)
 

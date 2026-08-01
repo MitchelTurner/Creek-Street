@@ -1,7 +1,13 @@
 import { Component, useEffect, useRef, useState, type ErrorInfo, type ReactNode } from 'react';
-import type { Map as MapLibreMap } from 'maplibre-gl';
+import type { Map as MapLibreMap, Marker } from 'maplibre-gl';
 import { Link, useNavigate } from 'react-router-dom';
 import type { StructureSummary } from '../lib/api';
+
+type MapLibreModule = {
+  Map: typeof import('maplibre-gl').Map;
+  Marker: typeof import('maplibre-gl').Marker;
+  NavigationControl: typeof import('maplibre-gl').NavigationControl;
+};
 
 type Props = {
   geojson: GeoJSON.FeatureCollection;
@@ -11,9 +17,12 @@ type Props = {
   /** When set, pin click opens drawer instead of navigating away. */
   onSelectSlug?: (slug: string) => void;
   selectedSlug?: string | null;
+  /** Staff/admin: show draggable markers and emit moves. */
+  editMode?: boolean;
+  onPinMoved?: (slug: string, lng: number, lat: number) => void | Promise<void>;
 };
 
-type Pin = { slug: string; name: string; contributing: boolean };
+type Pin = { slug: string; name: string; contributing: boolean; lng: number; lat: number };
 
 function pinsFromGeojson(geojson: GeoJSON.FeatureCollection): Pin[] {
   return geojson.features
@@ -21,6 +30,9 @@ function pinsFromGeojson(geojson: GeoJSON.FeatureCollection): Pin[] {
     .map((f) => {
       const p = f.properties ?? {};
       const slug = typeof p.publicSlug === 'string' ? p.publicSlug : '';
+      const coords = (f.geometry as { coordinates?: number[] }).coordinates;
+      const lng = Number(coords?.[0]);
+      const lat = Number(coords?.[1]);
       const name =
         (typeof p.commonName === 'string' && p.commonName) ||
         (typeof p.addressLabel === 'string' && p.addressLabel) ||
@@ -31,9 +43,11 @@ function pinsFromGeojson(geojson: GeoJSON.FeatureCollection): Pin[] {
         slug,
         name,
         contributing: p.nrhpContributing === true,
+        lng,
+        lat,
       };
     })
-    .filter((p) => p.slug);
+    .filter((p) => p.slug && Number.isFinite(p.lng) && Number.isFinite(p.lat));
 }
 
 function MapFallback({
@@ -89,7 +103,6 @@ function MapFallback({
   );
 }
 
-/** Catches MapLibre / WebGL failures so the rest of the hub stays usable. */
 class MapErrorBoundary extends Component<
   { children: ReactNode; fallback: ReactNode },
   { failed: boolean }
@@ -117,23 +130,40 @@ function DistrictMapCanvas({
   className,
   onSelectSlug,
   selectedSlug,
+  editMode = false,
+  onPinMoved,
   onFatal,
 }: Props & { onFatal: (message: string) => void }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
+  const maplibRef = useRef<MapLibreModule | null>(null);
+  const markersRef = useRef<Marker[]>([]);
+  const geojsonRef = useRef(geojson);
   const selectedRef = useRef(selectedSlug);
+  const editRef = useRef(editMode);
+  const onSelectRef = useRef(onSelectSlug);
+  const onMovedRef = useRef(onPinMoved);
   const navigate = useNavigate();
   const onFatalRef = useRef(onFatal);
+  const [mapReady, setMapReady] = useState(false);
+  geojsonRef.current = geojson;
   selectedRef.current = selectedSlug;
+  editRef.current = editMode;
+  onSelectRef.current = onSelectSlug;
+  onMovedRef.current = onPinMoved;
   onFatalRef.current = onFatal;
 
   useEffect(() => {
     if (!containerRef.current) return;
     let cancelled = false;
+    setMapReady(false);
 
     (async () => {
       try {
-        const maplibregl = (await import('maplibre-gl')).default;
+        const maplibre = await import('maplibre-gl');
+        const maplibregl = ((maplibre as { default?: MapLibreModule }).default ??
+          maplibre) as MapLibreModule;
+        maplibRef.current = maplibregl;
         if (cancelled || !containerRef.current) return;
 
         const map = new maplibregl.Map({
@@ -159,7 +189,6 @@ function DistrictMapCanvas({
           center: [-131.6422, 55.3425],
           zoom: 16.2,
           interactive,
-          attributionControl: {},
         });
         if (cancelled) {
           map.remove();
@@ -178,7 +207,7 @@ function DistrictMapCanvas({
 
         map.on('load', () => {
           if (cancelled) return;
-          map.addSource('district', { type: 'geojson', data: geojson as never });
+          map.addSource('district', { type: 'geojson', data: geojsonRef.current as never });
 
           map.addLayer({
             id: 'hd-fill',
@@ -222,24 +251,29 @@ function DistrictMapCanvas({
               ],
               'circle-stroke-width': 2,
               'circle-stroke-color': '#eef6f4',
+              'circle-opacity': editRef.current ? 0.25 : 1,
             },
           });
 
           if (interactive) {
             map.on('mouseenter', 'structures', () => {
+              if (editRef.current) return;
               map.getCanvas().style.cursor = 'pointer';
             });
             map.on('mouseleave', 'structures', () => {
               map.getCanvas().style.cursor = '';
             });
             map.on('click', 'structures', (e) => {
+              if (editRef.current) return;
               const f = e.features?.[0];
               const slug = f?.properties?.publicSlug;
               if (typeof slug !== 'string') return;
-              if (onSelectSlug) onSelectSlug(slug);
+              if (onSelectRef.current) onSelectRef.current(slug);
               else navigate(`/structures/${slug}`);
             });
           }
+
+          setMapReady(true);
         });
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
@@ -253,6 +287,9 @@ function DistrictMapCanvas({
 
     return () => {
       cancelled = true;
+      setMapReady(false);
+      for (const m of markersRef.current) m.remove();
+      markersRef.current = [];
       try {
         mapRef.current?.remove();
       } catch {
@@ -260,9 +297,17 @@ function DistrictMapCanvas({
       }
       mapRef.current = null;
     };
-  }, [geojson, interactive, navigate, onSelectSlug]);
+  }, [interactive, navigate]);
 
   useEffect(() => {
+    if (!mapReady) return;
+    const map = mapRef.current;
+    const source = map?.getSource('district') as { setData?: (data: unknown) => void } | undefined;
+    if (source?.setData) source.setData(geojson);
+  }, [geojson, mapReady]);
+
+  useEffect(() => {
+    if (!mapReady) return;
     const map = mapRef.current;
     if (!map?.getLayer('structures')) return;
     map.setPaintProperty('structures', 'circle-radius', [
@@ -271,7 +316,59 @@ function DistrictMapCanvas({
       11,
       7,
     ]);
-  }, [selectedSlug]);
+    map.setPaintProperty('structures', 'circle-opacity', editMode ? 0.25 : 1);
+  }, [selectedSlug, editMode, mapReady]);
+
+  useEffect(() => {
+    if (!mapReady) return;
+    const map = mapRef.current;
+    const maplibre = maplibRef.current;
+    if (!map || !maplibre) return;
+
+    for (const m of markersRef.current) m.remove();
+    markersRef.current = [];
+
+    if (!editMode) return;
+
+    const pins = pinsFromGeojson(geojson);
+    for (const pin of pins) {
+      const el = document.createElement('button');
+      el.type = 'button';
+      el.setAttribute('aria-label', `Drag to move ${pin.name}`);
+      el.title = `${pin.name} — drag to move`;
+      el.style.cssText = [
+        'width:18px',
+        'height:18px',
+        'border-radius:999px',
+        'border:2px solid #eef6f4',
+        `background:${pin.contributing ? '#9a6240' : '#5a7a78'}`,
+        'box-shadow:0 1px 4px rgba(0,0,0,0.45)',
+        'cursor:grab',
+        'padding:0',
+      ].join(';');
+
+      const marker = new maplibre.Marker({ element: el, draggable: true })
+        .setLngLat([pin.lng, pin.lat])
+        .addTo(map);
+
+      marker.on('dragend', () => {
+        const { lng, lat } = marker.getLngLat();
+        void onMovedRef.current?.(pin.slug, lng, lat);
+      });
+
+      el.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        onSelectRef.current?.(pin.slug);
+      });
+
+      markersRef.current.push(marker);
+    }
+
+    return () => {
+      for (const m of markersRef.current) m.remove();
+      markersRef.current = [];
+    };
+  }, [editMode, geojson, mapReady]);
 
   return <div ref={containerRef} className={className ?? 'h-[420px] w-full'} />;
 }

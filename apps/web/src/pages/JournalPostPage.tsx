@@ -5,14 +5,16 @@ import { api, type JournalPostDetail } from '../lib/api';
 
 function EmbedBlock({
   embed,
+  large,
 }: {
   embed: JournalPostDetail['embeds'][number];
+  large?: boolean;
 }) {
   const [broken, setBroken] = useState(false);
   const showPhoto = embed.kind === 'photo' && embed.imageUrl && !broken;
 
   return (
-    <figure className="my-10">
+    <figure className={large ? 'my-10' : 'my-6'}>
       {showPhoto ? (
         <a
           href={embed.sourceUrl}
@@ -23,7 +25,7 @@ function EmbedBlock({
           <img
             src={embed.imageUrl}
             alt=""
-            className="max-h-[28rem] w-full object-cover"
+            className={large ? 'max-h-[32rem] w-full object-cover' : 'max-h-[22rem] w-full object-cover'}
             loading="lazy"
             referrerPolicy="no-referrer"
             onError={() => setBroken(true)}
@@ -51,6 +53,36 @@ function EmbedBlock({
         {embed.credit}
       </figcaption>
     </figure>
+  );
+}
+
+function PhotoStrip({ photos }: { photos: JournalPostDetail['embeds'] }) {
+  if (photos.length < 2) return null;
+  return (
+    <div className="my-10 grid gap-3 sm:grid-cols-2">
+      {photos.slice(0, 4).map((embed) => (
+        <a
+          key={embed.imageUrl + embed.caption}
+          href={embed.sourceUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group relative aspect-[4/3] overflow-hidden bg-mist/40"
+        >
+          {embed.imageUrl ? (
+            <img
+              src={embed.imageUrl}
+              alt=""
+              className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+              loading="lazy"
+              referrerPolicy="no-referrer"
+            />
+          ) : null}
+          <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/70 to-transparent px-3 pb-2 pt-8 text-[11px] leading-snug text-foam">
+            {embed.caption}
+          </span>
+        </a>
+      ))}
+    </div>
   );
 }
 
@@ -88,6 +120,9 @@ export function JournalPostPage() {
 
   const photos = post.embeds.filter((e) => e.kind === 'photo');
   const articles = post.embeds.filter((e) => e.kind === 'article');
+  const mid = Math.ceil(post.body.length / 2);
+  const firstHalf = post.body.slice(0, mid);
+  const secondHalf = post.body.slice(mid);
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-10 md:px-6 md:py-14">
@@ -100,22 +135,32 @@ export function JournalPostPage() {
       <h1 className="mt-3 font-display text-[clamp(1.8rem,4vw,2.75rem)] font-semibold tracking-tight text-ink text-balance">
         {post.title}
       </h1>
-      <p className="mt-4 text-lg leading-relaxed text-ink/65">{post.lede}</p>
+      <p className="mt-4 text-lg leading-relaxed text-ink/65 md:text-xl">{post.lede}</p>
       <div className="accent-line mt-6 h-px w-20" aria-hidden="true" />
 
       <div className="mt-8">
         <DisclaimerBanner compact />
       </div>
 
-      {photos[0] && <EmbedBlock embed={photos[0]} />}
+      {photos[0] && <EmbedBlock embed={photos[0]} large />}
 
-      <div className="mt-8 space-y-5 text-base leading-relaxed text-ink/75">
-        {post.body.map((para) => (
+      <div className="mt-8 space-y-5 text-base leading-relaxed text-ink/75 md:text-[1.05rem]">
+        {firstHalf.map((para) => (
           <p key={para.slice(0, 48)}>{para}</p>
         ))}
       </div>
 
-      {photos.slice(1).map((embed) => (
+      {photos[1] && <EmbedBlock embed={photos[1]} />}
+
+      <div className="mt-8 space-y-5 text-base leading-relaxed text-ink/75 md:text-[1.05rem]">
+        {secondHalf.map((para) => (
+          <p key={para.slice(0, 48)}>{para}</p>
+        ))}
+      </div>
+
+      <PhotoStrip photos={photos.slice(2)} />
+
+      {photos.slice(2, 3).map((embed) => (
         <EmbedBlock key={embed.sourceUrl + embed.caption} embed={embed} />
       ))}
 
@@ -126,7 +171,7 @@ export function JournalPostPage() {
             <li key={t}>{t}</li>
           ))}
         </ul>
-        <p className="mt-6 text-sm font-semibold text-creek">{post.creekStreetHook}</p>
+        <p className="mt-6 text-sm font-semibold text-creek md:text-base">{post.creekStreetHook}</p>
         <div className="mt-6 flex flex-wrap gap-4 text-sm font-semibold">
           <Link to="/ideas" className="text-creek hover:underline">
             Civic ideas →
@@ -139,6 +184,20 @@ export function JournalPostPage() {
           </Link>
         </div>
       </section>
+
+      {photos.length > 3 && (
+        <section className="mt-12 border-t border-ink/10 pt-10">
+          <h2 className="font-display text-xl font-semibold">More from the sources</h2>
+          <p className="mt-2 text-sm text-ink/55">
+            Additional embeds from the linked articles — click any image to open the original.
+          </p>
+          <div className="mt-6 space-y-2">
+            {photos.slice(3).map((embed) => (
+              <EmbedBlock key={embed.imageUrl + embed.caption} embed={embed} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {articles.length > 0 && (
         <section className="mt-12 border-t border-ink/10 pt-10">

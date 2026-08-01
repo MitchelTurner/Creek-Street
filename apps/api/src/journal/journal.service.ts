@@ -9,6 +9,7 @@ import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'fs';
 import { dirname, join } from 'path';
 import {
   JOURNAL_DISCLAIMER,
+  JOURNAL_SEED_VERSION,
   journalTopics,
   type JournalEmbed,
   type JournalTopic,
@@ -34,6 +35,7 @@ export type JournalPost = {
   source: 'curated' | 'claude';
   model: string | null;
   creekStreetHook: string;
+  seedVersion: number;
 };
 
 export type WeeklyDigestResult = {
@@ -50,6 +52,7 @@ export type WeeklyDigestResult = {
 type StoreFile = {
   posts: JournalPost[];
   lastWeeklyWeekKey: string | null;
+  seedVersion?: number;
 };
 
 @Injectable()
@@ -68,12 +71,18 @@ export class JournalService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    this.load();
-    if (!this.posts.length) {
+    const loadedVersion = this.load();
+    const needsRefresh =
+      !this.posts.length ||
+      loadedVersion !== JOURNAL_SEED_VERSION ||
+      this.posts.some((p) => (p.seedVersion ?? 1) !== JOURNAL_SEED_VERSION);
+    if (needsRefresh) {
       this.bootstrapSeedPosts();
       this.persist();
     }
-    this.log.log(`Journal loaded posts=${this.posts.length} store=${this.storePath}`);
+    this.log.log(
+      `Journal loaded posts=${this.posts.length} seed=v${JOURNAL_SEED_VERSION} store=${this.storePath}`,
+    );
   }
 
   status() {
@@ -264,16 +273,17 @@ export class JournalService implements OnModuleInit {
   private composeCurated(topic: JournalTopic, alaskaDate: string): JournalPost {
     const slug = `${alaskaDate}-${topic.id}`.slice(0, 80);
     const body = [
+      topic.hook,
+      ...topic.scenes,
       topic.angle,
-      `For Creek Street, the useful question is not “how do we copy ${topic.place}?” but “which tools transfer under HD design review, boardwalk capacity, and cruise-season timing?”`,
-      ...topic.takeaways.map((t) => `Takeaway: ${t}`),
-      'Photos and deeper reading below are embedded from the source articles — open the originals for full context and licensing.',
+      `Creek Street doesn’t need a costume change to borrow from ${topic.place}. It needs one transferable tool that survives HD review, boardwalk capacity, and the cruise clock.`,
+      'The photos below are embedded from the source articles — click through for the full story and licensing. We don’t host the images.',
     ];
     return {
       id: `journal_${alaskaDate}_${topic.id}`,
       slug,
       title: topic.title,
-      lede: `${topic.place} (${topic.region}) — lessons for culture, business, and public revenue on a working historic street.`,
+      lede: topic.hook,
       body,
       place: topic.place,
       region: topic.region,
@@ -286,7 +296,8 @@ export class JournalService implements OnModuleInit {
       publishDateAlaska: alaskaDate,
       source: 'curated',
       model: null,
-      creekStreetHook: `Map one ${topic.place} tool onto Creek Street’s triage → filing pathway this week.`,
+      creekStreetHook: topic.creekStreetHook,
+      seedVersion: JOURNAL_SEED_VERSION,
     };
   }
 
@@ -297,19 +308,27 @@ export class JournalService implements OnModuleInit {
   ): Promise<JournalPost> {
     const model = process.env.ANTHROPIC_MODEL?.trim() || 'claude-sonnet-4-20250514';
     const system = [
-      'You write short case-study journal posts for the Creek Street Historic District hub in Ketchikan, Alaska.',
-      'Audience: city/borough staff, board members, applicants, and civic entrepreneurs.',
-      'Tone: practical, specific, non-legal. Never claim to be official City or Borough policy.',
-      'You MUST only reference the provided peer place and embeds. Do not invent photo URLs.',
+      'You write vivid case-study journal posts for the Creek Street Historic District hub in Ketchikan, Alaska.',
+      'Voice: specific, sensory, a little salty — like a sharp municipal reporter, not a tourism brochure.',
+      'Open with a cold hook. Use concrete street-level detail. Avoid generic “charming historic” filler.',
+      'Audience: city/borough staff, board members, applicants, civic entrepreneurs.',
+      'Never claim to be official City or Borough policy. Never invent photo URLs.',
       'Return ONLY valid JSON.',
     ].join(' ');
 
     const user = [
       `Peer place: ${topic.place} (${topic.region})`,
       `Seed title: ${topic.title}`,
+      `Hook: ${topic.hook}`,
       `Angle: ${topic.angle}`,
+      `Scenes: ${topic.scenes.join(' / ')}`,
       `Takeaways: ${topic.takeaways.join(' | ')}`,
+      `Creek Street hook: ${topic.creekStreetHook}`,
       `Pillars: ${topic.pillars.join(', ')}`,
+      `Photo captions available: ${topic.embeds
+        .filter((e) => e.kind === 'photo')
+        .map((e) => e.caption)
+        .join(' | ')}`,
       'Return JSON:',
       '{',
       '  "title": string,',
@@ -318,7 +337,7 @@ export class JournalService implements OnModuleInit {
       '  "creekStreetHook": string,',
       '  "takeaways": string[]',
       '}',
-      'body: 3-5 short paragraphs. takeaways: 3 bullets. Keep title under 90 chars.',
+      'body: 4-6 short paragraphs with character. takeaways: 3 punchy bullets. title under 90 chars. lede under 180 chars.',
     ].join('\n');
 
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -356,20 +375,21 @@ export class JournalService implements OnModuleInit {
     return {
       ...base,
       title: String(parsed.title || topic.title).slice(0, 120),
-      lede: String(parsed.lede || base.lede).slice(0, 320),
+      lede: String(parsed.lede || base.lede).slice(0, 220),
       body: (Array.isArray(parsed.body) ? parsed.body : base.body)
-        .map((p) => String(p).slice(0, 800))
+        .map((p) => String(p).slice(0, 900))
         .filter(Boolean)
-        .slice(0, 6),
+        .slice(0, 7),
       takeaways: (Array.isArray(parsed.takeaways) ? parsed.takeaways : topic.takeaways)
         .map((t) => String(t).slice(0, 240))
         .filter(Boolean)
         .slice(0, 5),
-      creekStreetHook: String(parsed.creekStreetHook || base.creekStreetHook).slice(0, 280),
+      creekStreetHook: String(parsed.creekStreetHook || base.creekStreetHook).slice(0, 320),
       source: 'claude',
       model,
       // Always keep curated embeds — never invent remote media URLs.
       embeds: topic.embeds,
+      seedVersion: JOURNAL_SEED_VERSION,
     };
   }
 
@@ -430,6 +450,7 @@ export class JournalService implements OnModuleInit {
   }
 
   private bootstrapSeedPosts() {
+    this.posts = [];
     const today = new Date();
     for (let i = 6; i >= 0; i--) {
       const d = new Date(today);
@@ -437,7 +458,6 @@ export class JournalService implements OnModuleInit {
       const key = alaskaDateKey(d);
       const topic = journalTopics[i % journalTopics.length]!;
       const post = this.composeCurated(topic, key);
-      // Avoid slug collisions when rotating
       post.id = `journal_seed_${key}_${topic.id}`;
       post.slug = `${key}-${topic.id}`;
       this.posts.push(post);
@@ -445,14 +465,16 @@ export class JournalService implements OnModuleInit {
     this.posts.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
   }
 
-  private load() {
+  private load(): number | null {
     try {
-      if (!existsSync(this.storePath)) return;
+      if (!existsSync(this.storePath)) return null;
       const raw = JSON.parse(readFileSync(this.storePath, 'utf8')) as StoreFile;
       if (Array.isArray(raw.posts)) this.posts = raw.posts;
       this.lastWeeklyWeekKey = raw.lastWeeklyWeekKey ?? null;
+      return raw.seedVersion ?? 1;
     } catch (e) {
       this.log.warn(`Journal store load failed: ${(e as Error).message}`);
+      return null;
     }
   }
 
@@ -462,6 +484,7 @@ export class JournalService implements OnModuleInit {
       const payload: StoreFile = {
         posts: this.posts.slice(0, 200),
         lastWeeklyWeekKey: this.lastWeeklyWeekKey,
+        seedVersion: JOURNAL_SEED_VERSION,
       };
       writeFileSync(this.storePath, JSON.stringify(payload, null, 2));
     } catch (e) {

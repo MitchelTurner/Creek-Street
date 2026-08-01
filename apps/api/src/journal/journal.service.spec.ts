@@ -34,8 +34,9 @@ describe('JournalService', () => {
     expect(list.count).toBeGreaterThanOrEqual(7);
     expect(list.posts[0]?.heroEmbed?.sourceUrl).toMatch(/^https?:\/\//);
     const detail = journal.getBySlug(list.posts[0]!.slug);
-    expect(detail.embeds.length).toBeGreaterThan(0);
-    expect(detail.embeds.some((e) => e.kind === 'photo' && e.imageUrl)).toBe(true);
+    expect(detail.embeds.filter((e) => e.kind === 'photo').length).toBeGreaterThanOrEqual(3);
+    expect(detail.lede.length).toBeGreaterThan(20);
+    expect(detail.body[0]).toBeTruthy();
   });
 
   it('ensureDailyPost is idempotent for the same Alaska day', async () => {

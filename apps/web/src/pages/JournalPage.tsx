@@ -67,8 +67,8 @@ export function JournalPage() {
             Journal
           </h1>
           <p className="animate-rise-delay mt-4 max-w-xl text-base leading-relaxed text-ink/65 md:text-lg">
-            Daily case studies from other historic districts — culture, business, and public revenue
-            ideas for the boardwalk. Photos are embedded from the source articles.
+            Street-level case studies from other historic districts — sharp takes on culture,
+            business, and public revenue. Packed with photo embeds from the source articles.
           </p>
         </div>
       </section>

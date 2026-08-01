@@ -102,3 +102,10 @@ export const PhotoRateLimitGuard = guardFor({
   limit: Number(process.env.RATE_LIMIT_PHOTOS ?? 15),
   windowMs: 60_000,
 });
+
+/** Claude civic-idea generation — tight (paid API). */
+export const IdeasAiRateLimitGuard = guardFor({
+  name: 'ideas-ai',
+  limit: Number(process.env.RATE_LIMIT_IDEAS_AI ?? 8),
+  windowMs: 60 * 60_000,
+});

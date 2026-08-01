@@ -19,7 +19,7 @@ export class HealthController {
     return {
       status: 'ok',
       ok: true,
-      phase: 33,
+      phase: 34,
       ui: 'boardwalk-hero-v1',
       build:
         process.env.BUILD_SHA ||

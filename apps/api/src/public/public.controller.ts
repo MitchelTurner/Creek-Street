@@ -10,9 +10,12 @@ import {
   Post,
   Query,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import type { Response } from 'express';
+import { IdeasAiRateLimitGuard } from '../ops/rate-limit';
 import { PublicStore } from '../store/public.store';
+import { AiIdeasService } from './ai-ideas.service';
 import { BoardPacketService } from './board-packet.service';
 import { CaseBriefService } from './case-brief.service';
 import { CivicIdeasService } from './civic-ideas.service';
@@ -45,13 +48,15 @@ export class PublicController {
     private readonly precedentCompare: PrecedentCompareService,
     private readonly boardPackets: BoardPacketService,
     private readonly civicIdeas: CivicIdeasService,
+    private readonly aiIdeas: AiIdeasService,
   ) {}
 
   @Get('health')
   health() {
+    const ai = this.aiIdeas.status();
     return {
       ok: true,
-      phase: 33,
+      phase: 34,
       store: this.store.backend(),
       opsDashboard: true,
       staffQueue: true,
@@ -75,6 +80,8 @@ export class PublicController {
       publicBoardPacket: true,
       mapPinEdit: true,
       civicIdeas: true,
+      claudeIdeas: ai.configured,
+      mailMode: ai.mail.mode,
     };
   }
 
@@ -96,6 +103,56 @@ export class PublicController {
       focus,
       count: count ? Number(count) : undefined,
     });
+  }
+
+  @Get('ideas/ai/status')
+  @Header('Cache-Control', 'no-store')
+  ideasAiStatus() {
+    return this.aiIdeas.status();
+  }
+
+  @Get('ideas/posts')
+  @Header('Cache-Control', 'no-store')
+  ideasPosts(@Query('limit') limit?: string) {
+    return this.aiIdeas.listPosts(limit ? Number(limit) : 20);
+  }
+
+  @Get('ideas/posts/:id')
+  @Header('Cache-Control', 'no-store')
+  ideasPost(@Param('id') id: string) {
+    const row = this.aiIdeas.getPost(id);
+    if (!row) throw new NotFoundException('Idea post not found');
+    return row;
+  }
+
+  @Post('ideas/ai')
+  @Header('Cache-Control', 'no-store')
+  @UseGuards(IdeasAiRateLimitGuard)
+  ideasAi(
+    @Body()
+    body: { focus?: string; notes?: string; notify?: boolean },
+    @Headers('x-forwarded-proto') proto = 'https',
+    @Headers('host') host?: string,
+  ) {
+    const origin = process.env.PUBLIC_WEB_ORIGIN || (host ? `${proto}://${host}` : undefined);
+    return this.aiIdeas.suggest({
+      focus: body?.focus,
+      notes: body?.notes,
+      notify: body?.notify,
+      origin,
+    });
+  }
+
+  @Post('ideas/posts/:id/notify')
+  @Header('Cache-Control', 'no-store')
+  @UseGuards(IdeasAiRateLimitGuard)
+  ideasNotify(
+    @Param('id') id: string,
+    @Headers('x-forwarded-proto') proto = 'https',
+    @Headers('host') host?: string,
+  ) {
+    const origin = process.env.PUBLIC_WEB_ORIGIN || (host ? `${proto}://${host}` : undefined);
+    return this.aiIdeas.notifyPost(id, origin);
   }
 
   @Get('search')

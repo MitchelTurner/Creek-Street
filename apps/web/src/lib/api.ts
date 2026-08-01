@@ -1,10 +1,27 @@
 const BASE = '/api';
 
+async function apiError(res: Response, path: string) {
+  let detail = `API ${path} failed: ${res.status}`;
+  try {
+    const body = (await res.json()) as {
+      message?: string | { message?: string; error?: string };
+      error?: string;
+    };
+    if (typeof body.message === 'string' && body.message.trim()) detail = body.message;
+    else if (body.message && typeof body.message === 'object') {
+      detail = body.message.message || body.message.error || detail;
+    } else if (typeof body.error === 'string' && body.error !== 'Service Unavailable') {
+      detail = body.error;
+    }
+  } catch {
+    /* keep status detail */
+  }
+  return new Error(detail);
+}
+
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE}${path}`);
-  if (!res.ok) {
-    throw new Error(`API ${path} failed: ${res.status}`);
-  }
+  if (!res.ok) throw await apiError(res, path);
   return res.json() as Promise<T>;
 }
 
@@ -14,9 +31,7 @@ async function post<T>(path: string, body: unknown): Promise<T> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
-  if (!res.ok) {
-    throw new Error(`API ${path} failed: ${res.status}`);
-  }
+  if (!res.ok) throw await apiError(res, path);
   return res.json() as Promise<T>;
 }
 
@@ -254,6 +269,49 @@ export type IdeasBrief = {
   disclaimer: string;
 };
 
+export type AiSuggestion = {
+  pillar: IdeaPillar;
+  title: string;
+  summary: string;
+  whyItFits: string;
+  nextStep: string;
+  tags: string[];
+};
+
+export type IdeasAiStatus = {
+  configured: boolean;
+  model: string;
+  mail: { mode: string; from: string; sent: number; failed: number };
+  notifyRecipients: number;
+  posts: number;
+  autoNotifyDefault: boolean;
+};
+
+export type IdeasAiPost = {
+  id: string;
+  createdAt: string;
+  focus: IdeaPillar | 'ALL';
+  notes: string;
+  model: string;
+  headline: string;
+  lede: string;
+  suggestions: AiSuggestion[];
+  playbook: string[];
+  notifiedAt: string | null;
+  notifyRecipientCount: number;
+  source: 'claude';
+  disclaimer: string;
+  href: string;
+  notify?: {
+    postId: string;
+    at: string;
+    recipients: number;
+    mode: string;
+    accepted: number;
+    failed: number;
+  } | null;
+};
+
 export const api = {
   meta: () => get<Meta>('/meta'),
   map: () => get<GeoJSON.FeatureCollection>('/map'),
@@ -292,6 +350,21 @@ export const api = {
     const q = qs.toString();
     return get<IdeasBrief>(`/ideas/generate${q ? `?${q}` : ''}`);
   },
+  ideasAiStatus: () => get<IdeasAiStatus>('/ideas/ai/status'),
+  ideasAiSuggest: (body: { focus?: string; notes?: string; notify?: boolean }) =>
+    post<IdeasAiPost>('/ideas/ai', body),
+  ideasPosts: (limit = 20) =>
+    get<{ count: number; posts: IdeasAiPost[]; disclaimer: string }>(`/ideas/posts?limit=${limit}`),
+  ideasPost: (id: string) => get<IdeasAiPost>(`/ideas/posts/${encodeURIComponent(id)}`),
+  ideasNotify: (id: string) =>
+    post<{
+      postId: string;
+      at: string;
+      recipients: number;
+      mode: string;
+      accepted: number;
+      failed: number;
+    }>(`/ideas/posts/${encodeURIComponent(id)}/notify`, {}),
 };
 
 declare namespace GeoJSON {

@@ -82,7 +82,7 @@ Deliberation does **not** turn on by default. That is intentional.
 
 **Phase 9 — delivery & ops:**
 
-- SMTP mail via `SMTP_URL` (nodemailer); stub log when unset
+- Mail via `RESEND_API_KEY` (preferred) or `SMTP_URL` (nodemailer); stub log when both unset
 - Rate limits on auth / subscriptions / photo submit (`429 RATE_LIMITED`)
 - Security headers + `X-Request-Id` + JSON access logs on every API request
 - Readiness reports mail mode + rate-limit flag
@@ -246,6 +246,17 @@ Deliberation does **not** turn on by default. That is intentional.
 - Visit mode sticky CTAs + larger type on `/visit/:slug`
 - Hub chrome: journey rail, trust strip, map dossier drawer, teaching-loop related-next, skeletons/empty states
 - Staff map pin edit: `PATCH /api/ops/structures/:slug/centroid` `{ lng, lat }` (STAFF/ADMIN) · `/map` → Edit pins
+
+**Phase 33 — civic ideas catalog:**
+
+- Curated culture / business / revenue ideas: `GET /api/ideas` · `GET /api/ideas/generate` · UI `/ideas`
+
+**Phase 34 — Claude suggestions + Resend notify:**
+
+- Claude briefs: `POST /api/ideas/ai` `{ focus, notes, notify }` (rate-limited; needs `ANTHROPIC_API_KEY`)
+- Post notify: `POST /api/ideas/posts/:id/notify` → `IDEA_NOTIFY_EMAILS` (or STAFF/ADMIN) via Resend/SMTP
+- Status: `GET /api/ideas/ai/status` · recent posts `GET /api/ideas/posts`
+- Mail preference: `RESEND_API_KEY` → `SMTP_URL` → stub
 
 ### Hard legal constraints (schema + API)
 

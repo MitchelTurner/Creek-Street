@@ -4,6 +4,7 @@ import { PacketsModule } from '../packets/packets.module';
 import { Phase1Module } from '../phase1/phase1.module';
 import { Phase2Module } from '../phase2/phase2.module';
 import { Phase4Module } from '../phase4/phase4.module';
+import { AiIdeasService } from './ai-ideas.service';
 import { BoardPacketService } from './board-packet.service';
 import { CaseBriefService } from './case-brief.service';
 import { CivicIdeasService } from './civic-ideas.service';
@@ -37,6 +38,7 @@ import { StructureSheetService } from './structure-sheet.service';
     PrecedentCompareService,
     BoardPacketService,
     CivicIdeasService,
+    AiIdeasService,
   ],
   exports: [
     ReadinessService,
@@ -51,6 +53,7 @@ import { StructureSheetService } from './structure-sheet.service';
     PrecedentCompareService,
     BoardPacketService,
     CivicIdeasService,
+    AiIdeasService,
   ],
 })
 export class PublicModule {}

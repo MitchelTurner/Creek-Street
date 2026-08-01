@@ -43,7 +43,7 @@ function shuffle<T>(rng: () => number, rows: T[]): T[] {
 export class CivicIdeasService {
   catalog() {
     return {
-      phase: 33,
+      phase: 34,
       pillars: ideaPillars,
       ideas: civicIdeas,
       count: civicIdeas.length,
@@ -81,7 +81,7 @@ export class CivicIdeasService {
     const comboTitle = `${spotlight[0]!.title.split(' ').slice(0, 3).join(' ')} × ${spotlight[1]!.title.split(' ').slice(0, 3).join(' ')}`;
 
     return {
-      phase: 33,
+      phase: 34,
       seed,
       focus,
       generatedAt: new Date().toISOString(),

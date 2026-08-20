@@ -158,29 +158,24 @@ p{margin:0 0 1em}
 @supports not (background:color-mix(in srgb,red,blue)){
   .masthead{background:var(--surface)}
 }
+.masthead[data-scrolled]{box-shadow:0 10px 30px -22px rgba(7,20,16,.5)}
 .masthead .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:66px}
+/* wordmark: one tight lockup — the dot is the only thing set apart */
 .mark{
-  font-family:var(--display);font-weight:800;font-size:16px;letter-spacing:-.02em;
-  text-decoration:none;color:var(--ink);flex:none;
-  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--display);font-weight:800;font-size:16.5px;letter-spacing:-.035em;
+  text-decoration:none;color:var(--ink);flex:none;white-space:nowrap;
 }
 .mark::before{
-  content:"";width:9px;height:9px;border-radius:50%;flex:none;
+  content:"";display:inline-block;vertical-align:middle;
+  width:9px;height:9px;border-radius:50%;
+  margin-right:9px;position:relative;top:-1px;
   background:var(--accent);
   box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
 }
-.mark span{color:var(--accent);font-weight:600}
+.mark span{color:var(--accent);font-weight:700}
 .mark:hover{color:var(--ink)}
 
-.nav{
-  display:flex;gap:6px;align-items:center;
-  overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;
-  margin-inline:-4px;padding-inline:4px;
-  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%);
-          mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%);
-}
-@media (min-width:860px){.nav{overflow:visible;-webkit-mask-image:none;mask-image:none;gap:4px}}
-.nav::-webkit-scrollbar{display:none}
+.nav{display:flex;gap:4px;align-items:center}
 .nav a{
   font-family:var(--mono);font-size:12px;letter-spacing:.05em;
   text-decoration:none;color:var(--ink-soft);white-space:nowrap;
@@ -188,12 +183,53 @@ p{margin:0 0 1em}
   transition:color .16s var(--ease), background .16s var(--ease);
 }
 .nav a:hover{color:var(--ink);background:var(--sunken)}
-.nav a[aria-current]{color:var(--ink);background:var(--sunken)}
-.nav-cta{
-  color:var(--raised) !important;background:var(--ember);
-  padding:9px 15px !important;
+.nav a[aria-current]:not(.nav-cta){
+  color:var(--ink);background:var(--sunken);
+  box-shadow:inset 0 0 0 1px var(--hair);
 }
-.nav-cta:hover{background:var(--ember-deep) !important;color:#fff !important}
+.nav a.nav-cta{
+  color:#fff;background:var(--ember);
+  padding:9px 15px;
+}
+.nav a.nav-cta:hover{background:var(--ember-deep);color:#fff}
+
+/* menu button — hidden until the row stops fitting */
+.nav-toggle{
+  display:none;align-items:center;gap:9px;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink);background:var(--raised);
+  border:1px solid var(--hair);border-radius:999px;
+  padding:11px 16px;cursor:pointer;
+  transition:border-color .16s var(--ease), background .16s var(--ease);
+}
+.nav-toggle:hover{border-color:var(--accent);background:var(--sunken)}
+.bars{position:relative;width:14px;height:9px;flex:none}
+.bars::before,.bars::after{
+  content:"";position:absolute;left:0;right:0;height:1.6px;border-radius:2px;
+  background:currentColor;transition:transform .2s var(--ease), top .2s var(--ease);
+}
+.bars::before{top:0}
+.bars::after{top:7.4px}
+.nav-toggle[aria-expanded="true"] .bars::before{top:3.7px;transform:rotate(45deg)}
+.nav-toggle[aria-expanded="true"] .bars::after{top:3.7px;transform:rotate(-45deg)}
+
+@media (max-width:859px){
+  .nav-toggle{display:inline-flex}
+  .nav{
+    display:none;
+    position:absolute;left:0;right:0;top:100%;
+    flex-direction:column;align-items:stretch;gap:2px;
+    padding:12px var(--gut) 20px;
+    background:var(--raised);
+    border-bottom:1px solid var(--hair);
+    box-shadow:var(--shadow-md);
+    max-height:calc(100dvh - 66px);overflow-y:auto;
+  }
+  .nav[data-open]{display:flex;animation:menu-in .18s var(--ease) both}
+  .nav a{font-size:14.5px;letter-spacing:.02em;padding:14px;border-radius:var(--r-sm)}
+  .nav-cta{margin-top:10px;text-align:center;border-radius:999px}
+}
+@keyframes menu-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 
 /* ---- hero ---- */
 .hero{

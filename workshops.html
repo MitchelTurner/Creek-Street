@@ -6,7 +6,8 @@
 <title>Workshops — CreekStreet.org</title>
 <meta name="description" content="After the agenda closes, the last part of each meeting is an open workshop: free-flow conversation between board members and anyone who came. No agenda, no motions, no need to sign up.">
 <link rel="canonical" href="https://creekstreet.org/workshops.html">
-<meta name="theme-color" content="#2C6B72">
+<meta name="theme-color" content="#EFF6F1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#071410" media="(prefers-color-scheme: dark)">
 <meta property="og:site_name" content="CreekStreet.org">
 <meta property="og:title" content="Workshops — CreekStreet.org">
 <meta property="og:description" content="After the agenda closes, the last part of each meeting is an open workshop. No agenda, no motions, no need to sign up.">
@@ -22,6 +23,8 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+<a class="skip" href="#top">Skip to content</a>
 
 <header class="masthead">
   <div class="wrap">
@@ -49,10 +52,10 @@
       <figure class="shape">
         <svg viewBox="0 0 1160 190" role="img" aria-label="Diagram: a meeting begins as evenly ruled agenda items, then after adjournment becomes a loose scatter of open conversation.">
           <!-- baseline -->
-          <path d="M20 132 H1140" stroke="#C3CECD" stroke-width="1" fill="none"/>
+          <path d="M20 132 H1140" stroke="var(--line-soft)" stroke-width="1" fill="none"/>
 
           <!-- structured agenda bars -->
-          <g fill="#3E555F">
+          <g fill="var(--line-strong)">
             <rect x="20" y="66" width="14" height="66"/>
             <rect x="58" y="82" width="14" height="50"/>
             <rect x="96" y="74" width="14" height="58"/>
@@ -70,11 +73,11 @@
           </g>
 
           <!-- the seam: adjournment -->
-          <path d="M566 40 V150" stroke="#C0452F" stroke-width="1.4" fill="none"/>
-          <text x="576" y="48" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing="1.2" fill="#C0452F">AGENDA CLOSES</text>
+          <path d="M566 40 V150" stroke="var(--ember)" stroke-width="1.4" fill="none"/>
+          <text x="576" y="48" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing="1.2" fill="var(--ember)">AGENDA CLOSES</text>
 
           <!-- open conversation: same ink, no grid -->
-          <g class="drift" fill="#2C6B72" opacity=".78">
+          <g class="drift" fill="var(--line-water)" opacity=".78">
             <circle cx="614" cy="104" r="5.5"/>
             <circle cx="656" cy="78" r="4"/>
             <circle cx="690" cy="118" r="7"/>
@@ -92,8 +95,8 @@
           </g>
 
           <!-- labels -->
-          <text x="20" y="164" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing="1.2" fill="#3E555F">FORMAL BUSINESS · MOTIONS · RECOMMENDATIONS</text>
-          <text x="614" y="164" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing="1.2" fill="#2C6B72">WORKSHOP · OPEN CONVERSATION</text>
+          <text x="20" y="164" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing="1.2" fill="var(--line-strong)">FORMAL BUSINESS · MOTIONS · RECOMMENDATIONS</text>
+          <text x="614" y="164" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing="1.2" fill="var(--line-water)">WORKSHOP · OPEN CONVERSATION</text>
         </svg>
         <figcaption>The shape of a meeting</figcaption>
       </figure>
@@ -118,7 +121,7 @@
   </section>
 
   <!-- WHAT TO BRING -->
-  <section id="bring" style="background:var(--raised);border-block:1px solid var(--hair)">
+  <section id="bring" class="band">
     <div class="wrap">
       <div class="section-head">
         <p class="eyebrow">Worth raising</p>
@@ -191,14 +194,14 @@
   </section>
 
   <!-- CTA -->
-  <section id="next" style="background:var(--ink);color:#DCE5E5">
+  <section id="next" class="cta-dark">
     <div class="wrap">
-      <p class="eyebrow" style="color:#7F9A9C">Next workshop</p>
-      <h2 style="color:#fff;max-width:20ch">It runs at the end of every meeting.</h2>
-      <p style="max-width:56ch;color:#9CB4B5">Meeting dates and the summaries that come out of them are posted on the main page. If you'd like a note before the next one, ask to be added to the list.</p>
-      <p style="margin-top:26px;display:flex;flex-wrap:wrap;gap:14px">
+      <p class="eyebrow">Next workshop</p>
+      <h2>It runs at the end of every meeting.</h2>
+      <p>Meeting dates and the summaries that come out of them are posted on the main page. If you'd like a note before the next one, ask to be added to the list.</p>
+      <p class="btn-row">
         <a class="btn" href="mailto:hello@creekstreet.org?subject=Add%20me%20to%20the%20meeting%20notice%20list">Get meeting notices</a>
-        <a class="btn ghost" style="border-color:#7F9A9C;color:#DCE5E5" href="index.html#updates">See meeting updates</a>
+        <a class="btn ghost on-dark" href="index.html#updates">See meeting updates</a>
       </p>
     </div>
   </section>
@@ -210,18 +213,18 @@
     <div class="foot-grid">
       <div>
         <h3>Creek Street Historic District Architectural Design Review Board</h3>
-        <p style="margin:0">An advisory board of the Ketchikan Gateway Borough, serving the Creek Street Historic District under Borough Code ch. 18.35.</p>
+        <p class="tight">An advisory board of the Ketchikan Gateway Borough, serving the Creek Street Historic District under Borough Code ch. 18.35.</p>
       </div>
       <div>
         <h3>Get in touch</h3>
-        <p style="margin:0">
+        <p class="tight">
           <a href="mailto:hello@creekstreet.org">hello@creekstreet.org</a><br>
           <a href="https://creekstreet.org">creekstreet.org</a>
         </p>
       </div>
       <div>
         <h3>Elsewhere</h3>
-        <p style="margin:0">
+        <p class="tight">
           <a href="index.html">Board home</a><br>
           <a href="https://www.kgbak.us/269/Creek-Street-Historic-District-Board">Borough board page</a>
         </p>

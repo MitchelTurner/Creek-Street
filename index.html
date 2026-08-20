@@ -6,7 +6,8 @@
 <title>CreekStreet.org — Creek Street Design Review Board</title>
 <meta name="description" content="CreekStreet.org is the public site of the advisory design review board for Ketchikan's Creek Street Historic District. What we do, how review works, and when we meet.">
 <link rel="canonical" href="https://creekstreet.org/">
-<meta name="theme-color" content="#2C6B72">
+<meta name="theme-color" content="#EFF6F1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#071410" media="(prefers-color-scheme: dark)">
 <meta property="og:site_name" content="CreekStreet.org">
 <meta property="og:title" content="CreekStreet.org — Creek Street Design Review Board">
 <meta property="og:description" content="The advisory design review board for Ketchikan's Creek Street Historic District. Meetings are open to the public.">
@@ -32,6 +33,8 @@
 </script>
 </head>
 <body>
+
+<a class="skip" href="#top">Skip to content</a>
 
 <header class="masthead">
   <div class="wrap">
@@ -64,7 +67,7 @@
       <!-- SIGNATURE: measured elevation of the boardwalk on its pilings -->
       <figure class="elevation">
         <svg viewBox="0 0 1160 300" role="img" aria-label="Line drawing: elevation of the Creek Street boardwalk, buildings standing on timber pilings above the creek at high and low water.">
-          <g fill="none" stroke="#3E555F" stroke-width="1" vector-effect="non-scaling-stroke">
+          <g fill="none" stroke="var(--line-strong)" stroke-width="1" vector-effect="non-scaling-stroke">
             <!-- building forms -->
             <path d="M40 148 L40 96 L92 62 L144 96 L144 148"/>
             <path d="M60 148 L60 118 L84 118 L84 148"/>
@@ -108,7 +111,7 @@
               <path d="M1062 154 V252 M1070 154 V242"/>
             </g>
             <!-- cross bracing -->
-            <g stroke="#9AAFAF">
+            <g stroke="var(--line-soft)">
               <path d="M52 196 L144 214 M144 196 L52 214"/>
               <path d="M222 200 L314 216 M314 200 L222 216"/>
               <path d="M390 198 L482 212 M482 198 L390 212"/>
@@ -120,11 +123,11 @@
 
           <!-- water -->
           <g class="tide">
-            <path d="M0 232 H1160" stroke="#2C6B72" stroke-width="1.4" fill="none"/>
-            <path d="M0 232 H1160 V300 H0 Z" fill="#2C6B72" opacity=".07"/>
-            <path d="M0 258 H1160 M0 276 H1160" stroke="#2C6B72" stroke-width="1" opacity=".28" fill="none"/>
+            <path d="M0 232 H1160" stroke="var(--line-water)" stroke-width="1.4" fill="none"/>
+            <path d="M0 232 H1160 V300 H0 Z" fill="var(--line-water)" opacity=".09"/>
+            <path d="M0 258 H1160 M0 276 H1160" stroke="var(--line-water)" stroke-width="1" opacity=".28" fill="none"/>
           </g>
-          <text x="0" y="224" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#3E555F">MHHW</text>
+          <text x="0" y="224" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="var(--line-strong)">MHHW</text>
         </svg>
         <figcaption>Creek Street, north elevation — schematic</figcaption>
       </figure>
@@ -174,7 +177,7 @@
   </section>
 
   <!-- SCOPE -->
-  <section id="scope" style="background:var(--raised);border-block:1px solid var(--hair)">
+  <section id="scope" class="band">
     <div class="wrap">
       <div class="section-head">
         <p class="eyebrow">Scope</p>
@@ -225,12 +228,12 @@
         <div class="attend-grid">
           <div>
             <h3>Sit in on a meeting</h3>
-            <p style="color:var(--ink-soft);font-size:.95em">Show up a few minutes early. Agendas are posted here ahead of each meeting, and there's time set aside for public comment. If you'd like a reminder before the next one, send us your email and we'll add you to the notice list.</p>
+            <p class="attend-copy">Show up a few minutes early. Agendas are posted here ahead of each meeting, and there's time set aside for public comment. If you'd like a reminder before the next one, send us your email and we'll add you to the notice list.</p>
             <a class="btn" href="mailto:hello@creekstreet.org?subject=Add%20me%20to%20the%20meeting%20notice%20list">Get meeting notices</a>
           </div>
           <div>
             <h3>Bring a project</h3>
-            <p style="color:var(--ink-soft);font-size:.95em">Have a change in mind for a building in the district? Get in touch before you're deep into drawings. Photos and a rough sketch are enough to start — we'd rather talk early than react late.</p>
+            <p class="attend-copy">Have a change in mind for a building in the district? Get in touch before you're deep into drawings. Photos and a rough sketch are enough to start — we'd rather talk early than react late.</p>
             <a class="btn ghost" href="mailto:hello@creekstreet.org?subject=Project%20on%20Creek%20Street">Ask about a project</a>
           </div>
         </div>
@@ -239,7 +242,7 @@
   </section>
 
   <!-- UPDATES -->
-  <section id="updates" style="background:var(--raised);border-top:1px solid var(--hair)">
+  <section id="updates" class="band">
     <div class="wrap">
       <div class="section-head">
         <p class="eyebrow">From the meetings</p>
@@ -257,18 +260,18 @@
     <div class="foot-grid">
       <div>
         <h3>Creek Street Historic District Architectural Design Review Board</h3>
-        <p style="margin:0">An advisory board of the Ketchikan Gateway Borough, serving the Creek Street Historic District under Borough Code ch. 18.35.</p>
+        <p class="tight">An advisory board of the Ketchikan Gateway Borough, serving the Creek Street Historic District under Borough Code ch. 18.35.</p>
       </div>
       <div>
         <h3>Get in touch</h3>
-        <p style="margin:0">
+        <p class="tight">
           <a href="mailto:hello@creekstreet.org">hello@creekstreet.org</a><br>
           <a href="https://creekstreet.org">creekstreet.org</a>
         </p>
       </div>
       <div>
         <h3>Elsewhere</h3>
-        <p style="margin:0">
+        <p class="tight">
           <a href="https://www.kgbak.us/269/Creek-Street-Historic-District-Board">Borough board page</a><br>
           <a href="https://www.kgbak.us/">Ketchikan Gateway Borough</a>
         </p>

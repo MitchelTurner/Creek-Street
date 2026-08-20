@@ -425,7 +425,11 @@ footer a:hover{color:#fff}
   list-style:none;margin:0;padding:0;
   display:grid;gap:clamp(12px,1.4vw,18px);
 }
-@media (min-width:720px){.raise{grid-template-columns:1fr 1fr}}
+@media (min-width:720px){
+  .raise{grid-template-columns:1fr 1fr}
+  /* a lone trailing card reads as a deliberate full-width note, not a gap */
+  .raise li:last-child:nth-child(odd){grid-column:1/-1}
+}
 .raise li{
   background:var(--raised);border:1px solid var(--hair);border-radius:var(--r-md);
   padding:20px clamp(20px,2.4vw,28px);font-size:.95em;

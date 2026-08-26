@@ -20,8 +20,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-<script src="site.js" defer></script>
+<link rel="stylesheet" href="/styles.css">
+<script src="/site.js" defer></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -39,17 +39,17 @@
 
 <header class="masthead">
   <div class="wrap">
-    <a class="mark" href="#top">CreekStreet<span>.org</span></a>
+    <a class="mark" href="/#top">CreekStreet<span>.org</span></a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
       <span class="bars" aria-hidden="true"></span>
       Menu
     </button>
     <nav class="nav" id="site-nav" aria-label="Main">
-      <a href="#premise">Purpose</a>
-      <a href="#scope">What we review</a>
-      <a href="workshops.html">Workshops</a>
-      <a href="#updates">Meeting updates</a>
-      <a class="nav-cta" href="#attend">Attend a meeting</a>
+      <a href="/board.html">The board</a>
+      <a href="/#scope">What we review</a>
+      <a href="/meetings.html">Meetings</a>
+      <a href="/priorities.html">What we're working on</a>
+      <a href="/workshops.html">Workshops</a>
     </nav>
   </div>
 </header>
@@ -140,14 +140,20 @@
   </div>
 
   <!-- NEXT MEETING STRIP -->
+  <!-- TODO: confirm the regular start time. Aug 17 was called to order at 4:57 pm,
+       so a 5:00 pm scheduled start is likely, but it is not confirmed. -->
   <div class="strip">
     <div class="wrap">
       <div>
         <p class="eyebrow">Next meeting</p>
-        <p class="when" id="next-when">Date to be set</p>
-        <p class="where" id="next-where">Assembly Chambers · White Cliff Building · 1900 First Ave</p>
+        <p class="when">September — date to be set</p>
+        <p class="where">Assembly Chambers · White Cliff Building · 1900 First Ave</p>
+        <p class="focus">Agenda focus: public restrooms, after the board reaches out to City Public Works</p>
       </div>
-      <p class="open"><span class="dot" aria-hidden="true"></span> Open to the public</p>
+      <div class="strip-side">
+        <p class="open"><span class="dot" aria-hidden="true"></span> Open to the public</p>
+        <a class="strip-link" href="/meetings.html">See past meetings</a>
+      </div>
     </div>
   </div>
 
@@ -175,7 +181,7 @@
         </div>
         <div>
           <h3>The record stays public</h3>
-          <p>Agendas, what we discussed, and what we recommended get posted here after each meeting. If you want to know why something was decided, you should be able to find out.</p>
+          <p>What the board discussed and what it recommended goes up after each meeting — <a href="/meetings.html">every meeting has a page</a>. If you want to know why something happened, you should be able to find out.</p>
         </div>
       </div>
     </div>
@@ -188,7 +194,7 @@
         <p class="eyebrow">Scope</p>
         <h2>What comes to us — and what doesn't</h2>
         <p>If you're not sure which side your project falls on, ask. A two-minute question is cheaper than a redesign.</p>
-        <p>And plenty of what matters on this street isn't design review at all — bears on the creek, trash cans, restrooms. Those come up in the <a href="workshops.html">workshop</a> at the end of each meeting.</p>
+        <p>And plenty of what matters on this street isn't design review at all — bears on the creek, trash cans, restrooms. Those get raised at the <a href="/workshops.html">workshop</a> and tracked on <a href="/priorities.html">what we're working on</a>, marked for what they are.</p>
       </div>
 
       <div class="scope">
@@ -255,7 +261,21 @@
         <h2>Meeting updates</h2>
         <p>What the board discussed, what it recommended, and what's coming next. Posted after each meeting.</p>
       </div>
-      <div class="feed" id="feed"></div>
+      <div class="meeting-list">
+        <article class="meeting-card">
+          <time datetime="2026-08-17">Aug 17, 2026</time>
+          <div>
+            <span class="badge badge--draft">Draft</span>
+            <h3><a href="/meetings/2026-08-17.html">The board's first meeting in years</a></h3>
+            <p>All five members were present, and the board elected Stephen Reeve as Chair, Tim Whiteley as Vice Chair, and Hayley Chambers as Secretary. Members raised hazard trees, the district entrance, boardwalk congestion, and the need for a neighborhood plan, and identified public restrooms as the near-term priority.</p>
+            <p class="source">Draft — not yet adopted by the board.</p>
+            <a class="more" href="/meetings/2026-08-17.html">Read the summary</a>
+          </div>
+        </article>
+      </div>
+      <p class="crosslinks">
+        <a class="more" href="/meetings.html">See all meetings</a>
+      </p>
     </div>
   </section>
 
@@ -278,7 +298,7 @@
       <div>
         <h3>Elsewhere</h3>
         <p class="tight">
-          <a href="https://www.kgbak.us/269/Creek-Street-Historic-District-Board">Borough board page</a><br>
+          <a href="https://www.kgbak.us/269/Creek-Street-Historic-District-Board">Borough board page — the official record</a><br>
           <a href="https://www.kgbak.us/">Ketchikan Gateway Borough</a>
         </p>
       </div>
@@ -289,74 +309,5 @@
   </div>
 </footer>
 
-<script>
-/* =========================================================================
-   MEETING UPDATES
-   Add a new entry at the TOP of this array after each meeting, then save.
-
-   date  — ISO date, "2026-09-14"
-   title — one line, what the meeting was about
-   tag   — optional short label: "Regular meeting", "Special meeting", "Notice"
-   body  — a short plain-language summary. 2–4 sentences is plenty.
-   files — optional links: [{label:"Agenda", url:"files/agenda.pdf"}]
-   ========================================================================= */
-const UPDATES = [
-  {
-    date: "2026-08-17",
-    tag: "Regular meeting",
-    title: "First meeting of the reseated board",
-    body: "The board met for the first time in roughly a decade. Members introduced themselves, walked through the board's authority under ch. 18.35, and agreed on priorities for the next meeting: the condition of the Creek Street restrooms, letting other Ketchikan organizations know the board is active again, and setting review procedures before applications start arriving.",
-    files: []
-  },
-  {
-    date: "2026-07-14",
-    tag: "Notice",
-    title: "Planning Commission fills the board",
-    body: "The Planning Commission appointed members to the board's vacant seats, seating a full board for the first time in years. Its first meeting followed on August 17. When a seat opens again, letters of application go to the Platting and Zoning Clerk at 1900 First Avenue, Suite 126.",
-    files: []
-  }
-];
-
-/* Next meeting shown in the dark strip. Leave `when` empty to show "Date to be set". */
-const NEXT_MEETING = {
-  when: "",                                   // e.g. "Thursday, September 17 · Noon"
-  where: "Assembly Chambers · White Cliff Building · 1900 First Ave"
-};
-
-/* ------------------------------------------------------------------ */
-(function () {
-  const fmt = iso => {
-    const [y, m, d] = iso.split("-").map(Number);
-    return new Date(y, m - 1, d).toLocaleDateString("en-US", {
-      year: "numeric", month: "short", day: "numeric"
-    });
-  };
-  const esc = s => String(s).replace(/[&<>"']/g, c =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-
-  const feed = document.getElementById("feed");
-  const sorted = [...UPDATES].sort((a, b) => b.date.localeCompare(a.date));
-
-  if (!sorted.length) {
-    feed.innerHTML = '<p class="empty">No updates posted yet. The first summary will appear here after the next meeting.</p>';
-  } else {
-    feed.innerHTML = sorted.map(u => `
-      <article class="entry">
-        <time datetime="${esc(u.date)}">${fmt(u.date)}</time>
-        <div>
-          ${u.tag ? `<span class="tag">${esc(u.tag)}</span>` : ""}
-          <h3>${esc(u.title)}</h3>
-          <p>${esc(u.body)}</p>
-          ${(u.files && u.files.length) ? `<div class="files">${
-            u.files.map(f => `<a href="${esc(f.url)}">${esc(f.label)} &rarr;</a>`).join("")
-          }</div>` : ""}
-        </div>
-      </article>`).join("");
-  }
-
-  if (NEXT_MEETING.when) document.getElementById("next-when").textContent = NEXT_MEETING.when;
-  if (NEXT_MEETING.where) document.getElementById("next-where").textContent = NEXT_MEETING.where;
-})();
-</script>
 </body>
 </html>

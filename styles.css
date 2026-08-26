@@ -478,6 +478,10 @@ footer a:hover{color:#fff}
 .prose{max-width:64ch}
 .prose p{color:var(--ink-soft)}
 .prose p:first-of-type{color:var(--ink);font-size:1.06em}
+/* a subhead inside prose starts a new thought — give it room */
+.prose h3{margin:36px 0 12px}
+.prose h3:first-child{margin-top:0}
+.prose h3 + p{color:var(--ink)}
 
 /* things worth raising */
 .raise{

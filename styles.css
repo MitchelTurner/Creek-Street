@@ -506,6 +506,9 @@ footer a:hover{color:#fff}
 .raise li strong{
   font-family:var(--display);font-weight:600;display:block;margin-bottom:5px;letter-spacing:-.012em;
 }
+.raise li strong a{color:var(--ink);text-decoration:none}
+.raise li strong a:hover{color:var(--accent)}
+.raise .badge{margin-bottom:12px}
 .raise li span{color:var(--ink-soft);font-size:.92em;line-height:1.55;display:block}
 
 /* pull quote / ground rule */

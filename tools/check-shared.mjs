@@ -24,8 +24,7 @@ const block = (source, open, close) => {
 };
 
 const DISCLAIMER =
-  'CreekStreet.org is maintained independently to make the board\u2019s work easier to follow.'
-    .replace('\u2019', "'");
+  'CreekStreet.org is an independent site about Creek Street and the projects coming to it.';
 
 const REQUIRED = [
   ['viewport', 'name="viewport"'],

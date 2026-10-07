@@ -6,28 +6,23 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://creekstreet.org/meetings.html</loc>
+    <loc>https://creekstreet.org/projects.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://creekstreet.org/notes.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://creekstreet.org/meetings/2026-08-17.html</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://creekstreet.org/priorities.html</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://creekstreet.org/board.html</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://creekstreet.org/workshops.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.6</priority>
   </url>
 </urlset>

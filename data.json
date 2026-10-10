@@ -1,0 +1,345 @@
+{
+  "updated": "2026-10-10",
+  "projects": [
+    {
+      "id": "restrooms",
+      "title": "Public restrooms",
+      "status": "discussion",
+      "summary": "The condition and availability of the public restrooms that serve Creek Street's visitors. The Borough's Public Works department is the next point of contact on their status.",
+      "raised": "2026-08-17",
+      "updated": "2026-08-17"
+    },
+    {
+      "id": "design-review",
+      "title": "Design review for exterior changes",
+      "status": "active",
+      "summary": "Changes to building exteriors in the Creek Street district go through public design review again, after about a decade without meetings. Owners planning work on facades, signs, railings or decks should expect a review step.",
+      "raised": "2026-08-17",
+      "updated": "2026-08-17"
+    },
+    {
+      "id": "owner-outreach",
+      "title": "Reaching owners and organizations",
+      "status": "discussion",
+      "summary": "An effort to let property owners, businesses and Ketchikan organizations know how the review process works, so projects on the street are planned with it in mind from the start.",
+      "raised": "2026-08-17",
+      "updated": "2026-10-10"
+    }
+  ],
+  "places": [
+    {
+      "id": "entrance",
+      "name": "Stedman Street entrance",
+      "kind": "Entrance",
+      "address": "Creek Street at Stedman Street",
+      "built": null,
+      "now": "The main way onto the boardwalk from downtown, under the arched Creek Street sign.",
+      "past": null,
+      "x": 1268,
+      "y": 512,
+      "extra": [
+        [
+          "Nearby",
+          "The New York Hotel (1924) and the Chief Johnson totem pole are steps away on Stedman Street."
+        ]
+      ]
+    },
+    {
+      "id": "the-star",
+      "name": "The Star",
+      "kind": "Gallery and inn",
+      "address": "5 Creek Street",
+      "built": "Begun 1903; enlarged 1910 and 1917",
+      "now": "Art galleries, including Soho Coho, with a suite of the Inn at Creek Street upstairs.",
+      "past": "One of the largest houses of the red-light era, run as a brothel until the early 1950s. It sat derelict after a 1972 fire until it was restored in 1991, keeping its maple dance floor. Listed on the National Register in 1993.",
+      "x": 1285,
+      "y": 420,
+      "extra": []
+    },
+    {
+      "id": "dollys-house",
+      "name": "Dolly's House",
+      "kind": "Museum",
+      "address": "24 Creek Street",
+      "built": "Standing by 1906",
+      "now": "A museum about the life of Dolly Arthur, with furnishings from her decades in the house.",
+      "past": "A house of the red-light district. Dolly Arthur lived here from 1919 to 1973.",
+      "x": 1075,
+      "y": 300,
+      "extra": []
+    },
+    {
+      "id": "tram",
+      "name": "Cape Fox Lodge tram",
+      "kind": "Connection",
+      "address": "Lower landing on Creek Street",
+      "built": "1991; new tram certified June 2025",
+      "now": "Runs between Creek Street and Cape Fox Lodge, with a stop at the Eagle's Nest restaurant. Open to visitors and the community.",
+      "past": "The original tram opened in 1991, six months after the lodge.",
+      "x": 628,
+      "y": 92,
+      "extra": []
+    },
+    {
+      "id": "trail",
+      "name": "Married Man's Trail",
+      "kind": "Trail",
+      "address": null,
+      "built": null,
+      "now": "A wooded footpath with stairs climbing from the creek toward the hillside.",
+      "past": "Named for the men who used it to reach Creek Street unseen.",
+      "x": 290,
+      "y": 300,
+      "extra": [
+        [
+          "Leads to",
+          "Cape Fox Lodge, about a ten-minute climb from the boardwalk."
+        ],
+        [
+          "Protected",
+          "Part of the Creek Street Historic District, listed on the National Register in 2014."
+        ]
+      ]
+    },
+    {
+      "id": "salmon-ladder",
+      "name": "Salmon ladder",
+      "kind": "Fish ladder",
+      "address": null,
+      "built": null,
+      "now": "A fishway upstream on Ketchikan Creek that helps salmon past the falls. A popular place to watch the run in late summer.",
+      "past": null,
+      "x": 60,
+      "y": 385,
+      "extra": [
+        [
+          "Where",
+          "Upstream from Creek Street along Ketchikan Creek."
+        ],
+        [
+          "Best time",
+          "Late summer, when pinks and coho are running."
+        ]
+      ]
+    },
+    {
+      "id": "creek",
+      "name": "Ketchikan Creek",
+      "kind": "Creek",
+      "address": null,
+      "built": null,
+      "now": "Salmon run up the creek beneath the boardwalk from late summer into fall and can be watched from the railings.",
+      "past": null,
+      "x": 960,
+      "y": 330,
+      "extra": [
+        [
+          "Fish",
+          "Pink salmon in August; coho from late August into October."
+        ],
+        [
+          "Landmark",
+          "The original Chief Johnson totem pole stood at the creek's mouth from 1901."
+        ]
+      ]
+    },
+    {
+      "id": "tongass-museum",
+      "name": "Tongass Historical Museum",
+      "kind": "Museum",
+      "address": "629 Dock Street",
+      "built": null,
+      "now": "The City of Ketchikan's history museum, with changing exhibits of artifacts and historical photographs covering Ketchikan's past, Alaska Native culture, art and community life.",
+      "past": null,
+      "x": 665,
+      "y": 370,
+      "extra": [
+        [
+          "Run by",
+          "The City of Ketchikan, as part of Ketchikan Museums."
+        ],
+        [
+          "Admission",
+          "A small entry fee."
+        ]
+      ]
+    },
+    {
+      "id": "chief-johnson-totem",
+      "name": "Chief Johnson totem pole",
+      "kind": "Totem pole",
+      "address": "Stedman Street",
+      "built": "Original 1901; replica 1989",
+      "now": "A replica of the pole honoring Chief George Johnson of the Gaanaxadi clan of the Tongass Tribe, carved by Israel Shotridge.",
+      "past": "The original pole stood at the mouth of Ketchikan Creek from 1901 until it was taken down in the early 1980s.",
+      "x": 1130,
+      "y": 560,
+      "extra": []
+    },
+    {
+      "id": "new-york-hotel",
+      "name": "New York Hotel and Inn at Creek Street",
+      "kind": "Hotel and cafe",
+      "address": "211 Stedman Street",
+      "built": "1924",
+      "now": "Hotel and cafe at the Stedman Street end of Creek Street, run together with the Inn at Creek Street.",
+      "past": "Part of the Stedman\u2013Thomas Historic District, listed on the National Register in 1996.",
+      "x": 1452,
+      "y": 468,
+      "extra": []
+    }
+  ],
+  "timeline": [
+    {
+      "year": "1902\u20131903",
+      "text": "A city ordinance moves brothels out of downtown to the east side of Ketchikan Creek. Houses go up on pilings, linked by a boardwalk, and Creek Street becomes the red-light district."
+    },
+    {
+      "year": "1903",
+      "text": "The Star, at 5 Creek Street, starts as a small gable-roofed house. It is enlarged in 1910 and 1917."
+    },
+    {
+      "year": "1906",
+      "text": "The house at 24 Creek Street, later Dolly's House, is standing by this year."
+    },
+    {
+      "year": "1919",
+      "text": "Dolly Arthur moves into No. 24, where she lives for more than fifty years."
+    },
+    {
+      "year": "1924",
+      "text": "The New York Hotel is built on Stedman Street at the foot of Creek Street."
+    },
+    {
+      "year": "Early 1940s",
+      "text": "Coast Guard pressure forces a wartime closure of the houses in the interest of national defense."
+    },
+    {
+      "year": "1953\u20131954",
+      "text": "Prostitution is outlawed and the red-light era on Creek Street ends."
+    },
+    {
+      "year": "1972",
+      "text": "A fire at The Star leaves the building derelict."
+    },
+    {
+      "year": "1973",
+      "text": "Dolly Arthur leaves No. 24. The house later opens as a museum of her life."
+    },
+    {
+      "year": "1989",
+      "text": "A replica of the Chief Johnson totem pole, carved by Israel Shotridge, is raised."
+    },
+    {
+      "year": "1991",
+      "text": "The Star is restored, and the tram between Creek Street and the new Cape Fox Lodge begins service."
+    },
+    {
+      "year": "1993",
+      "text": "The Star is listed on the National Register of Historic Places."
+    },
+    {
+      "year": "1996",
+      "text": "The Stedman\u2013Thomas Historic District, including the New York Hotel, is listed on the National Register."
+    },
+    {
+      "year": "2014",
+      "text": "The Creek Street Historic District, covering Creek Street, Married Man's Trail and Totem Way, is listed on the National Register on August 6."
+    },
+    {
+      "year": "2025",
+      "text": "A rebuilt tram, with a new stop at the Eagle's Nest restaurant, is certified in June and celebrated in September."
+    },
+    {
+      "year": "2026",
+      "text": "Public design review for the Creek Street district resumes after about ten years."
+    }
+  ],
+  "meetings": [
+    {
+      "date": null,
+      "label": "To be announced",
+      "where": "Watch for Borough notice",
+      "title": "Next design review meeting",
+      "summary": "Date and agenda to be posted.",
+      "items": []
+    },
+    {
+      "date": "2026-08-17",
+      "label": "August 17, 2026",
+      "where": "Assembly Chambers, White Cliff Building",
+      "title": "Design review resumes after about ten years",
+      "summary": "Topics raised:",
+      "items": [
+        "Status of the Creek Street public restrooms",
+        "Letting owners and organizations know review is active",
+        "Scheduling the next meeting"
+      ]
+    }
+  ],
+  "records": [],
+  "salmon": [
+    {
+      "species": "Pink",
+      "when": "August",
+      "start": 7.0,
+      "end": 8.0
+    },
+    {
+      "species": "Chum",
+      "when": "Late August to early September",
+      "start": 7.6,
+      "end": 8.35
+    },
+    {
+      "species": "Coho",
+      "when": "Late August through October",
+      "start": 7.6,
+      "end": 10.0
+    }
+  ],
+  "changelog": [
+    {
+      "date": "2026-10-10",
+      "text": "Added The Star, the salmon ladder, the Tongass Historical Museum, the Chief Johnson totem pole and the New York Hotel to the map, and expanded the history timeline. Map numbers now run left to right."
+    },
+    {
+      "date": "2026-10-10",
+      "text": "Added the place directory and street map, history timeline, owner's checklist, visitor information, salmon timing and update dates on every project."
+    },
+    {
+      "date": "2026-10-10",
+      "text": "creekstreet.org launched as an independent community site."
+    }
+  ],
+  "faq": [
+    {
+      "q": "Where is Creek Street?",
+      "a": "In downtown Ketchikan, Alaska, along Ketchikan Creek. The main entrance is on Stedman Street, a short walk from the downtown cruise docks."
+    },
+    {
+      "q": "What is Creek Street known for?",
+      "a": "Its wooden boardwalk and houses built on pilings over Ketchikan Creek, and its past as Ketchikan's red-light district from the early 1900s until the 1950s. The street is listed on the National Register of Historic Places as the Creek Street Historic District."
+    },
+    {
+      "q": "Does it cost anything to visit?",
+      "a": "Walking the boardwalk is free. Museums, the tram and shops along the way may charge for admission or rides."
+    },
+    {
+      "q": "When can you see salmon in Ketchikan Creek?",
+      "a": "Pink salmon run in August, chum from late August into early September, and coho from late August into October. Timing varies from year to year."
+    },
+    {
+      "q": "What is Dolly's House?",
+      "a": "A museum at 24 Creek Street in the house where Dolly Arthur lived from 1919 to 1973, furnished with her belongings from those decades."
+    },
+    {
+      "q": "How do you get from Creek Street to Cape Fox Lodge?",
+      "a": "Ride the tram from its landing on the boardwalk, or climb Married Man's Trail, about ten minutes on foot."
+    },
+    {
+      "q": "How much time should I plan?",
+      "a": "About an hour to walk the boardwalk and watch the creek. Allow more if you visit the museums or ride the tram up the hill."
+    }
+  ]
+}

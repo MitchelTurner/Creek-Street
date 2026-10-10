@@ -35,8 +35,8 @@
       "built": null,
       "now": "The main way onto the boardwalk from downtown, under the arched Creek Street sign.",
       "past": null,
-      "x": 1268,
-      "y": 512,
+      "x": 1315,
+      "y": 510,
       "extra": [
         [
           "Nearby",
@@ -52,8 +52,8 @@
       "built": "Begun 1903; enlarged 1910 and 1917",
       "now": "Art galleries, including Soho Coho, with a suite of the Inn at Creek Street upstairs.",
       "past": "One of the largest houses of the red-light era, run as a brothel until the early 1950s. It sat derelict after a 1972 fire until it was restored in 1991, keeping its maple dance floor. Listed on the National Register in 1993.",
-      "x": 1285,
-      "y": 420,
+      "x": 456,
+      "y": 272,
       "extra": []
     },
     {
@@ -64,8 +64,8 @@
       "built": "Standing by 1906",
       "now": "A museum about the life of Dolly Arthur, with furnishings from her decades in the house.",
       "past": "A house of the red-light district. Dolly Arthur lived here from 1919 to 1973.",
-      "x": 1075,
-      "y": 300,
+      "x": 1210,
+      "y": 369,
       "extra": []
     },
     {
@@ -76,8 +76,8 @@
       "built": "1991; new tram certified June 2025",
       "now": "Runs between Creek Street and Cape Fox Lodge, with a stop at the Eagle's Nest restaurant. Open to visitors and the community.",
       "past": "The original tram opened in 1991, six months after the lodge.",
-      "x": 628,
-      "y": 92,
+      "x": 610,
+      "y": 138,
       "extra": []
     },
     {
@@ -88,8 +88,8 @@
       "built": null,
       "now": "A wooded footpath with stairs climbing from the creek toward the hillside.",
       "past": "Named for the men who used it to reach Creek Street unseen.",
-      "x": 290,
-      "y": 300,
+      "x": 284,
+      "y": 267,
       "extra": [
         [
           "Leads to",
@@ -109,7 +109,7 @@
       "built": null,
       "now": "A fishway upstream on Ketchikan Creek that helps salmon past the falls. A popular place to watch the run in late summer.",
       "past": null,
-      "x": 60,
+      "x": 221,
       "y": 385,
       "extra": [
         [
@@ -130,8 +130,8 @@
       "built": null,
       "now": "Salmon run up the creek beneath the boardwalk from late summer into fall and can be watched from the railings.",
       "past": null,
-      "x": 960,
-      "y": 330,
+      "x": 902,
+      "y": 354,
       "extra": [
         [
           "Fish",
@@ -151,8 +151,8 @@
       "built": null,
       "now": "The City of Ketchikan's history museum, with changing exhibits of artifacts and historical photographs covering Ketchikan's past, Alaska Native culture, art and community life.",
       "past": null,
-      "x": 665,
-      "y": 370,
+      "x": 128,
+      "y": 496,
       "extra": [
         [
           "Run by",
@@ -172,8 +172,8 @@
       "built": "Original 1901; replica 1989",
       "now": "A replica of the pole honoring Chief George Johnson of the Gaanaxadi clan of the Tongass Tribe, carved by Israel Shotridge.",
       "past": "The original pole stood at the mouth of Ketchikan Creek from 1901 until it was taken down in the early 1980s.",
-      "x": 1130,
-      "y": 560,
+      "x": 602,
+      "y": 539,
       "extra": []
     },
     {
@@ -184,8 +184,8 @@
       "built": "1924",
       "now": "Hotel and cafe at the Stedman Street end of Creek Street, run together with the Inn at Creek Street.",
       "past": "Part of the Stedman\u2013Thomas Historic District, listed on the National Register in 1996.",
-      "x": 1452,
-      "y": 468,
+      "x": 1466,
+      "y": 481,
       "extra": []
     }
   ],
